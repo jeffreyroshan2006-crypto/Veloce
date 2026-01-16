@@ -1,0 +1,280 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* No global colors; components decide their own colors */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+}
+
+@keyframes liquidMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes morph {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+}
+
+.glass {
+  background: rgba(255, 240, 245, 0.08); /* Increased opacity for better visibility */
+  backdrop-filter: blur(65px); /* Increased from 45px to 65px */
+  -webkit-backdrop-filter: blur(65px);
+  border: 1px solid rgba(0, 127, 255, 0.25); /* Slightly more prominent border */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.glass:hover {
+  border: 1px solid rgba(0, 127, 255, 0.5);
+  background: rgba(255, 240, 245, 0.12);
+  backdrop-filter: blur(80px);
+  -webkit-backdrop-filter: blur(80px);
+  box-shadow: 0 12px 48px 0 rgba(0, 127, 255, 0.2);
+}
+
+/* Ensure focus states are visible for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #007FFF;
+  outline-offset: 4px;
+}
+
+/* Smooth scrolling for the whole document */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Accessibility: Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .floating-shape, .liquid-bg, .chromatic-text, .animate-pulse, .animate-ping {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.liquid-bg {
+  background: linear-gradient(-45deg, #FFF0F5, #007FFF, #005bb5, #FFF0F5);
+  background-size: 400% 400%;
+  animation: liquidMove 10s ease infinite;
+}
+
+.custom-bg {
+  background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.mesh-gradient {
+  background-color: transparent;
+  /* Adjusted overlay to be slightly darker to ensure text readability over the landscape image */
+  background-image: linear-gradient(180deg, rgba(5, 10, 21, 0.4) 0%, rgba(2, 4, 8, 0.7) 100%);
+}
+
+.futuristic-grid {
+  background-image: 
+    linear-gradient(rgba(0, 127, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 127, 255, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  /* Removed mask-image: radial-gradient which uses a filter-like masking */
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(30px, -50px) rotate(5deg); }
+  66% { transform: translate(-20px, 20px) rotate(-5deg); }
+}
+
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+}
+
+@keyframes data-stream {
+  0% { transform: translateX(-100%) scaleX(0); opacity: 0; }
+  50% { transform: translateX(0%) scaleX(1); opacity: 0.5; }
+  100% { transform: translateX(100%) scaleX(0); opacity: 0; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.orbital-ring {
+  position: absolute;
+  border: 1px solid rgba(0, 127, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.data-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #007FFF, transparent);
+  width: 200px;
+  opacity: 0;
+  pointer-events: none;
+  animation: data-stream 8s linear infinite;
+}
+
+.neural-node {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #007FFF;
+  border-radius: 50%;
+  /* Removed box-shadow glow */
+}
+
+.floating-shape {
+  position: absolute;
+  border: 1px solid rgba(255, 240, 245, 0.15);
+  background: linear-gradient(135deg, rgba(255, 240, 245, 0.08), rgba(0, 127, 255, 0.08));
+  backdrop-filter: blur(65px); /* Increased from 45px to 65px */
+  -webkit-backdrop-filter: blur(65px);
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  animation: float-slow 20s ease-in-out infinite;
+}
+
+.cursor-glow {
+  display: none; /* Completely disabled the blurred cursor glow */
+}
+
+.glow-line {
+  position: absolute;
+  width: 1px;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, #007FFF, transparent);
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100vh); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* Scroll Animation Classes */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Success Animation */
+@keyframes success-pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.success-message {
+  animation: success-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.mobile-menu-enter {
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.mobile-menu-enter-active {
+  transform: translateX(0);
+}
+
+.chromatic-text {
+  background: linear-gradient(
+    to right,
+    #FFF0F5 20%,
+    #007FFF 40%,
+    #ffffff 60%,
+    #FFF0F5 80%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: liquidMove 4s linear infinite;
+}
+
+/* Chromatic Shine Effect */
+.chromatic-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.chromatic-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    rgba(255, 240, 245, 0) 40%,
+    rgba(255, 240, 245, 0.2) 50%,
+    rgba(0, 127, 255, 0.2) 55%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  transition: all 0.7s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chromatic-shine:hover::after {
+  opacity: 1;
+  left: 100%;
+  top: 100%;
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+  .bento-item-large {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+}
+
+body {
+  background: #050505;
+  color: #ffffff;
+  overflow-x: hidden;
+}

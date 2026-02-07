@@ -7,11 +7,12 @@ export default function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  
+
   // Background Customization State
-  const [bgImage, setBgImage] = useState('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop');
+  const [bgImage, setBgImage] = useState('https://lh3.googleusercontent.com/d/1dHeOC1Nk2uENkYpZsoR4BMq6Ap2kVhEC=s0');
   const [brightness, setBrightness] = useState(85); // Increased from 60 to 85
   const [contrast, setContrast] = useState(100);
+  const [bgOpacity, setBgOpacity] = useState(1);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -20,7 +21,19 @@ export default function Home() {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener('mousemove', handleMouseMove);
-    
+
+    const handleScroll = () => {
+      const servicesSection = document.getElementById('services');
+      if (servicesSection) {
+        const rect = servicesSection.getBoundingClientRect();
+        // Start fading out when services section is 80% from the top
+        // Fully faded out when services section is at the top
+        const opacity = Math.max(0, Math.min(1, rect.top / (window.innerHeight * 0.8)));
+        setBgOpacity(opacity);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+
     const observerOptions = {
       threshold: 0.1,
       rootMargin: '0px 0px -50px 0px'
@@ -40,6 +53,7 @@ export default function Home() {
     return () => {
       observer.disconnect();
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -56,18 +70,19 @@ export default function Home() {
   return (
     <div className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden">
       {/* Custom Background Image Layer */}
-      <div 
-        className="fixed inset-0 -z-20 transition-all duration-500" 
-        style={{ 
+      <div
+        className="fixed inset-0 -z-20 transition-all duration-300"
+        style={{
           backgroundImage: `url(${bgImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: `brightness(${brightness}%) contrast(${contrast}%)`
-        }} 
+          filter: `brightness(${brightness}%) contrast(${contrast}%)`,
+          opacity: bgOpacity
+        }}
       />
 
       {/* Settings Toggle Button */}
-      <button 
+      <button
         onClick={() => setIsSettingsOpen(!isSettingsOpen)}
         className="fixed bottom-8 right-8 z-[70] w-14 h-14 glass rounded-full flex items-center justify-center hover:scale-110 transition-transform border-[#007FFF]/30 shadow-[0_0_20px_rgba(0,127,255,0.2)]"
         aria-label="Customization Settings"
@@ -84,12 +99,12 @@ export default function Home() {
           <span className="w-2 h-2 bg-[#007FFF] rounded-full animate-pulse" />
           Customization
         </h3>
-        
+
         <div className="space-y-6">
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-widest text-white/40">Background URL</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={bgImage}
               onChange={(e) => setBgImage(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-[#007FFF]/50 transition-colors"
@@ -102,10 +117,10 @@ export default function Home() {
               <label className="text-xs font-bold uppercase tracking-widest text-white/40">Brightness</label>
               <span className="text-xs text-[#007FFF]">{brightness}%</span>
             </div>
-            <input 
-              type="range" 
-              min="0" 
-              max="200" 
+            <input
+              type="range"
+              min="0"
+              max="200"
               value={brightness}
               onChange={(e) => setBrightness(parseInt(e.target.value))}
               className="w-full accent-[#007FFF]"
@@ -117,20 +132,20 @@ export default function Home() {
               <label className="text-xs font-bold uppercase tracking-widest text-white/40">Contrast</label>
               <span className="text-xs text-[#007FFF]">{contrast}%</span>
             </div>
-            <input 
-              type="range" 
-              min="0" 
-              max="200" 
+            <input
+              type="range"
+              min="0"
+              max="200"
               value={contrast}
               onChange={(e) => setContrast(parseInt(e.target.value))}
               className="w-full accent-[#007FFF]"
             />
           </div>
 
-          <button 
+          <button
             onClick={() => {
-              setBgImage('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop');
-              setBrightness(60);
+              setBgImage('https://lh3.googleusercontent.com/d/1dHeOC1Nk2uENkYpZsoR4BMq6Ap2kVhEC=s0');
+              setBrightness(85);
               setContrast(100);
             }}
             className="w-full py-2 rounded-xl glass-dark border border-white/10 text-xs font-bold hover:bg-white/5 transition-colors"
@@ -141,20 +156,20 @@ export default function Home() {
       </div>
 
       {/* Mobile Menu Overlay */}
-      <div 
-        className={`fixed inset-0 z-[60] bg-black/40 backdrop-blur-[45px] transition-opacity duration-300 ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
+      <div
+        className={`fixed inset-0 z-[60] bg-black/40 backdrop-blur-[45px] transition-opacity duration-300 ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setIsMenuOpen(false)}
         aria-hidden={!isMenuOpen}
       >
-        <div 
+        <div
           className={`absolute right-0 top-0 h-full w-3/4 max-w-sm bg-black/20 border-l border-white/10 p-10 flex flex-col gap-8 transition-transform duration-500 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
           aria-label="Mobile Navigation"
         >
-          <button 
-            className="self-end text-white/50 hover:text-white p-2" 
+          <button
+            className="self-end text-white/50 hover:text-white p-2"
             onClick={() => setIsMenuOpen(false)}
             aria-label="Close Menu"
           >
@@ -171,7 +186,7 @@ export default function Home() {
       {/* Futuristic Background Overlay Layer */}
       <div className="fixed inset-0 -z-10 mesh-gradient">
         <div className="absolute inset-0 futuristic-grid opacity-30" />
-        
+
         {/* Neural Network Nodes */}
         <div className="neural-node top-[15%] left-[25%]" style={{ animationDelay: '0s' }} />
         <div className="neural-node top-[45%] left-[15%]" style={{ animationDelay: '1s' }} />
@@ -191,7 +206,7 @@ export default function Home() {
           <div className="orbital-ring w-[120%] h-[120%] animate-[spin_20s_linear_infinite]" />
           <div className="orbital-ring w-[140%] h-[140%] animate-[spin_30s_linear_infinite_reverse] opacity-50" />
         </div>
-        
+
         {/* Floating Abstract Shapes */}
         <div className="floating-shape w-96 h-96 top-[10%] left-[5%] opacity-20" style={{ animationDelay: '0s' }} />
         <div className="floating-shape w-[500px] h-[500px] bottom-[10%] right-[5%] opacity-10" style={{ animationDelay: '-5s', borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%' }} />
@@ -201,7 +216,7 @@ export default function Home() {
         <div className="glow-line left-[20%] delay-0 opacity-20" />
         <div className="glow-line left-[50%] delay-[4s] opacity-20" />
         <div className="glow-line left-[80%] delay-[2s] opacity-20" />
-        
+
         {/* Removed Floating Blobs with blur-[150px] */}
       </div>
 
@@ -209,7 +224,7 @@ export default function Home() {
       <nav className="fixed top-0 w-full z-50 px-6 py-4" role="navigation" aria-label="Main Navigation">
         <div className="max-w-7xl mx-auto glass rounded-2xl px-6 py-3 flex justify-between items-center border-white/5">
           <a href="#home" className="text-2xl font-black tracking-tighter chromatic-text focus:outline-none" aria-label="VELOCE Home">VELOCE</a>
-          
+
           {/* Desktop Menu */}
           <div className="hidden md:flex gap-8 text-sm font-medium text-white/70">
             {['Home', 'Services', 'Portfolio', 'About', 'Contact'].map((item) => (
@@ -222,8 +237,8 @@ export default function Home() {
           </button>
 
           {/* Mobile Toggle */}
-          <button 
-            className="md:hidden text-white p-2" 
+          <button
+            className="md:hidden text-white p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-expanded={isMenuOpen}
             aria-label="Toggle Menu"
@@ -241,9 +256,9 @@ export default function Home() {
           {/* Decorative Background Elements for Hero */}
           <div className="absolute top-10 left-10 w-20 h-20 border border-white/10 rounded-full opacity-20 animate-pulse" />
           <div className="absolute bottom-20 right-20 w-40 h-40 border border-white/10 rounded-full opacity-10 animate-ping" style={{ animationDuration: '4s' }} />
-          
+
           {/* Removed Inner Glow Effects with blur-[80px] */}
-          
+
           <div className="relative z-10">
             <div className="inline-block px-4 py-1.5 mb-8 rounded-full glass-dark border border-[#007FFF]/30 text-xs font-bold tracking-[0.2em] uppercase text-[#007FFF] animate-pulse">
               Next-Gen Web Agency
@@ -360,7 +375,7 @@ export default function Home() {
               <div className="text-6xl mb-6">🚀</div>
               <h2 className="text-4xl font-bold mb-4">Message Sent!</h2>
               <p className="text-[#FFF0F5]/60">We'll get back to you within 24 hours.</p>
-              <button 
+              <button
                 onClick={() => setFormStatus('idle')}
                 className="mt-8 px-8 py-3 rounded-xl glass border-[#007FFF]/30 text-sm font-bold"
               >
@@ -385,7 +400,7 @@ export default function Home() {
                   <label htmlFor="message" className="text-sm font-medium text-white/50 ml-2">Message</label>
                   <textarea required id="message" name="message" rows={4} className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-[#007FFF]/50 transition-colors" placeholder="Tell us about your project..." />
                 </div>
-                <button 
+                <button
                   disabled={formStatus === 'submitting'}
                   className="w-full py-5 rounded-2xl bg-white text-black font-black text-lg hover:bg-[#FFF0F5] transition-all disabled:opacity-50 relative overflow-hidden group"
                 >

@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
+const geistSans = Geist({
   variable: "--font-geist-sans",
-  weight: "100 900",
+  subsets: ["latin"],
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
+
+const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  weight: "100 900",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -20,13 +19,13 @@ export const metadata: Metadata = {
   keywords: ["web development", "UI/UX design", "AI integration", "premium websites", "VELOCE agency"],
   authors: [{ name: "VELOCE Studio" }],
   openGraph: {
-    title: "VELOCE | World-Class Web Development Agency",
+    title: "VELOCE | World-Class Development Agency",
     description: "Engineering high-velocity digital experiences that redefine the boundaries of the modern web.",
     url: "https://veloce.agency",
     siteName: "VELOCE",
     images: [
       {
-        url: "/og-image.jpg", // Placeholder for actual OG image
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
       },
@@ -48,9 +47,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
         {children}
       </body>

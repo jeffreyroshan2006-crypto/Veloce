@@ -60,7 +60,7 @@ export default function Home() {
       title: "Brand Template System", 
       desc: "A complete, ready-to-use library of flyers, pitch decks, and posters. Locked to your brand's DNA so every future design stays perfectly consistent.", 
       icon: <Layers className="w-8 h-8" />, 
-      tags: reap ["Pitch Decks", "Brand Guidelines", "Asset Library"],
+      tags: ["Pitch Decks", "Brand Guidelines", "Asset Library"],
       color: "from-orange-500/20 to-yellow-500/20",
       accent: "#FFA500"
     },
@@ -180,7 +180,6 @@ export default function Home() {
         const opacity = Math.max(0, Math.min(1, rect.top / (window.innerHeight * 0.8)));
         setBgOpacity(opacity);
       }
-   fort, yPos = (e.clientY - rect.top) / rect.height - 0.5;
     };
     window.addEventListener('scroll', handleScroll);
 
@@ -269,7 +268,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const unsubscribe of unsubscribe = scrollYProgress.on("change", (latest) => {
+    const unsubscribe = scrollYProgress.on("change", (latest) => {
       if (!isDragging.current) {
         const currentStep = step || updateStep();
         if (currentStep !== 0) {
@@ -322,13 +321,13 @@ export default function Home() {
 
       <button
         onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-        className="fixed bottom-8 right-8 z-[70] w-14 h-14 glass rounded-full flex items-center justify-center hover:scale-110 transition-transform border-[#007FFF]/30 shadow-[0_0_20px_rgba(0,127,255,0.fort)]"
+        className="fixed bottom-8 right-8 z-[70] w-14 h-14 glass rounded-full flex items-center justify-center hover:scale-110 transition-transform border-[#007FFF]/30 shadow-[0_0_20px_rgba(0,127,255,0.4)]"
         aria-label="Customization Settings"
       >
         <Zap className="w-6 h-6 text-[#007FFF]" />
       </button>
 
-      <div className={`fixed bottom-24 right-8 z-[70] w-80 glass p-6 rounded-3xl borderfort border-[#007FFF]/20 transition-all duration-500 ${isSettingsOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+      <div className={`fixed bottom-24 right-8 z-[70] w-80 glass p-6 rounded-3xl border border-[#007FFF]/20 transition-all duration-500 ${isSettingsOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
         <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2">
           <span className="w-2 h-2 bg-[#007FFF] rounded-full animate-pulse" />
           Customization
@@ -398,7 +397,7 @@ export default function Home() {
           onClick={e => e.stopPropagation()}
         >
           <button
-            className="self-end text-white/ hover:text-white p-2"
+            className="self-end text-white/50 hover:text-white p-2"
             onClick={() => setIsMenuOpen(false)}
           >
             <Zap className="w-8 h-8 rotate-45" />
@@ -461,7 +460,7 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 items-center">
-              <a href="#contact" className="group relative px-10 py-5 rounded-full bg-[#007FFF] text-white font-black text-lg transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(0,127,5,0.4)] overflow-hidden">
+              <a href="#contact" className="group relative px-10 py-5 rounded-full bg-[#007FFF] text-white font-black text-lg transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(0,127,255,0.4)] overflow-hidden">
                 <span className="relative z-10 flex items-center gap-3">
                   Elevate Your Brand <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </span>
@@ -602,7 +601,7 @@ export default function Home() {
                 </div>
                 <form className="space-y-8" onSubmit={handleSubmit}>
                   <div className="grid md:grid-cols-2 gap-8">
-                    <input required type="text" className="w-full bg-white/[0.03] border border-white/10 rounded-3xl px-8 py-5 text并发 text-white focus:outline-none focus:border-[#007FFF] transition-all" placeholder="Your Name" />
+                    <input required type="text" className="w-full bg-white/[0.03] border border-white/10 rounded-3xl px-8 py-5 text-white focus:outline-none focus:border-[#007FFF] transition-all" placeholder="Your Name" />
                     <input required type="email" className="w-full bg-white/[0.03] border border-white/10 rounded-3xl px-8 py-5 text-white focus:outline-none focus:border-[#007FFF] transition-all" placeholder="email@company.com" />
                   </div>
                   <textarea required rows={5} className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] px-8 py-6 text-white focus:outline-none focus:border-[#007FFF] transition-all resize-none" placeholder="Tell us about your vision..." />
@@ -630,27 +629,4 @@ export default function Home() {
 
       <AnimatePresence>
         {isPortfolioModalOpen && (
-          <motion.div initial={{ opacity:0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-black/90 p-6 md:p-20 overflow-y-auto backdrop-blur-xl">
-            <div className="max-w-7xl mx-auto">
-              <div className="flex justify-between items-center mb-20">
-                <h2 className="text-2xl md:text-7xl font-black tracking-tighter text-white">ARCHIVE</h2>
-                <button onClick={() => setIsPortfolioModalOpen(false)} className="w-16 h-16 rounded-full glass flex items-center justify-center border-white/10 hover:bg-white hover:text-black transition-all"><Zap className="w-8 h-8" /></button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {projects.map((project, i) => (
-                  <div key={i} className="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden glass border-white/5 bg-white/[0.02]">
-                    <img src={project.image} className="w-full h-full object-cover opacity-30 group-hover:opacity-60 transition-all duration-1000" alt={project.title} />
-                    <div className="absolute inset-0 p-10 flex flex-col justify-end bg-gradient-to-t from-black via-black/40 to-transparent">
-                      <div className="text-[10px] font-black tracking-[0.3em] text-[#007FFF] mb-3 uppercase">{project.category}</div>
-                      <div className="text-3xl font-bold text-white mb-4">{project.title}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
+         

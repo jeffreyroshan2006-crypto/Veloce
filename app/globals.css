@@ -10,7 +10,8 @@
 
 @layer base {
   body {
-    @apply bg-black text-white overflow-x-hidden;
+    /* Changed from bg-black to transparent to let the Unicorn Studio background shine through */
+    @apply bg-transparent text-white overflow-x-hidden;
   }
 }
 

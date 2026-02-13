@@ -66,75 +66,91 @@ function MagneticButton({ children, className, onClick }: { children: React.Reac
   );
 }
 
-// Video Player Component - Premium Vertical Style
+// Video Player Component - Premium Vertical Style with Auto-load
 function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: string; type?: string }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   
-  const handlePlay = () => {
-    setIsPlaying(true);
+  const togglePlay = () => {
     if (videoRef.current) {
-      videoRef.current.play();
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        videoRef.current.play();
+        setIsPlaying(true);
+      }
     }
   };
   
   return (
     <motion.div 
       className="relative h-full min-h-[500px] rounded-[2rem] overflow-hidden bg-black group cursor-pointer"
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.3 }}
+      onClick={togglePlay}
     >
-      {!isPlaying ? (
-        <>
-          {/* Premium gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#007FFF]/30 via-purple-500/20 to-pink-500/30" />
-          
-          {/* Animated glow effect */}
+      {/* Video Element - Always visible, auto-loads */}
+      <video
+        ref={videoRef}
+        src={videoUrl}
+        className="w-full h-full object-contain bg-black"
+        preload="auto"
+        muted
+        playsInline
+        onEnded={() => setIsPlaying(false)}
+      />
+      
+      {/* Play/Pause Overlay */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <motion.div 
+          className="w-20 h-20 rounded-full bg-black/50 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center transition-all duration-300"
+          animate={{ 
+            opacity: isPlaying ? 0 : 1,
+            scale: isPlaying ? 0.8 : 1
+          }}
+          transition={{ duration: 0.2 }}
+        >
+          <Play size={36} className="text-white ml-1" fill="currentColor" />
+        </motion.div>
+      </div>
+      
+      {/* Pause indicator when playing */}
+      <motion.div 
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isPlaying ? 0 : 0 }}
+        whileHover={{ opacity: 1 }}
+      >
+        <div className="w-16 h-16 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center gap-3">
+          <div className="w-2 h-6 bg-white rounded-full" />
+          <div className="w-2 h-6 bg-white rounded-full" />
+        </div>
+      </motion.div>
+      
+      {/* Content overlay at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none">
+        <div className="flex items-center gap-2 mb-3">
           <motion.div 
-            className="absolute inset-0 bg-gradient-to-t from-[#007FFF]/10 to-transparent"
-            animate={{ opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 3, repeat: Infinity }}
+            className="w-2 h-2 bg-[#007FFF] rounded-full"
+            animate={{ 
+              scale: isPlaying ? [1, 1.5, 1] : 1,
+              opacity: isPlaying ? [0.5, 1, 0.5] : 0.5
+            }}
+            transition={{ duration: 1.5, repeat: isPlaying ? Infinity : 0 }}
           />
-          
-          {/* Play button */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <motion.div 
-              className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md border-2 border-white/30 flex items-center justify-center group-hover:bg-[#007FFF] group-hover:border-[#007FFF] transition-all duration-500 shadow-[0_0_40px_rgba(0,127,255,0.3)]"
-              whileHover={{ scale: 1.1 }}
-              onClick={handlePlay}
-            >
-              <Play size={40} className="text-white ml-1" fill="currentColor" />
-            </motion.div>
-          </div>
-          
-          {/* Content overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/60 to-transparent">
-            <div className="flex items-center gap-2 mb-3">
-              <motion.div 
-                className="w-2 h-2 bg-[#007FFF] rounded-full"
-                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#007FFF]">{type || 'Video Campaign'}</span>
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-2">{title}</h3>
-            <p className="text-white/50 text-sm">Click to play video</p>
-          </div>
-          
-          {/* Corner accents */}
-          <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-[#007FFF]/50 rounded-tr-lg" />
-          <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-purple-500/50 rounded-bl-lg" />
-        </>
-      ) : (
-        <video
-          ref={videoRef}
-          src={videoUrl}
-          className="w-full h-full object-contain bg-black"
-          autoPlay
-          controls
-          playsInline
-        />
-      )}
+          <span className="text-[10px] font-black uppercase tracking-widest text-[#007FFF]">{type || 'Video Campaign'}</span>
+          {isPlaying && (
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-2">• Playing</span>
+          )}
+        </div>
+        <h3 className="text-2xl font-bold text-white mb-1">{title}</h3>
+        <p className="text-white/50 text-sm">Tap to {isPlaying ? 'pause' : 'play'}</p>
+      </div>
+      
+      {/* Corner accents */}
+      <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-[#007FFF]/50 rounded-tr-lg pointer-events-none" />
+      <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-purple-500/50 rounded-bl-lg pointer-events-none" />
     </motion.div>
   );
 }

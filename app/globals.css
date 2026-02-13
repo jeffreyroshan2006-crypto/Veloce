@@ -67,3 +67,15 @@
 ::selection {
   @apply bg-[#007FFF]/30 text-white;
 }
+
+/* Hide Unicorn Studio Watermark */
+[data-us-project]::after,
+.unicorn-studio-watermark,
+[class*="unicorn"] [class*="watermark"],
+[class*="unicorn"] a,
+.us-watermark {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

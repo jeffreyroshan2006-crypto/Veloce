@@ -10,15 +10,6 @@ import { TextReveal } from '@/components/ui/TextReveal';
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -258,17 +249,10 @@ export default function Home() {
 
   return (
     <SmoothScroll>
-      <div className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden cursor-none">
-        {/* Custom Cursor */}
-        <motion.div 
-          className="fixed top-0 left-0 w-8 h-8 bg-white mix-blend-difference rounded-full pointer-events-none z-[999] hidden md:block"
-          animate={{ x: mousePos.x - 16, y: mousePos.y - 16 }}
-          transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
-        />
-
+      <div className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden">
         {/* Noise Texture Overlay */}
         <div className="fixed inset-0 z-[300] pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-
+        
         {/* Unicorn Studio Background */}
         <div 
           data-us-project="b8oiIiLJeUCUdCx3azAA" 
@@ -366,8 +350,14 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* Content Wrapper */}
-        <div className="relative z-10 bg-black">
+        {/* Content Wrapper with fade transition */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 bg-black/30 backdrop-blur-sm"
+        >
           {/* Services Section */}
           <section id="services" className="py-40 px-6 relative overflow-hidden">
             <div className="max-w-7xl mx-auto">
@@ -599,7 +589,7 @@ export default function Home() {
               <div className="text-sm text-white/20">© 2026 VELOCE Studio. All rights reserved.</div>
             </div>
           </footer>
-        </div>
+        </motion.div>
 
         {/* Portfolio Modal */}
         <AnimatePresence>

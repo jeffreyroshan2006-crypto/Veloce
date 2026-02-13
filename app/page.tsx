@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Play, Globe, Zap, Shield, Layers, Sparkles, Smartphone } from 'lucide-react';
+import { ArrowRight, Play, Globe, Zap, Shield, Layers, Sparkles, Smartphone, ExternalLink, Eye } from 'lucide-react';
 import { TextReveal } from '@/components/ui/TextReveal';
 import { WebGLBackground } from '@/components/ui/WebGLBackground';
 
@@ -10,6 +10,7 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false);
+  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
 
   const services = [
     { 
@@ -66,48 +67,63 @@ export default function Home() {
   const projects = [
     {
       title: "SIP & SOCIAL",
-      category: "Social Platform • 2025",
+      category: "Social Platform",
+      year: "2025",
       image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1974&auto=format&fit=crop",
-      color: "from-amber-600 to-orange-400",
-      description: "A social networking platform connecting beverage enthusiasts worldwide.",
-      link: "https://sipnsocial08.github.io/Sip-Social/"
+      color: "#F59E0B",
+      description: "A social networking platform connecting beverage enthusiasts worldwide with real-time events and community features.",
+      link: "https://sipnsocial08.github.io/Sip-Social/",
+      tags: ["Community", "Events", "Social"]
     },
     {
       title: "GENZ CRICKET",
-      category: "Sports Club • 2025",
+      category: "Sports Club",
+      year: "2025",
       image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=1994&auto=format&fit=crop",
-      color: "from-emerald-600 to-teal-400",
-      description: "Modern cricket club website with dynamic content and team management.",
-      link: "https://genzcricketclub-max.github.io/genzzz/"
+      color: "#10B981",
+      description: "Modern cricket club website with dynamic content, live scores, and team management for the next generation.",
+      link: "https://genzcricketclub-max.github.io/genzzz/",
+      tags: ["Sports", "Live Scores", "Team"]
     },
     {
       title: "PHIZOOE REHAB",
-      category: "Healthcare • 2025",
+      category: "Healthcare",
+      year: "2025",
       image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2070&auto=format&fit=crop",
-      color: "from-blue-600 to-cyan-400",
-      description: "Professional rehabilitation therapy center with appointment booking.",
-      link: "https://contactphizeeosrehabtherapy-source.github.io/Phizooe/"
+      color: "#3B82F6",
+      description: "Professional rehabilitation therapy center with appointment booking and patient management system.",
+      link: "https://contactphizeeosrehabtherapy-source.github.io/Phizooe/",
+      tags: ["Healthcare", "Booking", "Therapy"]
     },
     {
       title: "NEURALIS",
-      category: "AI Platform • 2026",
+      category: "AI Platform",
+      year: "2026",
       image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop",
-      color: "from-violet-600 to-fuchsia-400",
-      description: "A revolutionary AI-driven interface for neural data visualization."
+      color: "#8B5CF6",
+      description: "A revolutionary AI-driven interface for neural data visualization and predictive analytics.",
+      link: "",
+      tags: ["AI", "Data Viz", "Analytics"]
     },
     {
       title: "AETHER",
-      category: "E-commerce • 2025",
+      category: "E-commerce",
+      year: "2025",
       image: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070&auto=format&fit=crop",
-      color: "from-rose-600 to-orange-400",
-      description: "Redefining luxury retail through immersive 3D shopping experiences."
+      color: "#EC4899",
+      description: "Redefining luxury retail through immersive 3D shopping experiences and AR try-on features.",
+      link: "",
+      tags: ["E-commerce", "3D", "AR"]
     },
     {
       title: "ZENITH",
-      category: "Real Estate • 2025",
+      category: "Real Estate",
+      year: "2025",
       image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop",
-      color: "from-cyan-600 to-blue-400",
-      description: "Premium architectural visualization for the next generation of living."
+      color: "#06B6D4",
+      description: "Premium architectural visualization for the next generation of living with virtual tours.",
+      link: "",
+      tags: ["Real Estate", "3D Tours", "Premium"]
     }
   ];
 
@@ -351,30 +367,15 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="py-20 px-6 relative overflow-hidden border-y border-white/5">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {stats.map((stat, i) => (
-                <motion.div 
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  className="text-center"
-                >
-                  <div className="text-4xl md:text-6xl font-bold text-white mb-2 tracking-tighter">{stat.value}</div>
-                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">{stat.label}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Portfolio Section */}
+        {/* Portfolio Section - Premium Redesigned */}
         <section id="portfolio" className="relative py-40 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6 mb-24">
+          {/* Background Elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#007FFF]/10 rounded-full blur-[150px]" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[150px]" />
+          </div>
+
+          <div className="max-w-7xl mx-auto px-6 mb-24 relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-end gap-8">
               <div>
                 <div className="text-[#007FFF] font-black tracking-[0.4em] uppercase text-[10px] mb-4">Selected Works</div>
@@ -394,33 +395,115 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative w-full overflow-x-auto pb-8">
-            <div className="flex gap-8 px-6 min-w-max">
+          {/* Premium Portfolio Grid */}
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map((project, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  className="relative w-[85vw] md:w-[55vw] flex-shrink-0 group"
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  onMouseEnter={() => setHoveredProject(i)}
+                  onMouseLeave={() => setHoveredProject(null)}
+                  className="group relative"
                 >
-                  <div className="relative aspect-[16/10] rounded-[3rem] overflow-hidden bg-white/5 border border-white/10 transition-all duration-500 group-hover:border-[#007FFF]/50">
-                    <img src={project.image} alt={project.title} className="w-full h-full object-cover opacity-40 group-hover:opacity-70 transition-opacity duration-500" />
-                    <div className="absolute inset-0 p-10 md:p-16 flex flex-col justify-between z-20">
+                  <div 
+                    className="relative aspect-[4/5] rounded-[2rem] overflow-hidden cursor-pointer"
+                    style={{ 
+                      boxShadow: hoveredProject === i ? `0 25px 50px -12px ${project.color}40` : 'none',
+                      transition: 'box-shadow 0.5s ease'
+                    }}
+                  >
+                    {/* Image */}
+                    <img 
+                      src={project.image} 
+                      alt={project.title} 
+                      className="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                    />
+                    
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+                    
+                    {/* Animated Border */}
+                    <div 
+                      className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{ 
+                        boxShadow: `inset 0 0 0 2px ${project.color}`,
+                      }}
+                    />
+
+                    {/* Content */}
+                    <div className="absolute inset-0 p-8 flex flex-col justify-between">
+                      {/* Top Section */}
                       <div className="flex justify-between items-start">
-                        <div className="glass px-5 py-2.5 rounded-full text-[10px] font-black tracking-widest text-white/80 border-white/10">{project.category}</div>
-                        {project.link && (
-                          <a href={project.link} target="_blank" rel="noopener noreferrer" className="w-16 h-16 rounded-full glass flex items-center justify-center border-white/20 group-hover:bg-white group-hover:text-black transition-all duration-300 -rotate-45 group-hover:rotate-0">
-                            <ArrowRight size={28} />
-                          </a>
-                        )}
+                        <div className="flex gap-2">
+                          {project.tags.map((tag, j) => (
+                            <span 
+                              key={j} 
+                              className="text-[9px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white/80 border border-white/10"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        <span className="text-white/40 font-mono text-sm">{project.year}</span>
                       </div>
+
+                      {/* Bottom Section */}
                       <div>
-                        <h3 className="text-5xl md:text-8xl font-bold text-white tracking-tighter mb-6 group-hover:text-[#007FFF] transition-colors duration-300">{project.title}</h3>
-                        <p className="text-white/60 text-lg md:text-xl font-light max-w-md leading-relaxed opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500">{project.description}</p>
+                        <div className="flex items-center gap-2 mb-3">
+                          <div 
+                            className="w-2 h-2 rounded-full animate-pulse"
+                            style={{ backgroundColor: project.color }}
+                          />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-white/60">{project.category}</span>
+                        </div>
+                        
+                        <h3 
+                          className="text-3xl md:text-4xl font-black text-white tracking-tight mb-3 transition-colors duration-300"
+                          style={{ color: hoveredProject === i ? project.color : 'white' }}
+                        >
+                          {project.title}
+                        </h3>
+                        
+                        <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-xs opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
+                          {project.description}
+                        </p>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-200">
+                          {project.link && (
+                            <a 
+                              href={project.link} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105"
+                              style={{ 
+                                backgroundColor: project.color,
+                                color: 'white'
+                              }}
+                            >
+                              <Eye size={14} />
+                              View Live Site
+                            </a>
+                          )}
+                          <button 
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300"
+                          >
+                            <ExternalLink size={14} />
+                            Case Study
+                          </button>
+                        </div>
                       </div>
                     </div>
+
+                    {/* Hover Glow Effect */}
+                    <div 
+                      className="absolute -inset-px rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl"
+                      style={{ backgroundColor: project.color }}
+                    />
                   </div>
                 </motion.div>
               ))}
@@ -515,12 +598,22 @@ export default function Home() {
                   >
                     <div className="relative aspect-video rounded-[2rem] overflow-hidden mb-6 border border-white/10">
                       <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        {project.link ? (
-                          <a href={project.link} target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-full bg-white text-black font-bold text-sm">VIEW PROJECT</a>
-                        ) : (
-                          <button className="px-8 py-4 rounded-full bg-white text-black font-bold text-sm">VIEW CASE STUDY</button>
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
+                        {project.link && (
+                          <a 
+                            href={project.link} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-bold text-sm hover:bg-[#007FFF] hover:text-white transition-all duration-300"
+                          >
+                            <Eye size={16} />
+                            View Live Site
+                          </a>
                         )}
+                        <button className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white font-bold text-sm hover:bg-white hover:text-black transition-all duration-300">
+                          <ExternalLink size={16} />
+                          Case Study
+                        </button>
                       </div>
                     </div>
                     <div className="flex justify-between items-end">

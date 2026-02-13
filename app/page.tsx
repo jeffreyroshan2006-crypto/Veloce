@@ -1,16 +1,106 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Play, Globe, Zap, Shield, Layers, Sparkles, Smartphone, ExternalLink, Eye } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
+import { ArrowRight, Play, Globe, Zap, Shield, Layers, Sparkles, Smartphone, ExternalLink, Eye, ArrowUpRight } from 'lucide-react';
 import { TextReveal } from '@/components/ui/TextReveal';
 import { WebGLBackground } from '@/components/ui/WebGLBackground';
+
+// Animated counter component
+function AnimatedCounter({ value, suffix = '' }: { value: string; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true });
+  const [displayValue, setDisplayValue] = useState('0');
+
+  useEffect(() => {
+    if (isInView) {
+      const numericValue = parseInt(value.replace(/[^0-9]/g, ''));
+      const duration = 2000;
+      const steps = 60;
+      const increment = numericValue / steps;
+      let current = 0;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= numericValue) {
+          setDisplayValue(value);
+          clearInterval(timer);
+        } else {
+          setDisplayValue(Math.floor(current).toString() + (value.includes('%') ? '%' : '') + (value.includes('+') ? '+' : '') + (value.includes('x') ? 'x' : ''));
+        }
+      }, duration / steps);
+      return () => clearInterval(timer);
+    }
+  }, [isInView, value]);
+
+  return <span ref={ref}>{displayValue}{suffix}</span>;
+}
+
+// Magnetic button component
+function MagneticButton({ children, className, onClick }: { children: React.ReactNode; className?: string; onClick?: () => void }) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouse = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    setPosition({ x: x * 0.3, y: y * 0.3 });
+  };
+
+  const reset = () => setPosition({ x: 0, y: 0 });
+
+  return (
+    <motion.button
+      ref={ref}
+      className={className}
+      onClick={onClick}
+      onMouseMove={handleMouse}
+      onMouseLeave={reset}
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: 'spring', stiffness: 150, damping: 15, mass: 0.1 }}
+    >
+      {children}
+    </motion.button>
+  );
+}
+
+// Floating animation variants
+const floatAnimation = {
+  initial: { y: 0 },
+  animate: {
+    y: [-10, 10, -10],
+    transition: {
+      duration: 6,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+// Glow pulse animation
+const glowPulse = {
+  initial: { opacity: 0.5, scale: 1 },
+  animate: {
+    opacity: [0.5, 1, 0.5],
+    scale: [1, 1.05, 1],
+    transition: {
+      duration: 3,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false);
-  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
+  const [activeProject, setActiveProject] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   const services = [
     { 
@@ -71,6 +161,7 @@ export default function Home() {
       year: "2025",
       image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1974&auto=format&fit=crop",
       color: "#F59E0B",
+      gradient: "from-amber-500 to-orange-600",
       description: "A social networking platform connecting beverage enthusiasts worldwide with real-time events and community features.",
       link: "https://sipnsocial08.github.io/Sip-Social/",
       tags: ["Community", "Events", "Social"]
@@ -81,6 +172,7 @@ export default function Home() {
       year: "2025",
       image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=1994&auto=format&fit=crop",
       color: "#10B981",
+      gradient: "from-emerald-500 to-teal-600",
       description: "Modern cricket club website with dynamic content, live scores, and team management for the next generation.",
       link: "https://genzcricketclub-max.github.io/genzzz/",
       tags: ["Sports", "Live Scores", "Team"]
@@ -91,6 +183,7 @@ export default function Home() {
       year: "2025",
       image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2070&auto=format&fit=crop",
       color: "#3B82F6",
+      gradient: "from-blue-500 to-cyan-600",
       description: "Professional rehabilitation therapy center with appointment booking and patient management system.",
       link: "https://contactphizeeosrehabtherapy-source.github.io/Phizooe/",
       tags: ["Healthcare", "Booking", "Therapy"]
@@ -101,6 +194,7 @@ export default function Home() {
       year: "2026",
       image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop",
       color: "#8B5CF6",
+      gradient: "from-violet-500 to-purple-600",
       description: "A revolutionary AI-driven interface for neural data visualization and predictive analytics.",
       link: "",
       tags: ["AI", "Data Viz", "Analytics"]
@@ -111,6 +205,7 @@ export default function Home() {
       year: "2025",
       image: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070&auto=format&fit=crop",
       color: "#EC4899",
+      gradient: "from-pink-500 to-rose-600",
       description: "Redefining luxury retail through immersive 3D shopping experiences and AR try-on features.",
       link: "",
       tags: ["E-commerce", "3D", "AR"]
@@ -121,6 +216,7 @@ export default function Home() {
       year: "2025",
       image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop",
       color: "#06B6D4",
+      gradient: "from-cyan-500 to-blue-600",
       description: "Premium architectural visualization for the next generation of living with virtual tours.",
       link: "",
       tags: ["Real Estate", "3D Tours", "Premium"]
@@ -128,10 +224,10 @@ export default function Home() {
   ];
 
   const stats = [
-    { label: "Average CTR Increase", value: "45%" },
-    { label: "Production Speed", value: "3x" },
-    { label: "Client Retention", value: "98%" },
-    { label: "Assets Delivered", value: "12k+" }
+    { label: "Average CTR Increase", value: "45%", icon: "📈" },
+    { label: "Production Speed", value: "3x", icon: "⚡" },
+    { label: "Client Retention", value: "98%", icon: "🎯" },
+    { label: "Assets Delivered", value: "12k+", icon: "🚀" }
   ];
 
   const adExamples = [
@@ -165,12 +261,18 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden">
+    <div ref={containerRef} className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden">
       {/* WebGL Background */}
       <WebGLBackground />
       
       {/* Gradient overlay */}
       <div className="fixed inset-0 z-0 bg-gradient-to-b from-[#007FFF]/5 via-transparent to-transparent pointer-events-none" />
+
+      {/* Scroll Progress Indicator */}
+      <motion.div 
+        className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#007FFF] via-purple-500 to-pink-500 z-[200] origin-left"
+        style={{ scaleX: smoothProgress }}
+      />
 
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-[100] px-6 py-6">
@@ -239,11 +341,11 @@ export default function Home() {
               transition={{ delay: 0.7, duration: 0.6 }}
               className="flex flex-col sm:flex-row gap-6 items-center"
             >
-              <a href="#contact" className="group relative px-10 py-5 rounded-full bg-[#007FFF] text-white font-black text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(0,127,255,0.4)] overflow-hidden">
+              <MagneticButton className="group relative px-10 py-5 rounded-full bg-[#007FFF] text-white font-black text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(0,127,255,0.4)] overflow-hidden">
                 <span className="relative z-10 flex items-center gap-3">
                   Elevate Your Brand <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </span>
-              </a>
+              </MagneticButton>
               <button className="flex items-center gap-3 px-10 py-5 rounded-full glass font-bold text-lg hover:bg-white/10 transition-all duration-300 border border-white/10 group">
                 <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-[#007FFF] transition-colors duration-300">
                   <Play size={16} fill="currentColor" />
@@ -348,31 +450,83 @@ export default function Home() {
                 </motion.div>
               ))}
             </div>
+          </div>
+        </section>
 
-            <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/5 pt-24">
+        {/* Stats Section with 70% black background */}
+        <section className="py-32 px-6 relative overflow-hidden bg-black/70 backdrop-blur-md">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <motion.div 
+              className="absolute -top-1/2 -left-1/4 w-full h-full bg-gradient-to-r from-[#007FFF]/10 to-transparent rounded-full blur-3xl"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+            />
+            <motion.div 
+              className="absolute -bottom-1/2 -right-1/4 w-full h-full bg-gradient-to-l from-purple-500/10 to-transparent rounded-full blur-3xl"
+              animate={{ rotate: -360 }}
+              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+            />
+          </div>
+
+          <div className="max-w-7xl mx-auto relative z-10">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h3 className="text-3xl md:text-5xl font-bold text-white tracking-tighter mb-4">
+                Numbers That <span className="text-[#007FFF]">Matter</span>
+              </h3>
+              <p className="text-white/40 text-lg max-w-xl mx-auto">
+                Our track record speaks for itself. Real results, real impact.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((stat, i) => (
                 <motion.div 
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  className="text-center"
+                  transition={{ delay: i * 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  className="text-center group"
                 >
-                  <div className="text-4xl md:text-6xl font-bold text-white mb-2 tracking-tighter">{stat.value}</div>
-                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">{stat.label}</div>
+                  <motion.div 
+                    className="relative inline-block"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <div className="absolute inset-0 bg-[#007FFF]/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="text-5xl md:text-7xl font-black text-white mb-3 tracking-tighter relative">
+                      <AnimatedCounter value={stat.value} />
+                    </div>
+                  </motion.div>
+                  <div className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-white/40 group-hover:text-white/60 transition-colors duration-300">
+                    {stat.label}
+                  </div>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Portfolio Section - Premium Redesigned */}
+        {/* Portfolio Section - Premium Futuristic Design */}
         <section id="portfolio" className="relative py-40 overflow-hidden">
-          {/* Background Elements */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#007FFF]/10 rounded-full blur-[150px]" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[150px]" />
+          {/* Animated background elements */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <motion.div 
+              className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-[#007FFF]/5 rounded-full blur-[100px]"
+              animate={{ x: [0, 100, 0], y: [0, -50, 0] }}
+              transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div 
+              className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[100px]"
+              animate={{ x: [0, -100, 0], y: [0, 50, 0] }}
+              transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+            />
           </div>
 
           <div className="max-w-7xl mx-auto px-6 mb-24 relative z-10">
@@ -395,94 +549,181 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Premium Portfolio Grid */}
+          {/* Premium Portfolio Grid with Futuristic Animations */}
           <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {projects.map((project, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 60, rotateX: -10 }}
+                  whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
-                  transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  onMouseEnter={() => setHoveredProject(i)}
-                  onMouseLeave={() => setHoveredProject(null)}
-                  className="group relative"
+                  transition={{ 
+                    delay: i * 0.15, 
+                    duration: 0.8, 
+                    ease: [0.22, 1, 0.36, 1] 
+                  }}
+                  onHoverStart={() => setActiveProject(i)}
+                  onHoverEnd={() => setActiveProject(null)}
+                  className="group relative perspective-1000"
+                  style={{ perspective: '1000px' }}
                 >
-                  <div 
-                    className="relative aspect-[4/5] rounded-[2rem] overflow-hidden cursor-pointer"
-                    style={{ 
-                      boxShadow: hoveredProject === i ? `0 25px 50px -12px ${project.color}40` : 'none',
-                      transition: 'box-shadow 0.5s ease'
+                  <motion.div 
+                    className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden cursor-pointer"
+                    whileHover={{ 
+                      rotateY: 2, 
+                      rotateX: -2,
+                      scale: 1.02,
+                      transition: { duration: 0.4, ease: "easeOut" }
                     }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
                   >
-                    {/* Image */}
-                    <img 
-                      src={project.image} 
-                      alt={project.title} 
-                      className="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-                    />
-                    
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
-                    
-                    {/* Animated Border */}
-                    <div 
-                      className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                      style={{ 
-                        boxShadow: `inset 0 0 0 2px ${project.color}`,
+                    {/* Animated border gradient */}
+                    <motion.div 
+                      className="absolute -inset-[2px] rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{
+                        background: `linear-gradient(135deg, ${project.color}, transparent, ${project.color})`,
                       }}
                     />
+
+                    {/* Image with zoom effect */}
+                    <motion.img 
+                      src={project.image} 
+                      alt={project.title} 
+                      className="absolute inset-0 w-full h-full object-cover"
+                      animate={{ scale: activeProject === i ? 1.1 : 1 }}
+                      transition={{ duration: 0.6, ease: "easeOut" }}
+                    />
+                    
+                    {/* Animated gradient overlay */}
+                    <motion.div 
+                      className="absolute inset-0"
+                      style={{
+                        background: `linear-gradient(to top, ${project.color}40 0%, transparent 50%, transparent 100%)`,
+                      }}
+                      animate={{ opacity: activeProject === i ? 1 : 0.6 }}
+                      transition={{ duration: 0.4 }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-90" />
+
+                    {/* Floating particles effect on hover */}
+                    {activeProject === i && (
+                      <motion.div 
+                        className="absolute inset-0 pointer-events-none"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {[...Array(5)].map((_, p) => (
+                          <motion.div
+                            key={p}
+                            className="absolute w-1 h-1 bg-white/30 rounded-full"
+                            style={{
+                              left: `${20 + p * 15}%`,
+                              top: `${30 + p * 10}%`,
+                            }}
+                            animate={{
+                              y: [-20, -60],
+                              opacity: [0, 1, 0],
+                              scale: [0, 1, 0],
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              delay: p * 0.3,
+                            }}
+                          />
+                        ))}
+                      </motion.div>
+                    )}
 
                     {/* Content */}
                     <div className="absolute inset-0 p-8 flex flex-col justify-between">
                       {/* Top Section */}
                       <div className="flex justify-between items-start">
-                        <div className="flex gap-2">
+                        <motion.div 
+                          className="flex gap-2"
+                          initial={{ opacity: 0, y: -20 }}
+                          animate={{ opacity: activeProject === i ? 1 : 0, y: activeProject === i ? 0 : -20 }}
+                          transition={{ duration: 0.4, delay: 0.1 }}
+                        >
                           {project.tags.map((tag, j) => (
                             <span 
                               key={j} 
-                              className="text-[9px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white/80 border border-white/10"
+                              className="text-[9px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white/80 border border-white/10"
                             >
                               {tag}
                             </span>
                           ))}
-                        </div>
-                        <span className="text-white/40 font-mono text-sm">{project.year}</span>
+                        </motion.div>
+                        <motion.span 
+                          className="text-white/40 font-mono text-sm px-3 py-1 rounded-full bg-white/5 backdrop-blur-sm"
+                          animate={{ 
+                            backgroundColor: activeProject === i ? `${project.color}30` : 'rgba(255,255,255,0.05)'
+                          }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {project.year}
+                        </motion.span>
                       </div>
 
                       {/* Bottom Section */}
                       <div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div 
-                            className="w-2 h-2 rounded-full animate-pulse"
+                        <motion.div 
+                          className="flex items-center gap-2 mb-3"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.4 }}
+                        >
+                          <motion.div 
+                            className="w-2 h-2 rounded-full"
                             style={{ backgroundColor: project.color }}
+                            animate={{ 
+                              scale: [1, 1.5, 1],
+                              opacity: [0.5, 1, 0.5]
+                            }}
+                            transition={{ duration: 2, repeat: Infinity }}
                           />
                           <span className="text-[10px] font-black uppercase tracking-widest text-white/60">{project.category}</span>
-                        </div>
+                        </motion.div>
                         
-                        <h3 
-                          className="text-3xl md:text-4xl font-black text-white tracking-tight mb-3 transition-colors duration-300"
-                          style={{ color: hoveredProject === i ? project.color : 'white' }}
+                        <motion.h3 
+                          className="text-3xl md:text-4xl font-black text-white tracking-tight mb-3"
+                          animate={{ 
+                            color: activeProject === i ? project.color : '#ffffff',
+                            x: activeProject === i ? 10 : 0
+                          }}
+                          transition={{ duration: 0.4, ease: "easeOut" }}
                         >
                           {project.title}
-                        </h3>
+                        </motion.h3>
                         
-                        <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-xs opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
+                        <motion.p 
+                          className="text-white/50 text-sm leading-relaxed mb-6 max-w-xs"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: activeProject === i ? 1 : 0, y: activeProject === i ? 0 : 20 }}
+                          transition={{ duration: 0.4, delay: 0.15 }}
+                        >
                           {project.description}
-                        </p>
+                        </motion.p>
 
                         {/* Action Buttons */}
-                        <div className="flex gap-3 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-200">
+                        <motion.div 
+                          className="flex gap-3"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: activeProject === i ? 1 : 0, y: activeProject === i ? 0 : 20 }}
+                          transition={{ duration: 0.4, delay: 0.25 }}
+                        >
                           {project.link && (
                             <a 
                               href={project.link} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105"
+                              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 hover:shadow-lg"
                               style={{ 
                                 backgroundColor: project.color,
-                                color: 'white'
+                                color: 'white',
+                                boxShadow: activeProject === i ? `0 10px 30px ${project.color}40` : 'none'
                               }}
                             >
                               <Eye size={14} />
@@ -490,21 +731,31 @@ export default function Home() {
                             </a>
                           )}
                           <button 
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300"
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300"
                           >
-                            <ExternalLink size={14} />
+                            <ArrowUpRight size={14} />
                             Case Study
                           </button>
-                        </div>
+                        </motion.div>
                       </div>
                     </div>
 
-                    {/* Hover Glow Effect */}
-                    <div 
-                      className="absolute -inset-px rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl"
-                      style={{ backgroundColor: project.color }}
+                    {/* Corner accent */}
+                    <motion.div 
+                      className="absolute top-6 right-6 w-12 h-12 border-t-2 border-r-2 rounded-tr-2xl"
+                      style={{ borderColor: project.color }}
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: activeProject === i ? 1 : 0, scale: activeProject === i ? 1 : 0.5 }}
+                      transition={{ duration: 0.3 }}
                     />
-                  </div>
+                    <motion.div 
+                      className="absolute bottom-6 left-6 w-12 h-12 border-b-2 border-l-2 rounded-bl-2xl"
+                      style={{ borderColor: project.color }}
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: activeProject === i ? 1 : 0, scale: activeProject === i ? 1 : 0.5 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                    />
+                  </motion.div>
                 </motion.div>
               ))}
             </div>
@@ -553,16 +804,66 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="py-12 px-6 border-t border-white/5">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="text-2xl font-black tracking-tighter chromatic-text">VELOCE</div>
-            <div className="flex gap-8 text-sm text-white/40">
-              <a href="#" className="hover:text-white transition-colors duration-300">Twitter</a>
-              <a href="#" className="hover:text-white transition-colors duration-300">LinkedIn</a>
-              <a href="#" className="hover:text-white transition-colors duration-300">Dribbble</a>
+        {/* Footer with 70% black background */}
+        <footer className="py-16 px-6 border-t border-white/5 bg-black/70 backdrop-blur-md relative overflow-hidden">
+          {/* Animated gradient */}
+          <div className="absolute inset-0 pointer-events-none">
+            <motion.div 
+              className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#007FFF] to-transparent"
+              animate={{ opacity: [0.3, 1, 0.3] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            />
+          </div>
+
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-12">
+              {/* Logo and tagline */}
+              <div className="flex flex-col items-center md:items-start gap-4">
+                <motion.div 
+                  className="text-3xl font-black tracking-tighter chromatic-text"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  VELOCE
+                </motion.div>
+                <p className="text-white/30 text-sm max-w-xs text-center md:text-left">
+                  Crafting digital excellence since 2024
+                </p>
+              </div>
+
+              {/* Social Links */}
+              <div className="flex gap-6">
+                {['Twitter', 'LinkedIn', 'Dribbble'].map((social, i) => (
+                  <motion.a 
+                    key={social}
+                    href="#" 
+                    className="text-sm text-white/40 hover:text-white transition-colors duration-300 relative group"
+                    whileHover={{ y: -2 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    {social}
+                    <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#007FFF] transition-all duration-300 group-hover:w-full" />
+                  </motion.a>
+                ))}
+              </div>
+
+              {/* Copyright */}
+              <div className="text-sm text-white/20">
+                © 2026 VELOCE Studio. All rights reserved.
+              </div>
             </div>
-            <div className="text-sm text-white/20">© 2026 VELOCE Studio. All rights reserved.</div>
+
+            {/* Bottom accent line */}
+            <motion.div 
+              className="mt-12 pt-8 border-t border-white/5 flex justify-center"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <p className="text-white/20 text-xs tracking-widest uppercase">
+                Designed with passion. Built for impact.
+              </p>
+            </motion.div>
           </div>
         </footer>
       </div>

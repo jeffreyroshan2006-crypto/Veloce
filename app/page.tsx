@@ -412,7 +412,10 @@ export default function Home() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="max-w-7xl mx-auto glass rounded-full px-8 py-4 flex justify-between items-center"
         >
-          <a href="#home" className="text-2xl font-black tracking-tighter chromatic-text">VELOCE</a>
+          <a href="#home" className="flex items-center gap-3 group">
+            <img src="/logo.png" alt="VELOCE Logo" className="w-10 h-10 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" />
+            <span className="text-2xl font-black tracking-tighter chromatic-text">VELOCE</span>
+          </a>
           
           <div className="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-black">
             {['Home', 'Services', 'Portfolio', 'Contact'].map((item) => (
@@ -450,6 +453,16 @@ export default function Home() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#007FFF]"></span>
               </span>
               Available for Q3 2026 Projects
+            </motion.div>
+
+            {/* Logo and Title */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center gap-6 mb-6"
+            >
+              <img src="/logo.png" alt="VELOCE" className="w-20 h-20 md:w-28 md:h-28 rounded-full object-cover shadow-[0_0_40px_rgba(0,127,255,0.3)]" />
             </motion.div>
 
             <h1 className="text-[12vw] md:text-[15vw] font-black mb-6 tracking-tighter leading-[0.8] text-white">
@@ -963,11 +976,12 @@ export default function Home() {
               {/* Logo and tagline */}
               <div className="flex flex-col items-center md:items-start gap-4">
                 <motion.div 
-                  className="text-3xl font-black tracking-tighter chromatic-text"
+                  className="flex items-center gap-3"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  VELOCE
+                  <img src="/logo.png" alt="VELOCE Logo" className="w-10 h-10 rounded-full object-cover" />
+                  <span className="text-3xl font-black tracking-tighter chromatic-text">VELOCE</span>
                 </motion.div>
                 <p className="text-white/30 text-sm max-w-xs text-center md:text-left">
                   Crafting digital excellence since 2024

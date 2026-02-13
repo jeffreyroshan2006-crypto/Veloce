@@ -13,21 +13,26 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://veloce.agency'),
+  metadataBase: new URL('https://velocenow.com'),
   title: "VELOCE | World-Class Web Development Agency",
   description: "VELOCE builds functional, feature-rich, and high-performance websites. Premium UI/UX, AI integration, and full-stack development for the next generation of digital experiences.",
   keywords: ["web development", "UI/UX design", "AI integration", "premium websites", "VELOCE agency"],
   authors: [{ name: "VELOCE Studio" }],
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
   openGraph: {
     title: "VELOCE | World-Class Development Agency",
     description: "Engineering high-velocity digital experiences that redefine the boundaries of the modern web.",
-    url: "https://veloce.agency",
+    url: "https://velocenow.com",
     siteName: "VELOCE",
     images: [
       {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
+        url: "/logo.png",
+        width: 512,
+        height: 512,
       },
     ],
     locale: "en_US",
@@ -37,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "VELOCE | World-Class Web Development Agency",
     description: "Engineering high-velocity digital experiences.",
-    images: ["/og-image.jpg"],
+    images: ["/logo.png"],
   },
 };
 
@@ -48,6 +53,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <link rel="icon" href="/logo.png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-white`}
       >

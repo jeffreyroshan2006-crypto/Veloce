@@ -66,8 +66,8 @@ function MagneticButton({ children, className, onClick }: { children: React.Reac
   );
 }
 
-// Video Player Component
-function VideoPlayer({ videoUrl, title }: { videoUrl: string; title: string }) {
+// Video Player Component - Premium Vertical Style
+function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: string; type?: string }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   
@@ -80,35 +80,56 @@ function VideoPlayer({ videoUrl, title }: { videoUrl: string; title: string }) {
   
   return (
     <motion.div 
-      className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-black/50 group cursor-pointer"
+      className="relative h-full min-h-[500px] rounded-[2rem] overflow-hidden bg-black group cursor-pointer"
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.3 }}
     >
       {!isPlaying ? (
         <>
-          <div className="absolute inset-0 bg-gradient-to-br from-[#007FFF]/20 to-purple-500/20" />
+          {/* Premium gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#007FFF]/30 via-purple-500/20 to-pink-500/30" />
+          
+          {/* Animated glow effect */}
+          <motion.div 
+            className="absolute inset-0 bg-gradient-to-t from-[#007FFF]/10 to-transparent"
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
+          
+          {/* Play button */}
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div 
-              className="w-20 h-20 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-[#007FFF] group-hover:border-[#007FFF] transition-all duration-300"
+              className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md border-2 border-white/30 flex items-center justify-center group-hover:bg-[#007FFF] group-hover:border-[#007FFF] transition-all duration-500 shadow-[0_0_40px_rgba(0,127,255,0.3)]"
               whileHover={{ scale: 1.1 }}
               onClick={handlePlay}
             >
-              <Play size={32} className="text-white ml-1" fill="currentColor" />
+              <Play size={40} className="text-white ml-1" fill="currentColor" />
             </motion.div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-            <div className="flex items-center gap-2 mb-2">
-              <Video size={16} className="text-[#007FFF]" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#007FFF]">Professional Advertisement</span>
+          
+          {/* Content overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/60 to-transparent">
+            <div className="flex items-center gap-2 mb-3">
+              <motion.div 
+                className="w-2 h-2 bg-[#007FFF] rounded-full"
+                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#007FFF]">{type || 'Video Campaign'}</span>
             </div>
-            <h3 className="text-xl font-bold text-white">{title}</h3>
+            <h3 className="text-2xl font-bold text-white mb-2">{title}</h3>
+            <p className="text-white/50 text-sm">Click to play video</p>
           </div>
+          
+          {/* Corner accents */}
+          <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-[#007FFF]/50 rounded-tr-lg" />
+          <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-purple-500/50 rounded-bl-lg" />
         </>
       ) : (
         <video
           ref={videoRef}
           src={videoUrl}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain bg-black"
           autoPlay
           controls
           playsInline
@@ -258,10 +279,12 @@ export default function Home() {
 
   const adExamples = [
     {
-      title: "Social Creative Pack",
-      type: "Instagram/LinkedIn",
-      image: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?q=80&w=1974&auto=format&fit=crop",
-      benefit: "3x Faster Content Production"
+      title: "Video & Social Invites",
+      type: "Video Campaign",
+      image: "",
+      benefit: "Engaging Social Content",
+      isVideo: true,
+      videoUrl: "/video-social-invites.mp4"
     },
     {
       title: "Professional Advertisement",
@@ -274,8 +297,10 @@ export default function Home() {
     {
       title: "Short Video Promo",
       type: "Reels/TikTok Vertical",
-      image: "https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=1932&auto=format&fit=crop",
-      benefit: "Viral Brand Recall"
+      image: "",
+      benefit: "Viral Brand Recall",
+      isVideo: true,
+      videoUrl: "/short-video-promo.mp4"
     }
   ];
 
@@ -451,37 +476,44 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Premium Video Showcase Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {adExamples.map((example, i) => (
                 <motion.div 
                   key={i}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.2, duration: 0.5 }}
-                  className="group relative glass rounded-[2.5rem] overflow-hidden border-white/5 hover:border-[#007FFF]/30 transition-all duration-500"
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ delay: i * 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  className="group relative"
                 >
-                  {example.isVideo ? (
-                    <div className="aspect-[4/5] relative">
-                      <VideoPlayer videoUrl={example.videoUrl || ''} title={example.title} />
-                    </div>
-                  ) : (
-                    <div className="aspect-[4/5] relative overflow-hidden">
-                      <img src={example.image} alt={example.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
-                      
-                      <div className="absolute bottom-0 left-0 w-full p-8">
-                        <div className="flex items-center gap-2 mb-4">
-                          <div className="w-2 h-2 bg-[#007FFF] rounded-full animate-pulse" />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-white/60">{example.type}</span>
-                        </div>
-                        <h3 className="text-2xl font-bold text-white mb-2">{example.title}</h3>
-                        <div className="inline-block px-4 py-2 rounded-full bg-[#007FFF] text-white text-xs font-black tracking-wider">
-                          {example.benefit}
+                  <div className="relative h-[500px] md:h-[580px] rounded-[2rem] overflow-hidden border border-white/10 hover:border-[#007FFF]/50 transition-all duration-500 bg-black/50 backdrop-blur-sm">
+                    {example.isVideo ? (
+                      <VideoPlayer videoUrl={example.videoUrl || ''} title={example.title} type={example.type} />
+                    ) : (
+                      <div className="h-full relative overflow-hidden">
+                        <img src={example.image} alt={example.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
+                        
+                        <div className="absolute bottom-0 left-0 w-full p-8">
+                          <div className="flex items-center gap-2 mb-4">
+                            <div className="w-2 h-2 bg-[#007FFF] rounded-full animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">{example.type}</span>
+                          </div>
+                          <h3 className="text-2xl font-bold text-white mb-2">{example.title}</h3>
+                          <div className="inline-block px-4 py-2 rounded-full bg-[#007FFF] text-white text-xs font-black tracking-wider">
+                            {example.benefit}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                  
+                  {/* Title below card */}
+                  <div className="mt-4 text-center">
+                    <h3 className="text-lg font-bold text-white group-hover:text-[#007FFF] transition-colors duration-300">{example.title}</h3>
+                    <p className="text-white/40 text-sm mt-1">{example.benefit}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>

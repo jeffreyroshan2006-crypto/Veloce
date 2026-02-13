@@ -68,13 +68,20 @@ function MagneticButton({ children, className, onClick }: { children: React.Reac
 // Video Player Component
 function VideoPlayer({ videoUrl, title }: { videoUrl: string; title: string }) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  const handlePlay = () => {
+    setIsPlaying(true);
+    if (videoRef.current) {
+      videoRef.current.play();
+    }
+  };
   
   return (
     <motion.div 
-      className="relative aspect-video rounded-[2rem] overflow-hidden bg-black/50 group cursor-pointer"
+      className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-black/50 group cursor-pointer"
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.3 }}
-      onClick={() => setIsPlaying(!isPlaying)}
     >
       {!isPlaying ? (
         <>
@@ -83,6 +90,7 @@ function VideoPlayer({ videoUrl, title }: { videoUrl: string; title: string }) {
             <motion.div 
               className="w-20 h-20 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-[#007FFF] group-hover:border-[#007FFF] transition-all duration-300"
               whileHover={{ scale: 1.1 }}
+              onClick={handlePlay}
             >
               <Play size={32} className="text-white ml-1" fill="currentColor" />
             </motion.div>
@@ -96,12 +104,13 @@ function VideoPlayer({ videoUrl, title }: { videoUrl: string; title: string }) {
           </div>
         </>
       ) : (
-        <iframe
+        <video
+          ref={videoRef}
           src={videoUrl}
-          className="w-full h-full"
-          allow="autoplay; encrypted-media"
-          allowFullScreen
-          style={{ border: 'none' }}
+          className="w-full h-full object-cover"
+          autoPlay
+          controls
+          playsInline
         />
       )}
     </motion.div>
@@ -259,7 +268,7 @@ export default function Home() {
       image: "",
       benefit: "High-Impact Visual Storytelling",
       isVideo: true,
-      videoUrl: "https://drive.google.com/file/d/1zs2gCzMPanz3MkVNkjuZzl0ijB1uY2SV/preview"
+      videoUrl: "/advertisement.mp4"
     },
     {
       title: "Short Video Promo",

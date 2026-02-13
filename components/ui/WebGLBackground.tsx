@@ -5,7 +5,7 @@ import * as THREE from 'three';
 
 export function WebGLBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
+  const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -13,7 +13,7 @@ export function WebGLBackground() {
     // Scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 30;
+    camera.position.z = 1;
 
     const renderer = new THREE.WebGLRenderer({ 
       antialias: true, 
@@ -22,189 +22,184 @@ export function WebGLBackground() {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 1);
     containerRef.current.appendChild(renderer.domElement);
 
-    // Particle system with custom shader
-    const particleCount = 2000;
-    const positions = new Float32Array(particleCount * 3);
-    const colors = new Float32Array(particleCount * 3);
-    const sizes = new Float32Array(particleCount);
-    const velocities = new Float32Array(particleCount * 3);
-
-    const color1 = new THREE.Color(0x007FFF); // Brand blue
-    const color2 = new THREE.Color(0x00CED1); // Cyan
-    const color3 = new THREE.Color(0xFF4500); // Orange accent
-
-    for (let i = 0; i < particleCount; i++) {
-      const i3 = i * 3;
-      
-      // Spherical distribution
-      const radius = 20 + Math.random() * 30;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      
-      positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i3 + 2] = radius * Math.cos(phi);
-
-      // Velocity for animation
-      velocities[i3] = (Math.random() - 0.5) * 0.02;
-      velocities[i3 + 1] = (Math.random() - 0.5) * 0.02;
-      velocities[i3 + 2] = (Math.random() - 0.5) * 0.02;
-
-      // Color gradient
-      const mixRatio = Math.random();
-      const tempColor = new THREE.Color();
-      if (mixRatio < 0.33) {
-        tempColor.lerpColors(color1, color2, mixRatio * 3);
-      } else if (mixRatio < 0.66) {
-        tempColor.lerpColors(color2, color3, (mixRatio - 0.33) * 3);
-      } else {
-        tempColor.lerpColors(color3, color1, (mixRatio - 0.66) * 3);
-      }
-      
-      colors[i3] = tempColor.r;
-      colors[i3 + 1] = tempColor.g;
-      colors[i3 + 2] = tempColor.b;
-
-      sizes[i] = Math.random() * 2 + 0.5;
-    }
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
-    geometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
-
-    // Custom shader material
-    const material = new THREE.ShaderMaterial({
+    // Create flowing gradient mesh with custom shader
+    const gradientGeometry = new THREE.PlaneGeometry(4, 4, 1, 1);
+    
+    const gradientMaterial = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
         uMouse: { value: new THREE.Vector2(0, 0) },
-        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) }
+        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
       },
       vertexShader: `
-        attribute vec3 aColor;
-        attribute float aSize;
-        
-        uniform float uTime;
-        uniform vec2 uMouse;
-        uniform float uPixelRatio;
-        
-        varying vec3 vColor;
-        varying float vAlpha;
-        
+        varying vec2 vUv;
         void main() {
-          vColor = aColor;
-          
-          vec3 pos = position;
-          
-          // Organic wave motion
-          float wave = sin(pos.x * 0.1 + uTime * 0.5) * cos(pos.y * 0.1 + uTime * 0.3) * 2.0;
-          pos.z += wave;
-          
-          // Mouse influence
-          float dist = length(pos.xy - uMouse * 20.0);
-          float influence = smoothstep(15.0, 0.0, dist);
-          pos.z += influence * 5.0;
-          
-          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          gl_Position = projectionMatrix * mvPosition;
-          
-          // Size attenuation
-          gl_PointSize = aSize * uPixelRatio * (300.0 / -mvPosition.z);
-          
-          // Alpha based on depth
-          vAlpha = smoothstep(-50.0, 10.0, mvPosition.z) * 0.8;
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
       fragmentShader: `
-        varying vec3 vColor;
-        varying float vAlpha;
+        uniform float uTime;
+        uniform vec2 uMouse;
+        uniform vec2 uResolution;
+        varying vec2 vUv;
+        
+        // Simplex noise function
+        vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+        vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+        vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+        
+        float snoise(vec2 v) {
+          const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+                             -0.577350269189626, 0.024390243902439);
+          vec2 i  = floor(v + dot(v, C.yy));
+          vec2 x0 = v -   i + dot(i, C.xx);
+          vec2 i1;
+          i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+          vec4 x12 = x0.xyxy + C.xxzz;
+          x12.xy -= i1;
+          i = mod289(i);
+          vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0))
+                                        + i.x + vec3(0.0, i1.x, 1.0));
+          vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+                                  dot(x12.zw,x12.zw)), 0.0);
+          m = m*m;
+          m = m*m;
+          vec3 x = 2.0 * fract(p * C.www) - 1.0;
+          vec3 h = abs(x) - 0.5;
+          vec3 ox = floor(x + 0.5);
+          vec3 a0 = x - ox;
+          m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+          vec3 g;
+          g.x  = a0.x  * x0.x  + h.x  * x0.y;
+          g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+          return 130.0 * dot(m, g);
+        }
+        
+        // Aurora effect
+        float aurora(vec2 uv, float time) {
+          float noise1 = snoise(uv * 2.0 + time * 0.1);
+          float noise2 = snoise(uv * 3.0 - time * 0.15);
+          float noise3 = snoise(uv * 1.5 + time * 0.08);
+          
+          float aurora = sin(uv.y * 3.0 + noise1 * 2.0 + time * 0.3) * 0.5 + 0.5;
+          aurora += sin(uv.y * 2.0 + noise2 * 1.5 - time * 0.2) * 0.3;
+          aurora += sin(uv.y * 4.0 + noise3 + time * 0.4) * 0.2;
+          
+          return aurora * 0.5;
+        }
         
         void main() {
-          // Circular particle with soft edge
-          float dist = length(gl_PointCoord - vec2(0.5));
-          if (dist > 0.5) discard;
+          vec2 uv = vUv;
+          vec2 mouse = uMouse * 0.5 + 0.5;
           
-          float alpha = smoothstep(0.5, 0.1, dist) * vAlpha;
+          float time = uTime * 0.5;
           
-          // Glow effect
-          vec3 glow = vColor * (1.0 + smoothstep(0.3, 0.0, dist) * 0.5);
+          // Create flowing noise
+          float noise1 = snoise(uv * 1.5 + time * 0.1);
+          float noise2 = snoise(uv * 2.0 - time * 0.15);
+          float noise3 = snoise(uv * 3.0 + time * 0.08);
           
-          gl_FragColor = vec4(glow, alpha);
+          // Mouse influence
+          float mouseDist = length(uv - mouse);
+          float mouseInfluence = smoothstep(0.5, 0.0, mouseDist) * 0.3;
+          
+          // Aurora waves
+          float aurora1 = aurora(uv + vec2(time * 0.1, 0.0), time);
+          float aurora2 = aurora(uv * 1.3 + vec2(0.0, time * 0.05), time * 0.8);
+          
+          // Color palette - deep blues, cyans, and subtle purples
+          vec3 color1 = vec3(0.0, 0.5, 1.0);   // Brand blue
+          vec3 color2 = vec3(0.0, 0.8, 0.9);   // Cyan
+          vec3 color3 = vec3(0.1, 0.2, 0.4);   // Deep blue
+          vec3 color4 = vec3(0.05, 0.1, 0.2);  // Dark blue
+          
+          // Mix colors based on noise and aurora
+          vec3 finalColor = mix(color4, color3, smoothstep(-1.0, 1.0, noise1));
+          finalColor = mix(finalColor, color2, aurora1 * 0.4);
+          finalColor = mix(finalColor, color1, aurora2 * 0.3 + mouseInfluence);
+          
+          // Add subtle glow spots
+          float glow = snoise(uv * 4.0 + time * 0.2) * 0.5 + 0.5;
+          glow = pow(glow, 3.0) * 0.15;
+          finalColor += vec3(0.0, 0.4, 0.8) * glow;
+          
+          // Vignette
+          float vignette = 1.0 - smoothstep(0.3, 1.0, length(uv - 0.5) * 1.2);
+          finalColor *= vignette * 0.8 + 0.2;
+          
+          // Subtle grain
+          float grain = fract(sin(dot(uv * 1000.0, vec2(12.9898, 78.233))) * 43758.5453);
+          finalColor += grain * 0.02;
+          
+          gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
+      transparent: false
     });
 
-    const particles = new THREE.Points(geometry, material);
-    scene.add(particles);
+    const gradientMesh = new THREE.Mesh(gradientGeometry, gradientMaterial);
+    scene.add(gradientMesh);
 
-    // Floating geometric shapes
-    const shapes: THREE.Mesh[] = [];
-    const shapeGeometries = [
-      new THREE.IcosahedronGeometry(2, 0),
-      new THREE.OctahedronGeometry(2, 0),
-      new THREE.TetrahedronGeometry(2, 0)
-    ];
-
-    for (let i = 0; i < 15; i++) {
-      const geo = shapeGeometries[Math.floor(Math.random() * shapeGeometries.length)];
-      const mat = new THREE.MeshBasicMaterial({
-        color: i % 2 === 0 ? 0x007FFF : 0x00CED1,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.15
-      });
-      const mesh = new THREE.Mesh(geo, mat);
-      
-      mesh.position.set(
-        (Math.random() - 0.5) * 60,
-        (Math.random() - 0.5) * 60,
-        (Math.random() - 0.5) * 40
-      );
-      
-      mesh.rotation.set(
-        Math.random() * Math.PI,
-        Math.random() * Math.PI,
-        Math.random() * Math.PI
-      );
-      
-      mesh.userData = {
-        rotationSpeed: {
-          x: (Math.random() - 0.5) * 0.01,
-          y: (Math.random() - 0.5) * 0.01,
-          z: (Math.random() - 0.5) * 0.01
+    // Floating orbs
+    const orbs: THREE.Mesh[] = [];
+    const orbGeometry = new THREE.SphereGeometry(1, 32, 32);
+    
+    for (let i = 0; i < 5; i++) {
+      const orbMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          uTime: { value: 0 },
+          uColor: { value: new THREE.Color(i % 2 === 0 ? 0x007FFF : 0x00CED1) }
         },
-        floatSpeed: Math.random() * 0.5 + 0.5,
-        floatOffset: Math.random() * Math.PI * 2
-      };
+        vertexShader: `
+          varying vec3 vNormal;
+          varying vec3 vPosition;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vPosition = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float uTime;
+          uniform vec3 uColor;
+          varying vec3 vNormal;
+          varying vec3 vPosition;
+          
+          void main() {
+            float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.0);
+            vec3 color = uColor * fresnel * 2.0;
+            float alpha = fresnel * 0.5;
+            gl_FragColor = vec4(color, alpha);
+          }
+        `,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide
+      });
       
-      shapes.push(mesh);
-      scene.add(mesh);
+      const orb = new THREE.Mesh(orbGeometry, orbMaterial);
+      orb.position.set(
+        (Math.random() - 0.5) * 3,
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 0.5
+      );
+      orb.scale.setScalar(0.3 + Math.random() * 0.3);
+      orb.userData = {
+        speed: 0.2 + Math.random() * 0.3,
+        offset: Math.random() * Math.PI * 2,
+        baseY: orb.position.y
+      };
+      orbs.push(orb);
+      scene.add(orb);
     }
-
-    // Connection lines between nearby particles
-    const lineGeometry = new THREE.BufferGeometry();
-    const linePositions = new Float32Array(300 * 6);
-    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
-    
-    const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x007FFF,
-      transparent: true,
-      opacity: 0.1
-    });
-    
-    const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
-    scene.add(lines);
 
     // Mouse move handler
     const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      mouseRef.current.targetX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseRef.current.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
     };
     window.addEventListener('mousemove', handleMouseMove);
 
@@ -213,7 +208,7 @@ export function WebGLBackground() {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      material.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2);
+      gradientMaterial.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
     };
     window.addEventListener('resize', handleResize);
 
@@ -226,49 +221,21 @@ export function WebGLBackground() {
       
       const elapsedTime = clock.getElapsedTime();
       
-      // Update uniforms
-      material.uniforms.uTime.value = elapsedTime;
-      material.uniforms.uMouse.value.set(mouseRef.current.x, mouseRef.current.y);
+      // Smooth mouse following
+      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.05;
+      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.05;
       
-      // Rotate particles
-      particles.rotation.y = elapsedTime * 0.05;
-      particles.rotation.x = Math.sin(elapsedTime * 0.1) * 0.1;
+      // Update gradient
+      gradientMaterial.uniforms.uTime.value = elapsedTime;
+      gradientMaterial.uniforms.uMouse.value.set(mouseRef.current.x, mouseRef.current.y);
       
-      // Animate shapes
-      shapes.forEach((shape) => {
-        shape.rotation.x += shape.userData.rotationSpeed.x;
-        shape.rotation.y += shape.userData.rotationSpeed.y;
-        shape.rotation.z += shape.userData.rotationSpeed.z;
-        
-        shape.position.y += Math.sin(elapsedTime * shape.userData.floatSpeed + shape.userData.floatOffset) * 0.01;
+      // Animate orbs
+      orbs.forEach((orb) => {
+        orb.position.y = orb.userData.baseY + Math.sin(elapsedTime * orb.userData.speed + orb.userData.offset) * 0.3;
+        orb.position.x += Math.sin(elapsedTime * 0.2 + orb.userData.offset) * 0.001;
+        orb.rotation.y = elapsedTime * 0.1;
+        (orb.material as THREE.ShaderMaterial).uniforms.uTime.value = elapsedTime;
       });
-      
-      // Update connection lines
-      const posArray = geometry.attributes.position.array as Float32Array;
-      const linePosArray = lines.geometry.attributes.position.array as Float32Array;
-      let lineIndex = 0;
-      
-      for (let i = 0; i < Math.min(100, particleCount); i++) {
-        const i3 = i * 3;
-        for (let j = i + 1; j < Math.min(100, particleCount); j++) {
-          const j3 = j * 3;
-          const dx = posArray[i3] - posArray[j3];
-          const dy = posArray[i3 + 1] - posArray[j3 + 1];
-          const dz = posArray[i3 + 2] - posArray[j3 + 2];
-          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-          
-          if (dist < 8 && lineIndex < 300 * 6) {
-            linePosArray[lineIndex++] = posArray[i3];
-            linePosArray[lineIndex++] = posArray[i3 + 1];
-            linePosArray[lineIndex++] = posArray[i3 + 2];
-            linePosArray[lineIndex++] = posArray[j3];
-            linePosArray[lineIndex++] = posArray[j3 + 1];
-            linePosArray[lineIndex++] = posArray[j3 + 2];
-          }
-        }
-      }
-      
-      lines.geometry.attributes.position.needsUpdate = true;
       
       renderer.render(scene, camera);
     };
@@ -281,8 +248,10 @@ export function WebGLBackground() {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       
-      geometry.dispose();
-      material.dispose();
+      gradientGeometry.dispose();
+      gradientMaterial.dispose();
+      orbGeometry.dispose();
+      orbs.forEach(orb => (orb.material as THREE.Material).dispose());
       renderer.dispose();
       
       if (containerRef.current && renderer.domElement) {
@@ -295,7 +264,6 @@ export function WebGLBackground() {
     <div 
       ref={containerRef} 
       className="fixed inset-0 -z-10 w-full h-full"
-      style={{ background: 'linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%)' }}
     />
   );
 }

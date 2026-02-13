@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
 import { ArrowRight, Play, Globe, Zap, Shield, Layers, Sparkles, Smartphone, ExternalLink, Eye, ArrowUpRight, Video } from 'lucide-react';
 import { TextReveal } from '@/components/ui/TextReveal';
 import { WebGLBackground } from '@/components/ui/WebGLBackground';
+import { PageTransition } from '@/components/ui/PageTransition';
 
 // Animated counter component
 function AnimatedCounter({ value, suffix = '' }: { value: string; suffix?: string }) {
@@ -288,6 +289,7 @@ export default function Home() {
   };
 
   return (
+    <PageTransition>
     <div ref={containerRef} className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden">
       {/* WebGL Background */}
       <WebGLBackground />
@@ -965,5 +967,6 @@ export default function Home() {
         )}
       </AnimatePresence>
     </div>
+    </PageTransition>
   );
 }

@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence, useSpring, useMotionValue, PanInfo } from 'framer-motion';
 import { ArrowRight, Play, Globe, Zap, Shield, Layers, Sparkles, Smartphone, ExternalLink, MousePointer2 } from 'lucide-react';
 import Script from 'next/script';
-import { SmoothScroll } from '@/components/ui/SmoothScroll';
 import { TextReveal } from '@/components/ui/TextReveal';
 
 export default function Home() {
@@ -103,10 +102,34 @@ export default function Home() {
 
   const projects = [
     {
+      title: "SIP & SOCIAL",
+      category: "Social Platform • 2025",
+      image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1974&auto=format&fit=crop",
+      color: "from-amber-600 to-orange-400",
+      description: "A social networking platform connecting beverage enthusiasts worldwide.",
+      link: "https://sipnsocial08.github.io/Sip-Social/"
+    },
+    {
+      title: "GENZ CRICKET",
+      category: "Sports Club • 2025",
+      image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=1994&auto=format&fit=crop",
+      color: "from-emerald-600 to-teal-400",
+      description: "Modern cricket club website with dynamic content and team management.",
+      link: "https://genzcricketclub-max.github.io/genzzz/"
+    },
+    {
+      title: "PHIZOOE REHAB",
+      category: "Healthcare • 2025",
+      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2070&auto=format&fit=crop",
+      color: "from-blue-600 to-cyan-400",
+      description: "Professional rehabilitation therapy center with appointment booking.",
+      link: "https://contactphizeeosrehabtherapy-source.github.io/Phizooe/"
+    },
+    {
       title: "NEURALIS",
       category: "AI Platform • 2026",
       image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop",
-      color: "from-blue-600 to-cyan-400",
+      color: "from-violet-600 to-fuchsia-400",
       description: "A revolutionary AI-driven interface for neural data visualization."
     },
     {
@@ -117,31 +140,10 @@ export default function Home() {
       description: "Redefining luxury retail through immersive 3D shopping experiences."
     },
     {
-      title: "KINETIC",
-      category: "SaaS Dashboard • 2026",
-      image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop",
-      color: "from-emerald-600 to-teal-400",
-      description: "High-velocity data processing for global logistics enterprises."
-    },
-    {
-      title: "ORBITAL",
-      category: "Fintech • 2025",
-      image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=2232&auto=format&fit=crop",
-      color: "from-violet-600 to-fuchsia-400",
-      description: "The next generation of decentralized finance management."
-    },
-    {
-      title: "VORTEX",
-      category: "Web3 • 2026",
-      image: "https://images.unsplash.com/photo-1642104704074-907c0698bcd9?q=80&w=2070&auto=format&fit=crop",
-      color: "from-cyan-600 to-blue-400",
-      description: "Decentralized liquidity protocol with real-time visualization."
-    },
-    {
       title: "ZENITH",
       category: "Real Estate • 2025",
       image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop",
-      color: "from-amber-600 to-orange-400",
+      color: "from-cyan-600 to-blue-400",
       description: "Premium architectural visualization for the next generation of living."
     }
   ];
@@ -248,8 +250,7 @@ export default function Home() {
   }), [step, projects.length]);
 
   return (
-    <SmoothScroll>
-      <div className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden">
+    <div className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden">
         {/* Noise Texture Overlay */}
         <div className="fixed inset-0 z-[300] pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
         
@@ -350,14 +351,8 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* Content Wrapper with fade transition */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10 bg-black/30 backdrop-blur-sm"
-        >
+        {/* Content Wrapper */}
+        <div className="relative z-10 bg-black/45 backdrop-blur-sm">
           {/* Services Section */}
           <section id="services" className="py-40 px-6 relative overflow-hidden">
             <div className="max-w-7xl mx-auto">
@@ -589,7 +584,7 @@ export default function Home() {
               <div className="text-sm text-white/20">© 2026 VELOCE Studio. All rights reserved.</div>
             </div>
           </footer>
-        </motion.div>
+        </div>
 
         {/* Portfolio Modal */}
         <AnimatePresence>
@@ -641,6 +636,5 @@ export default function Home() {
           )}
         </AnimatePresence>
       </div>
-    </SmoothScroll>
   );
 }

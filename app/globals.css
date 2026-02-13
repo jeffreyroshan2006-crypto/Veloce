@@ -10,8 +10,7 @@
 
 @layer base {
   body {
-    /* Changed from bg-black to transparent to let the Unicorn Studio background shine through */
-    @apply bg-transparent text-white overflow-x-hidden;
+    @apply bg-black text-white overflow-x-hidden;
   }
 }
 
@@ -56,26 +55,49 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-black;
+  background: #000000;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-[#007FFF]/50 transition-colors;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 127, 255, 0.5);
 }
 
 /* Selection */
 ::selection {
-  @apply bg-[#007FFF]/30 text-white;
+  background: rgba(0, 127, 255, 0.3);
+  color: white;
 }
 
-/* Hide Unicorn Studio Watermark */
+/* Hide Unicorn Studio Watermark - Multiple selectors for maximum coverage */
+[data-us-project] > a,
+[data-us-project] a,
+[data-us-project] [class*="credit"],
+[data-us-project] [class*="watermark"],
+[data-us-project] [class*="logo"],
 [data-us-project]::after,
+[data-us-project]::before,
 .unicorn-studio-watermark,
-[class*="unicorn"] [class*="watermark"],
+.us-watermark,
+.us-credit,
+[class*="unicorn-studio"],
 [class*="unicorn"] a,
-.us-watermark {
+[class*="unicorn"] [class*="watermark"],
+[class*="unicorn"] [class*="credit"],
+[class*="unicorn"] [class*="logo"],
+div[class*="unicorn"] > a,
+span[class*="unicorn"],
+a[href*="unicornstudio"],
+a[href*="unicorn.studio"] {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
 }

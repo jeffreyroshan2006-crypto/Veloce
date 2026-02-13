@@ -118,6 +118,27 @@ export default function Home() {
     { label: "Assets Delivered", value: "12k+" }
   ];
 
+  const adExamples = [
+    {
+      title: "Social Creative Pack",
+      type: "Instagram/LinkedIn",
+      image: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?q=80&w=1974&auto=format&fit=crop",
+      benefit: "3x Faster Content Production"
+    },
+    {
+      title: "Campaign Ad",
+      type: "High-Conversion Static",
+      image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop",
+      benefit: "+45% Click-Through Rate"
+    },
+    {
+      title: "Short Video Promo",
+      type: "Reels/TikTok Vertical",
+      image: "https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=1932&auto=format&fit=crop",
+      benefit: "Viral Brand Recall"
+    }
+  ];
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormStatus('submitting');
@@ -263,6 +284,67 @@ export default function Home() {
                       ))}
                     </div>
                   </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Live Proof Section */}
+        <section className="py-40 px-6 relative overflow-hidden border-y border-white/5">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col items-center text-center mb-24">
+              <div className="text-[#007FFF] font-black tracking-[0.5em] uppercase text-[10px] mb-6">Live Proof</div>
+              <h2 className="text-5xl md:text-8xl font-bold tracking-tighter text-white leading-none mb-8">
+                <TextReveal>MEASURABLE</TextReveal>
+                <TextReveal delay={0.1}><span className="chromatic-text">VELOCITY.</span></TextReveal>
+              </h2>
+              <p className="text-white/40 text-xl max-w-2xl font-light">
+                Real-world performance data from our latest creative deployments. We don't just deliver assets; we deliver <span className="text-white">growth</span>.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {adExamples.map((example, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.2, duration: 0.5 }}
+                  className="group relative glass rounded-[2.5rem] overflow-hidden border-white/5 hover:border-[#007FFF]/30 transition-all duration-500"
+                >
+                  <div className="aspect-[4/5] relative overflow-hidden">
+                    <img src={example.image} alt={example.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
+                    
+                    <div className="absolute bottom-0 left-0 w-full p-8">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="w-2 h-2 bg-[#007FFF] rounded-full animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/60">{example.type}</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-2">{example.title}</h3>
+                      <div className="inline-block px-4 py-2 rounded-full bg-[#007FFF] text-white text-xs font-black tracking-wider">
+                        {example.benefit}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/5 pt-24">
+              {stats.map((stat, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  className="text-center"
+                >
+                  <div className="text-4xl md:text-6xl font-bold text-white mb-2 tracking-tighter">{stat.value}</div>
+                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">{stat.label}</div>
                 </motion.div>
               ))}
             </div>

@@ -69,9 +69,13 @@ function MagneticButton({ children, className, onClick }: { children: React.Reac
 // Video Player Component - Premium Vertical Style with Auto-load
 function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: string; type?: string }) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
-  const togglePlay = () => {
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
@@ -83,12 +87,41 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
     }
   };
   
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+  
+  const toggleFullscreen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (containerRef.current) {
+      if (!document.fullscreenElement) {
+        containerRef.current.requestFullscreen().then(() => {
+          setIsFullscreen(true);
+          if (videoRef.current) {
+            videoRef.current.muted = false;
+            setIsMuted(false);
+          }
+        }).catch(err => {
+          console.log('Fullscreen error:', err);
+        });
+      } else {
+        document.exitFullscreen().then(() => {
+          setIsFullscreen(false);
+        });
+      }
+    }
+  };
+  
   return (
     <motion.div 
-      className="relative h-full min-h-[500px] rounded-[2rem] overflow-hidden bg-black group cursor-pointer"
+      ref={containerRef}
+      className="relative h-full min-h-[500px] rounded-[2rem] overflow-hidden bg-black group"
       whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.3 }}
-      onClick={togglePlay}
     >
       {/* Video Element - Always visible, auto-loads */}
       <video
@@ -96,15 +129,19 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
         src={videoUrl}
         className="w-full h-full object-contain bg-black"
         preload="auto"
-        muted
+        muted={isMuted}
         playsInline
         onEnded={() => setIsPlaying(false)}
+        onClick={togglePlay}
       />
       
       {/* Play/Pause Overlay */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div 
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        onClick={togglePlay}
+      >
         <motion.div 
-          className="w-20 h-20 rounded-full bg-black/50 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center transition-all duration-300"
+          className="w-20 h-20 rounded-full bg-black/50 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center transition-all duration-300 pointer-events-auto cursor-pointer"
           animate={{ 
             opacity: isPlaying ? 0 : 1,
             scale: isPlaying ? 0.8 : 1
@@ -115,18 +152,41 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
         </motion.div>
       </div>
       
-      {/* Pause indicator when playing */}
-      <motion.div 
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isPlaying ? 0 : 0 }}
-        whileHover={{ opacity: 1 }}
-      >
-        <div className="w-16 h-16 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center gap-3">
-          <div className="w-2 h-6 bg-white rounded-full" />
-          <div className="w-2 h-6 bg-white rounded-full" />
-        </div>
-      </motion.div>
+      {/* Control Buttons - Top Right */}
+      <div className="absolute top-4 right-4 flex gap-2 z-10">
+        {/* Mute/Unmute Button */}
+        <motion.button
+          onClick={toggleMute}
+          className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {isMuted ? (
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          )}
+        </motion.button>
+        
+        {/* Fullscreen Button */}
+        <motion.button
+          onClick={toggleFullscreen}
+          className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+        </motion.button>
+      </div>
       
       {/* Content overlay at bottom */}
       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none">
@@ -145,11 +205,11 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
           )}
         </div>
         <h3 className="text-2xl font-bold text-white mb-1">{title}</h3>
-        <p className="text-white/50 text-sm">Tap to {isPlaying ? 'pause' : 'play'}</p>
+        <p className="text-white/50 text-sm">Tap video to {isPlaying ? 'pause' : 'play'}</p>
       </div>
       
       {/* Corner accents */}
-      <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-[#007FFF]/50 rounded-tr-lg pointer-events-none" />
+      <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-[#007FFF]/50 rounded-tl-lg pointer-events-none" />
       <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-purple-500/50 rounded-bl-lg pointer-events-none" />
     </motion.div>
   );

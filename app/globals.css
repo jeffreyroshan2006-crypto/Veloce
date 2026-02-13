@@ -73,7 +73,7 @@
   color: white;
 }
 
-/* Hide Unicorn Studio Watermark - Multiple selectors for maximum coverage */
+/* Hide Unicorn Studio Watermark - Maximum coverage */
 [data-us-project] > a,
 [data-us-project] a,
 [data-us-project] [class*="credit"],
@@ -92,7 +92,9 @@
 div[class*="unicorn"] > a,
 span[class*="unicorn"],
 a[href*="unicornstudio"],
-a[href*="unicorn.studio"] {
+a[href*="unicorn.studio"],
+canvas + a,
+[data-us-project] canvas + * {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
@@ -100,4 +102,9 @@ a[href*="unicorn.studio"] {
   width: 0 !important;
   height: 0 !important;
   overflow: hidden !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
 }

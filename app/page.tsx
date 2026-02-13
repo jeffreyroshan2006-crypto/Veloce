@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { ArrowRight, Play, Globe, Zap, Shield, Layers, Sparkles, Smartphone, ExternalLink, Eye, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, Play, Globe, Zap, Shield, Layers, Sparkles, Smartphone, ExternalLink, Eye, ArrowUpRight, Video } from 'lucide-react';
 import { TextReveal } from '@/components/ui/TextReveal';
 import { WebGLBackground } from '@/components/ui/WebGLBackground';
 
@@ -65,32 +65,48 @@ function MagneticButton({ children, className, onClick }: { children: React.Reac
   );
 }
 
-// Floating animation variants
-const floatAnimation = {
-  initial: { y: 0 },
-  animate: {
-    y: [-10, 10, -10],
-    transition: {
-      duration: 6,
-      repeat: Infinity,
-      ease: "easeInOut"
-    }
-  }
-};
-
-// Glow pulse animation
-const glowPulse = {
-  initial: { opacity: 0.5, scale: 1 },
-  animate: {
-    opacity: [0.5, 1, 0.5],
-    scale: [1, 1.05, 1],
-    transition: {
-      duration: 3,
-      repeat: Infinity,
-      ease: "easeInOut"
-    }
-  }
-};
+// Video Player Component
+function VideoPlayer({ videoUrl, title }: { videoUrl: string; title: string }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  
+  return (
+    <motion.div 
+      className="relative aspect-video rounded-[2rem] overflow-hidden bg-black/50 group cursor-pointer"
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.3 }}
+      onClick={() => setIsPlaying(!isPlaying)}
+    >
+      {!isPlaying ? (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#007FFF]/20 to-purple-500/20" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <motion.div 
+              className="w-20 h-20 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-[#007FFF] group-hover:border-[#007FFF] transition-all duration-300"
+              whileHover={{ scale: 1.1 }}
+            >
+              <Play size={32} className="text-white ml-1" fill="currentColor" />
+            </motion.div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
+            <div className="flex items-center gap-2 mb-2">
+              <Video size={16} className="text-[#007FFF]" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#007FFF]">Professional Advertisement</span>
+            </div>
+            <h3 className="text-xl font-bold text-white">{title}</h3>
+          </div>
+        </>
+      ) : (
+        <iframe
+          src={videoUrl}
+          className="w-full h-full"
+          allow="autoplay; encrypted-media"
+          allowFullScreen
+          style={{ border: 'none' }}
+        />
+      )}
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -238,10 +254,12 @@ export default function Home() {
       benefit: "3x Faster Content Production"
     },
     {
-      title: "Campaign Ad",
-      type: "High-Conversion Static",
-      image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop",
-      benefit: "+45% Click-Through Rate"
+      title: "Professional Advertisement",
+      type: "Video Campaign",
+      image: "",
+      benefit: "High-Impact Visual Storytelling",
+      isVideo: true,
+      videoUrl: "https://drive.google.com/file/d/1zs2gCzMPanz3MkVNkjuZzl0ijB1uY2SV/preview"
     },
     {
       title: "Short Video Promo",
@@ -284,9 +302,9 @@ export default function Home() {
         >
           <a href="#home" className="text-2xl font-black tracking-tighter chromatic-text">VELOCE</a>
           
-          <div className="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-white/50">
+          <div className="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-black">
             {['Home', 'Services', 'Portfolio', 'Contact'].map((item) => (
-              <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-white transition-colors duration-300 relative group">
+              <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-[#007FFF] transition-colors duration-300 relative group">
                 {item}
                 <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#007FFF] transition-all duration-300 group-hover:w-full" />
               </a>
@@ -432,21 +450,27 @@ export default function Home() {
                   transition={{ delay: i * 0.2, duration: 0.5 }}
                   className="group relative glass rounded-[2.5rem] overflow-hidden border-white/5 hover:border-[#007FFF]/30 transition-all duration-500"
                 >
-                  <div className="aspect-[4/5] relative overflow-hidden">
-                    <img src={example.image} alt={example.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
-                    
-                    <div className="absolute bottom-0 left-0 w-full p-8">
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="w-2 h-2 bg-[#007FFF] rounded-full animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/60">{example.type}</span>
-                      </div>
-                      <h3 className="text-2xl font-bold text-white mb-2">{example.title}</h3>
-                      <div className="inline-block px-4 py-2 rounded-full bg-[#007FFF] text-white text-xs font-black tracking-wider">
-                        {example.benefit}
+                  {example.isVideo ? (
+                    <div className="aspect-[4/5] relative">
+                      <VideoPlayer videoUrl={example.videoUrl || ''} title={example.title} />
+                    </div>
+                  ) : (
+                    <div className="aspect-[4/5] relative overflow-hidden">
+                      <img src={example.image} alt={example.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
+                      
+                      <div className="absolute bottom-0 left-0 w-full p-8">
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="w-2 h-2 bg-[#007FFF] rounded-full animate-pulse" />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-white/60">{example.type}</span>
+                        </div>
+                        <h3 className="text-2xl font-bold text-white mb-2">{example.title}</h3>
+                        <div className="inline-block px-4 py-2 rounded-full bg-[#007FFF] text-white text-xs font-black tracking-wider">
+                          {example.benefit}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </motion.div>
               ))}
             </div>
@@ -513,7 +537,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Portfolio Section - Premium Futuristic Design */}
+        {/* Portfolio Section - Premium Moving Design */}
         <section id="portfolio" className="relative py-40 overflow-hidden">
           {/* Animated background elements */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -549,7 +573,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Premium Portfolio Grid with Futuristic Animations */}
+          {/* Premium Moving Portfolio Grid */}
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {projects.map((project, i) => (
@@ -565,7 +589,7 @@ export default function Home() {
                   }}
                   onHoverStart={() => setActiveProject(i)}
                   onHoverEnd={() => setActiveProject(null)}
-                  className="group relative perspective-1000"
+                  className="group relative"
                   style={{ perspective: '1000px' }}
                 >
                   <motion.div 

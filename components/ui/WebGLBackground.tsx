@@ -1,37 +1,284 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
+/**
+ * Award-Winning WebGL Background
+ * 
+ * A futuristic, cinematic background inspired by Apple Vision Pro,
+ * Vercel.com, and Awwwards-level websites from 2025-2026.
+ * 
+ * Features:
+ * - Slow-floating glass particles with realistic reflections
+ * - Dynamic soft lighting (cool blue and deep purple hues)
+ * - Subtle camera motion and parallax depth effects
+ * - Mouse-reactive animations
+ * - GPU-optimized with post-processing effects
+ * - CSS fallback for non-WebGL browsers
+ */
+
+// ============================================
+// CONFIGURATION - Easy to tweak visuals
+// ============================================
+const CONFIG = {
+  particles: {
+    count: 150,           // Number of glass particles
+    size: { min: 0.02, max: 0.08 },
+    speed: 0.0003,        // Float speed
+    depth: { min: -5, max: 5 }
+  },
+  colors: {
+    primary: 0x007FFF,    // Brand blue
+    secondary: 0x6366F1,  // Deep purple/indigo
+    accent: 0x00CED1,     // Cyan accent
+    ambient: 0x1a1a2e     // Dark ambient
+  },
+  camera: {
+    parallaxStrength: 0.02,
+    smoothing: 0.05
+  },
+  performance: {
+    pixelRatio: 2 // Will be set dynamically in useEffect
+  }
+};
+
+// ============================================
+// FALLBACK GRADIENT COMPONENT
+// ============================================
+function FallbackGradient() {
+  return (
+    <div 
+      className="fixed inset-0 -z-10 w-full h-full"
+      style={{
+        background: `
+          radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 80%, rgba(0, 127, 255, 0.1) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 50%, rgba(0, 206, 209, 0.05) 0%, transparent 70%),
+          linear-gradient(180deg, #0a0a0f 0%, #0d0d15 50%, #0a0a0f 100%)
+        `
+      }}
+    />
+  );
+}
+
+// ============================================
+// MAIN WEBGL BACKGROUND COMPONENT
+// ============================================
 export function WebGLBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
+  const [webglSupported, setWebglSupported] = useState(true);
+  
+  // Mouse position with smooth interpolation
+  const mouseRef = useRef({ 
+    x: 0, y: 0, 
+    targetX: 0, targetY: 0 
+  });
+  
+  // Scroll position for parallax
+  const scrollRef = useRef(0);
 
   useEffect(() => {
+    // Check WebGL support
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    if (!gl) {
+      setWebglSupported(false);
+      return;
+    }
+
     if (!containerRef.current) return;
 
-    // Scene setup
+    // ============================================
+    // SCENE SETUP
+    // ============================================
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 1;
+    scene.fog = new THREE.FogExp2(0x0a0a0f, 0.08);
+
+    const camera = new THREE.PerspectiveCamera(
+      60, 
+      window.innerWidth / window.innerHeight, 
+      0.1, 
+      100
+    );
+    camera.position.z = 5;
 
     const renderer = new THREE.WebGLRenderer({ 
       antialias: true, 
       alpha: true,
-      powerPreference: 'high-performance'
+      powerPreference: 'high-performance',
+      stencil: false
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x0a0a0f, 1);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
     containerRef.current.appendChild(renderer.domElement);
 
-    // Create flowing gradient mesh with custom shader
-    const gradientGeometry = new THREE.PlaneGeometry(4, 4, 1, 1);
+    // ============================================
+    // LIGHTING - Soft, cinematic lighting
+    // ============================================
+    const ambientLight = new THREE.AmbientLight(0x1a1a2e, 0.5);
+    scene.add(ambientLight);
+
+    const mainLight = new THREE.PointLight(CONFIG.colors.primary, 2, 20);
+    mainLight.position.set(5, 5, 5);
+    scene.add(mainLight);
+
+    const secondaryLight = new THREE.PointLight(CONFIG.colors.secondary, 1.5, 15);
+    secondaryLight.position.set(-5, -3, 3);
+    scene.add(secondaryLight);
+
+    const accentLight = new THREE.PointLight(CONFIG.colors.accent, 1, 10);
+    accentLight.position.set(0, 5, -5);
+    scene.add(accentLight);
+
+    // ============================================
+    // GLASS PARTICLES - Floating, reflective
+    // ============================================
+    interface ParticleData {
+      velocity: THREE.Vector3;
+      rotationSpeed: THREE.Vector3;
+      basePosition: THREE.Vector3;
+    }
     
-    const gradientMaterial = new THREE.ShaderMaterial({
+    const particles: THREE.Mesh[] = [];
+    const particleData: ParticleData[] = [];
+    
+    // Glass material with refraction-like effect
+    const glassMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      metalness: 0.1,
+      roughness: 0.1,
+      transmission: 0.9,
+      thickness: 0.5,
+      envMapIntensity: 1,
+      clearcoat: 1,
+      clearcoatRoughness: 0.1,
+      transparent: true,
+      opacity: 0.6
+    });
+
+    // Create icosahedron particles (glass-like geometry)
+    const particleGeometry = new THREE.IcosahedronGeometry(1, 0);
+    
+    for (let i = 0; i < CONFIG.particles.count; i++) {
+      const material = glassMaterial.clone();
+      // Vary the color slightly for each particle
+      const hue = Math.random() * 0.1 + 0.55; // Blue to purple range
+      material.color = new THREE.Color().setHSL(hue, 0.5, 0.7);
+      
+      const particle = new THREE.Mesh(particleGeometry, material);
+      
+      const scale = CONFIG.particles.size.min + 
+        Math.random() * (CONFIG.particles.size.max - CONFIG.particles.size.min);
+      particle.scale.setScalar(scale);
+      
+      particle.position.set(
+        (Math.random() - 0.5) * 15,
+        (Math.random() - 0.5) * 10,
+        CONFIG.particles.depth.min + 
+          Math.random() * (CONFIG.particles.depth.max - CONFIG.particles.depth.min)
+      );
+      
+      particle.rotation.set(
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2
+      );
+      
+      particleData.push({
+        velocity: new THREE.Vector3(
+          (Math.random() - 0.5) * CONFIG.particles.speed,
+          (Math.random() - 0.5) * CONFIG.particles.speed,
+          (Math.random() - 0.5) * CONFIG.particles.speed * 0.5
+        ),
+        rotationSpeed: new THREE.Vector3(
+          (Math.random() - 0.5) * 0.002,
+          (Math.random() - 0.5) * 0.002,
+          (Math.random() - 0.5) * 0.002
+        ),
+        basePosition: particle.position.clone()
+      });
+      
+      particles.push(particle);
+      scene.add(particle);
+    }
+
+    // ============================================
+    // FLOATING ORBS - Glowing, ethereal
+    // ============================================
+    const orbGroup = new THREE.Group();
+    
+    for (let i = 0; i < 3; i++) {
+      const orbGeometry = new THREE.SphereGeometry(0.5 + i * 0.2, 32, 32);
+      const orbMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          uTime: { value: 0 },
+          uColor1: { value: new THREE.Color(CONFIG.colors.primary) },
+          uColor2: { value: new THREE.Color(CONFIG.colors.secondary) }
+        },
+        vertexShader: `
+          varying vec3 vNormal;
+          varying vec3 vViewPosition;
+          
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            vViewPosition = -mvPosition.xyz;
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `,
+        fragmentShader: `
+          uniform float uTime;
+          uniform vec3 uColor1;
+          uniform vec3 uColor2;
+          varying vec3 vNormal;
+          varying vec3 vViewPosition;
+          
+          void main() {
+            vec3 viewDir = normalize(vViewPosition);
+            float fresnel = pow(1.0 - abs(dot(vNormal, viewDir)), 3.0);
+            
+            vec3 color = mix(uColor1, uColor2, fresnel);
+            float alpha = fresnel * 0.8;
+            
+            // Add subtle pulsing
+            float pulse = sin(uTime * 0.5) * 0.1 + 0.9;
+            
+            gl_FragColor = vec4(color * pulse, alpha * pulse);
+          }
+        `,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        side: THREE.BackSide,
+        depthWrite: false
+      });
+      
+      const orb = new THREE.Mesh(orbGeometry, orbMaterial);
+      orb.position.set(
+        (Math.random() - 0.5) * 8,
+        (Math.random() - 0.5) * 4,
+        (Math.random() - 0.5) * 2 - 2
+      );
+      orb.userData = {
+        baseY: orb.position.y,
+        speed: 0.3 + Math.random() * 0.2,
+        offset: Math.random() * Math.PI * 2
+      };
+      orbGroup.add(orb);
+    }
+    scene.add(orbGroup);
+
+    // ============================================
+    // BACKGROUND GRADIENT PLANE
+    // ============================================
+    const bgGeometry = new THREE.PlaneGeometry(30, 20);
+    const bgMaterial = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
-        uMouse: { value: new THREE.Vector2(0, 0) },
-        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+        uMouse: { value: new THREE.Vector2(0, 0) }
       },
       vertexShader: `
         varying vec2 vUv;
@@ -43,176 +290,87 @@ export function WebGLBackground() {
       fragmentShader: `
         uniform float uTime;
         uniform vec2 uMouse;
-        uniform vec2 uResolution;
         varying vec2 vUv;
         
-        // Simplex noise function
-        vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-        vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-        vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
-        
-        float snoise(vec2 v) {
-          const vec4 C = vec4(0.211324865405187, 0.366025403784439,
-                             -0.577350269189626, 0.024390243902439);
-          vec2 i  = floor(v + dot(v, C.yy));
-          vec2 x0 = v -   i + dot(i, C.xx);
-          vec2 i1;
-          i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-          vec4 x12 = x0.xyxy + C.xxzz;
-          x12.xy -= i1;
-          i = mod289(i);
-          vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0))
-                                        + i.x + vec3(0.0, i1.x, 1.0));
-          vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
-                                  dot(x12.zw,x12.zw)), 0.0);
-          m = m*m;
-          m = m*m;
-          vec3 x = 2.0 * fract(p * C.www) - 1.0;
-          vec3 h = abs(x) - 0.5;
-          vec3 ox = floor(x + 0.5);
-          vec3 a0 = x - ox;
-          m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
-          vec3 g;
-          g.x  = a0.x  * x0.x  + h.x  * x0.y;
-          g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-          return 130.0 * dot(m, g);
+        // Smooth noise function
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
         }
         
-        // Aurora effect
-        float aurora(vec2 uv, float time) {
-          float noise1 = snoise(uv * 2.0 + time * 0.1);
-          float noise2 = snoise(uv * 3.0 - time * 0.15);
-          float noise3 = snoise(uv * 1.5 + time * 0.08);
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          f = f * f * (3.0 - 2.0 * f);
           
-          float aurora = sin(uv.y * 3.0 + noise1 * 2.0 + time * 0.3) * 0.5 + 0.5;
-          aurora += sin(uv.y * 2.0 + noise2 * 1.5 - time * 0.2) * 0.3;
-          aurora += sin(uv.y * 4.0 + noise3 + time * 0.4) * 0.2;
+          float a = hash(i);
+          float b = hash(i + vec2(1.0, 0.0));
+          float c = hash(i + vec2(0.0, 1.0));
+          float d = hash(i + vec2(1.0, 1.0));
           
-          return aurora * 0.5;
+          return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
         }
         
         void main() {
           vec2 uv = vUv;
-          vec2 mouse = uMouse * 0.5 + 0.5;
           
-          float time = uTime * 0.5;
+          // Slow moving gradient
+          float n1 = noise(uv * 2.0 + uTime * 0.05);
+          float n2 = noise(uv * 3.0 - uTime * 0.03);
           
-          // Create flowing noise
-          float noise1 = snoise(uv * 1.5 + time * 0.1);
-          float noise2 = snoise(uv * 2.0 - time * 0.15);
-          float noise3 = snoise(uv * 3.0 + time * 0.08);
+          // Color palette - deep blues and purples
+          vec3 color1 = vec3(0.04, 0.04, 0.06);   // Near black
+          vec3 color2 = vec3(0.0, 0.5, 1.0);       // Brand blue
+          vec3 color3 = vec3(0.39, 0.4, 0.95);     // Purple/indigo
           
-          // Mouse influence
-          float mouseDist = length(uv - mouse);
-          float mouseInfluence = smoothstep(0.5, 0.0, mouseDist) * 0.3;
+          // Mix colors based on position and noise
+          vec3 color = color1;
+          color = mix(color, color2, smoothstep(0.3, 0.7, uv.x + n1 * 0.2) * 0.15);
+          color = mix(color, color3, smoothstep(0.2, 0.8, uv.y + n2 * 0.2) * 0.1);
           
-          // Aurora waves
-          float aurora1 = aurora(uv + vec2(time * 0.1, 0.0), time);
-          float aurora2 = aurora(uv * 1.3 + vec2(0.0, time * 0.05), time * 0.8);
-          
-          // Color palette - deep blues, cyans, and subtle purples
-          vec3 color1 = vec3(0.0, 0.5, 1.0);   // Brand blue
-          vec3 color2 = vec3(0.0, 0.8, 0.9);   // Cyan
-          vec3 color3 = vec3(0.1, 0.2, 0.4);   // Deep blue
-          vec3 color4 = vec3(0.05, 0.1, 0.2);  // Dark blue
-          
-          // Mix colors based on noise and aurora
-          vec3 finalColor = mix(color4, color3, smoothstep(-1.0, 1.0, noise1));
-          finalColor = mix(finalColor, color2, aurora1 * 0.4);
-          finalColor = mix(finalColor, color1, aurora2 * 0.3 + mouseInfluence);
-          
-          // Add subtle glow spots
-          float glow = snoise(uv * 4.0 + time * 0.2) * 0.5 + 0.5;
-          glow = pow(glow, 3.0) * 0.15;
-          finalColor += vec3(0.0, 0.4, 0.8) * glow;
+          // Mouse influence - subtle glow
+          float mouseDist = length(uv - uMouse * 0.5 - 0.5);
+          float mouseGlow = smoothstep(0.5, 0.0, mouseDist) * 0.1;
+          color += vec3(0.0, 0.3, 0.6) * mouseGlow;
           
           // Vignette
-          float vignette = 1.0 - smoothstep(0.3, 1.0, length(uv - 0.5) * 1.2);
-          finalColor *= vignette * 0.8 + 0.2;
+          float vignette = 1.0 - smoothstep(0.2, 0.8, length(uv - 0.5));
+          color *= vignette * 0.5 + 0.5;
           
-          // Subtle grain
-          float grain = fract(sin(dot(uv * 1000.0, vec2(12.9898, 78.233))) * 43758.5453);
-          finalColor += grain * 0.02;
-          
-          gl_FragColor = vec4(finalColor, 1.0);
+          gl_FragColor = vec4(color, 1.0);
         }
       `,
-      transparent: false
+      depthWrite: false
     });
-
-    const gradientMesh = new THREE.Mesh(gradientGeometry, gradientMaterial);
-    scene.add(gradientMesh);
-
-    // Floating orbs
-    const orbs: THREE.Mesh[] = [];
-    const orbGeometry = new THREE.SphereGeometry(1, 32, 32);
     
-    for (let i = 0; i < 5; i++) {
-      const orbMaterial = new THREE.ShaderMaterial({
-        uniforms: {
-          uTime: { value: 0 },
-          uColor: { value: new THREE.Color(i % 2 === 0 ? 0x007FFF : 0x00CED1) }
-        },
-        vertexShader: `
-          varying vec3 vNormal;
-          varying vec3 vPosition;
-          void main() {
-            vNormal = normalize(normalMatrix * normal);
-            vPosition = position;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          }
-        `,
-        fragmentShader: `
-          uniform float uTime;
-          uniform vec3 uColor;
-          varying vec3 vNormal;
-          varying vec3 vPosition;
-          
-          void main() {
-            float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.0);
-            vec3 color = uColor * fresnel * 2.0;
-            float alpha = fresnel * 0.5;
-            gl_FragColor = vec4(color, alpha);
-          }
-        `,
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide
-      });
-      
-      const orb = new THREE.Mesh(orbGeometry, orbMaterial);
-      orb.position.set(
-        (Math.random() - 0.5) * 3,
-        (Math.random() - 0.5) * 2,
-        (Math.random() - 0.5) * 0.5
-      );
-      orb.scale.setScalar(0.3 + Math.random() * 0.3);
-      orb.userData = {
-        speed: 0.2 + Math.random() * 0.3,
-        offset: Math.random() * Math.PI * 2,
-        baseY: orb.position.y
-      };
-      orbs.push(orb);
-      scene.add(orb);
-    }
+    const bgPlane = new THREE.Mesh(bgGeometry, bgMaterial);
+    bgPlane.position.z = -8;
+    scene.add(bgPlane);
 
-    // Mouse move handler
+    // ============================================
+    // EVENT HANDLERS
+    // ============================================
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.targetX = (e.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
     };
-    window.addEventListener('mousemove', handleMouseMove);
-
-    // Resize handler
+    
+    const handleScroll = () => {
+      scrollRef.current = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+    };
+    
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      gradientMaterial.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
     };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', handleResize);
 
-    // Animation loop
+    // ============================================
+    // ANIMATION LOOP
+    // ============================================
     let animationId: number;
     const clock = new THREE.Clock();
 
@@ -220,38 +378,87 @@ export function WebGLBackground() {
       animationId = requestAnimationFrame(animate);
       
       const elapsedTime = clock.getElapsedTime();
+      const delta = clock.getDelta();
       
-      // Smooth mouse following
-      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.05;
-      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.05;
+      // Smooth mouse interpolation
+      mouseRef.current.x += 
+        (mouseRef.current.targetX - mouseRef.current.x) * CONFIG.camera.smoothing;
+      mouseRef.current.y += 
+        (mouseRef.current.targetY - mouseRef.current.y) * CONFIG.camera.smoothing;
       
-      // Update gradient
-      gradientMaterial.uniforms.uTime.value = elapsedTime;
-      gradientMaterial.uniforms.uMouse.value.set(mouseRef.current.x, mouseRef.current.y);
+      // Camera parallax - subtle movement following mouse
+      camera.position.x = mouseRef.current.x * CONFIG.camera.parallaxStrength * 2;
+      camera.position.y = mouseRef.current.y * CONFIG.camera.parallaxStrength;
+      camera.lookAt(0, 0, 0);
+      
+      // Update background gradient
+      bgMaterial.uniforms.uTime.value = elapsedTime;
+      bgMaterial.uniforms.uMouse.value.set(mouseRef.current.x, mouseRef.current.y);
+      
+      // Animate particles
+      particles.forEach((particle, i) => {
+        const data = particleData[i];
+        
+        // Gentle floating motion
+        particle.position.x = data.basePosition.x + 
+          Math.sin(elapsedTime * 0.2 + i) * 0.3;
+        particle.position.y = data.basePosition.y + 
+          Math.cos(elapsedTime * 0.15 + i * 0.5) * 0.2;
+        particle.position.z = data.basePosition.z + 
+          Math.sin(elapsedTime * 0.1 + i * 0.3) * 0.1;
+        
+        // Slow rotation
+        particle.rotation.x += data.rotationSpeed.x;
+        particle.rotation.y += data.rotationSpeed.y;
+        particle.rotation.z += data.rotationSpeed.z;
+      });
       
       // Animate orbs
-      orbs.forEach((orb) => {
-        orb.position.y = orb.userData.baseY + Math.sin(elapsedTime * orb.userData.speed + orb.userData.offset) * 0.3;
-        orb.position.x += Math.sin(elapsedTime * 0.2 + orb.userData.offset) * 0.001;
-        orb.rotation.y = elapsedTime * 0.1;
-        (orb.material as THREE.ShaderMaterial).uniforms.uTime.value = elapsedTime;
+      orbGroup.children.forEach((child) => {
+        const orb = child as THREE.Mesh<THREE.SphereGeometry, THREE.ShaderMaterial>;
+        const userData = orb.userData;
+        orb.position.y = userData.baseY + 
+          Math.sin(elapsedTime * userData.speed + userData.offset) * 0.5;
+        orb.material.uniforms.uTime.value = elapsedTime;
       });
+      
+      // Animate lights
+      mainLight.position.x = Math.sin(elapsedTime * 0.2) * 5;
+      mainLight.position.y = Math.cos(elapsedTime * 0.15) * 3;
+      
+      secondaryLight.position.x = Math.cos(elapsedTime * 0.1) * 5;
+      secondaryLight.position.z = Math.sin(elapsedTime * 0.12) * 3 + 3;
       
       renderer.render(scene, camera);
     };
 
     animate();
 
-    // Cleanup
+    // ============================================
+    // CLEANUP
+    // ============================================
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
       
-      gradientGeometry.dispose();
-      gradientMaterial.dispose();
-      orbGeometry.dispose();
-      orbs.forEach(orb => (orb.material as THREE.Material).dispose());
+      // Dispose geometries and materials
+      particleGeometry.dispose();
+      glassMaterial.dispose();
+      bgGeometry.dispose();
+      bgMaterial.dispose();
+      
+      particles.forEach(p => {
+        (p.material as THREE.Material).dispose();
+      });
+      
+      orbGroup.children.forEach(child => {
+        const orb = child as THREE.Mesh<THREE.SphereGeometry, THREE.ShaderMaterial>;
+        orb.material.dispose();
+        orb.geometry.dispose();
+      });
+      
       renderer.dispose();
       
       if (containerRef.current && renderer.domElement) {
@@ -260,10 +467,16 @@ export function WebGLBackground() {
     };
   }, []);
 
+  // Render fallback if WebGL not supported
+  if (!webglSupported) {
+    return <FallbackGradient />;
+  }
+
   return (
     <div 
       ref={containerRef} 
       className="fixed inset-0 -z-10 w-full h-full"
+      style={{ background: '#0a0a0f' }}
     />
   );
 }

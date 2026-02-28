@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
-	turbopack: {},
+	output: 'export',
+	distDir: 'dist',
 	images: {
+		unoptimized: true,
 		remotePatterns: [
 			{
 				protocol: "https",

@@ -4,8 +4,14 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
 import { ArrowRight, Play, Globe, Zap, Shield, Layers, Sparkles, Smartphone, ExternalLink, Eye, ArrowUpRight, Video } from 'lucide-react';
 import { TextReveal } from '@/components/ui/TextReveal';
-import { WebGLBackground } from '@/components/ui/WebGLBackground';
+import { ImageBackground } from '@/components/ui/ImageBackground';
 import { PageTransition } from '@/components/ui/PageTransition';
+import ServicePillars from '@/components/sections/ServicePillars';
+import WhyVeloce from '@/components/sections/WhyVeloce';
+import CustomerSuccess from '@/components/sections/CustomerSuccess';
+import TechStackGrid from '@/components/sections/TechStackGrid';
+import { InteractiveMarquee } from '@/components/ui/InteractiveMarquee';
+import { PremiumHeroText } from '@/components/ui/PremiumHeroText';
 
 // Animated counter component
 function AnimatedCounter({ value, suffix = '' }: { value: string; suffix?: string }) {
@@ -73,7 +79,7 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
   const [isFullscreen, setIsFullscreen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (videoRef.current) {
@@ -86,7 +92,7 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
       }
     }
   };
-  
+
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (videoRef.current) {
@@ -94,7 +100,7 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
       setIsMuted(!isMuted);
     }
   };
-  
+
   const toggleFullscreen = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (containerRef.current) {
@@ -115,9 +121,9 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
       }
     }
   };
-  
+
   return (
-    <motion.div 
+    <motion.div
       ref={containerRef}
       className="relative h-full min-h-[500px] rounded-[2rem] overflow-hidden bg-black group"
       whileHover={{ scale: 1.01 }}
@@ -134,15 +140,15 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
         onEnded={() => setIsPlaying(false)}
         onClick={togglePlay}
       />
-      
+
       {/* Play/Pause Overlay */}
-      <div 
+      <div
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
         onClick={togglePlay}
       >
-        <motion.div 
+        <motion.div
           className="w-20 h-20 rounded-full bg-black/50 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center transition-all duration-300 pointer-events-auto cursor-pointer"
-          animate={{ 
+          animate={{
             opacity: isPlaying ? 0 : 1,
             scale: isPlaying ? 0.8 : 1
           }}
@@ -151,7 +157,7 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
           <Play size={36} className="text-white ml-1" fill="currentColor" />
         </motion.div>
       </div>
-      
+
       {/* Control Buttons - Top Right */}
       <div className="absolute top-4 right-4 flex gap-2 z-10">
         {/* Mute/Unmute Button */}
@@ -174,7 +180,7 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
             </svg>
           )}
         </motion.button>
-        
+
         {/* Fullscreen Button */}
         <motion.button
           onClick={toggleFullscreen}
@@ -187,13 +193,13 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
           </svg>
         </motion.button>
       </div>
-      
+
       {/* Content overlay at bottom */}
       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none">
         <div className="flex items-center gap-2 mb-3">
-          <motion.div 
+          <motion.div
             className="w-2 h-2 bg-[#007FFF] rounded-full"
-            animate={{ 
+            animate={{
               scale: isPlaying ? [1, 1.5, 1] : 1,
               opacity: isPlaying ? [0.5, 1, 0.5] : 0.5
             }}
@@ -207,7 +213,7 @@ function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: strin
         <h3 className="text-2xl font-bold text-white mb-1">{title}</h3>
         <p className="text-white/50 text-sm">Tap video to {isPlaying ? 'pause' : 'play'}</p>
       </div>
-      
+
       {/* Corner accents */}
       <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-[#007FFF]/50 rounded-tl-lg pointer-events-none" />
       <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-purple-500/50 rounded-bl-lg pointer-events-none" />
@@ -221,57 +227,57 @@ export default function Home() {
   const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false);
   const [activeProject, setActiveProject] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   const services = [
-    { 
-      title: "Social Media Creative Pack", 
-      desc: "Stop the scroll with custom-built, on-brand templates for Instagram, LinkedIn, and YouTube. Empower your team to produce world-class content in minutes, not hours.", 
-      icon: <Smartphone className="w-8 h-8" />, 
+    {
+      title: "Social Media Creative Pack",
+      desc: "Stop the scroll with custom-built, on-brand templates for Instagram, LinkedIn, and YouTube. Empower your team to produce world-class content in minutes, not hours.",
+      icon: <Smartphone className="w-8 h-8" />,
       tags: ["Instagram", "LinkedIn", "YouTube Thumbnails"],
       color: "from-blue-500/20 to-cyan-500/20"
     },
-    { 
-      title: "Ad & Campaign Creatives", 
-      desc: "High-impact static and animated ads engineered for maximum click-through rates. We optimize every pixel for clarity, brand recall, and conversion performance.", 
-      icon: <Zap className="w-8 h-8" />, 
+    {
+      title: "Ad & Campaign Creatives",
+      desc: "High-impact static and animated ads engineered for maximum click-through rates. We optimize every pixel for clarity, brand recall, and conversion performance.",
+      icon: <Zap className="w-8 h-8" />,
       tags: ["Social Ads", "Display Campaigns", "Motion Graphics"],
       color: "from-purple-500/20 to-pink-500/20"
     },
-    { 
-      title: "Brand Template System", 
-      desc: "A complete, ready-to-use library of flyers, pitch decks, and posters. Locked to your brand's DNA so every future design stays perfectly consistent.", 
-      icon: <Layers className="w-8 h-8" />, 
+    {
+      title: "Brand Template System",
+      desc: "A complete, ready-to-use library of flyers, pitch decks, and posters. Locked to your brand's DNA so every future design stays perfectly consistent.",
+      icon: <Layers className="w-8 h-8" />,
       tags: ["Pitch Decks", "Brand Guidelines", "Asset Library"],
       color: "from-orange-500/20 to-yellow-500/20"
     },
-    { 
-      title: "Poster, Flyer & Print Design", 
-      desc: "From event posters to business cards, we deliver print-ready assets that command attention in the physical world and translate seamlessly to digital.", 
-      icon: <Globe className="w-8 h-8" />, 
+    {
+      title: "Poster, Flyer & Print Design",
+      desc: "From event posters to business cards, we deliver print-ready assets that command attention in the physical world and translate seamlessly to digital.",
+      icon: <Globe className="w-8 h-8" />,
       tags: ["Print-Ready", "Brochures", "Event Graphics"],
       color: "from-green-500/20 to-emerald-500/20"
     },
-    { 
-      title: "Short Video & Promo Assets", 
-      desc: "Dominate Reels, Shorts, and TikTok with high-velocity promotional clips. Clean motion, trending audio, and sharp text that drives engagement.", 
-      icon: <Play className="w-8 h-8" />, 
+    {
+      title: "Short Video & Promo Assets",
+      desc: "Dominate Reels, Shorts, and TikTok with high-velocity promotional clips. Clean motion, trending audio, and sharp text that drives engagement.",
+      icon: <Play className="w-8 h-8" />,
       tags: ["Reels/TikTok", "Promo Clips", "Motion Design"],
       color: "from-red-500/20 to-orange-500/20"
     },
-    { 
-      title: "Festival & Seasonal Packs", 
-      desc: "Pre-planned creative packs for launches and sale seasons. Plug in your offers and publish instantly with localized, high-conversion styling.", 
-      icon: <Sparkles className="w-8 h-8" />, 
+    {
+      title: "Festival & Seasonal Packs",
+      desc: "Pre-planned creative packs for launches and sale seasons. Plug in your offers and publish instantly with localized, high-conversion styling.",
+      icon: <Sparkles className="w-8 h-8" />,
       tags: ["Seasonal Sales", "Launch Packs", "Holiday Creative"],
       color: "from-cyan-500/20 to-blue-500/20"
     },
-    { 
-      title: "Brand Refresh & Upgrade", 
-      desc: "We take your existing creatives and inject world-class layouts, typography, and color theory—elevating your brand without losing its core identity.", 
-      icon: <Shield className="w-8 h-8" />, 
+    {
+      title: "Brand Refresh & Upgrade",
+      desc: "We take your existing creatives and inject world-class layouts, typography, and color theory—elevating your brand without losing its core identity.",
+      icon: <Shield className="w-8 h-8" />,
       tags: ["Creative Audit", "Visual Upgrade", "Consistency"],
       color: "from-emerald-500/20 to-teal-500/20"
     },
@@ -391,280 +397,251 @@ export default function Home() {
 
   return (
     <PageTransition>
-    <div ref={containerRef} className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden">
-      {/* WebGL Background */}
-      <WebGLBackground />
-      
-      {/* Gradient overlay */}
-      <div className="fixed inset-0 z-0 bg-gradient-to-b from-[#007FFF]/5 via-transparent to-transparent pointer-events-none" />
+      <div ref={containerRef} className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden">
+        {/* WebGL Background */}
+        <ImageBackground />
 
-      {/* Scroll Progress Indicator */}
-      <motion.div 
-        className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#007FFF] via-purple-500 to-pink-500 z-[200] origin-left"
-        style={{ scaleX: smoothProgress }}
-      />
+        {/* Scroll Progress Indicator */}
+        <motion.div
+          className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#007FFF] via-purple-500 to-pink-500 z-[200] origin-left"
+          style={{ scaleX: smoothProgress }}
+        />
 
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-[100] px-6 py-6">
-        <motion.div 
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="max-w-7xl mx-auto glass rounded-full px-8 py-4 flex justify-between items-center"
-        >
-          <a href="#home" className="flex items-center gap-3 group">
-            <img src="/logo.png" alt="VELOCE Logo" className="w-10 h-10 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" />
-            <span className="text-2xl font-black tracking-tighter chromatic-text">VELOCE</span>
-          </a>
-          
-          <div className="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-black">
-            {['Home', 'Services', 'Portfolio', 'Contact'].map((item) => (
-              <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-[#007FFF] transition-colors duration-300 relative group">
-                {item}
-                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#007FFF] transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-4">
-            <a href="#contact" className="hidden md:flex items-center gap-2 px-6 py-2.5 rounded-full bg-white text-black text-xs font-black hover:bg-[#007FFF] hover:text-white transition-all duration-300">
-              START PROJECT <ArrowRight size={14} />
+        {/* Navigation */}
+        <nav className="fixed top-0 w-full z-[100] px-6 py-6">
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="max-w-7xl mx-auto glass rounded-full px-8 py-4 flex justify-between items-center"
+          >
+            <a href="#home" className="flex items-center gap-3 group">
+              <img src="/logo.png" alt="VELOCE Logo" className="w-10 h-10 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" />
+              <span className="text-2xl font-black tracking-tighter chromatic-text">VELOCE</span>
             </a>
-            <button className="md:hidden text-white p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              <div className="w-6 h-0.5 bg-white mb-1.5" />
-              <div className="w-6 h-0.5 bg-white" />
-            </button>
-          </div>
-        </motion.div>
-      </nav>
 
-      {/* Hero Section */}
-      <section id="home" className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-        <div className="max-w-7xl w-full relative z-10 px-6">
-          <div className="flex flex-col items-center text-center">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full glass border border-[#007FFF]/30 text-[10px] font-black tracking-[0.3em] uppercase text-[#007FFF]"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#007FFF] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#007FFF]"></span>
-              </span>
-              Available for Q3 2026 Projects
-            </motion.div>
+            <div className="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-white/60">
+              {['Home', 'Services', 'Portfolio', 'Contact'].map((item) => (
+                <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="hover:text-uptic-orange transition-colors duration-300 relative group">
+                  {item}
+                  <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-uptic-orange transition-all duration-300 group-hover:w-full" />
+                </a>
+              ))}
+            </div>
 
-            {/* Logo and Title */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6 }}
-              className="flex items-center gap-6 mb-6"
-            >
-              <img src="/logo.png" alt="VELOCE" className="w-20 h-20 md:w-28 md:h-28 rounded-full object-cover shadow-[0_0_40px_rgba(0,127,255,0.3)]" />
-            </motion.div>
-
-            <h1 className="text-[12vw] md:text-[15vw] font-black mb-6 tracking-tighter leading-[0.8] text-white">
-              <TextReveal><span className="chromatic-text">VELOCE</span></TextReveal>
-            </h1>
-
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-lg md:text-2xl text-white/60 mb-12 max-w-2xl mx-auto font-light leading-relaxed"
-            >
-              We craft high-performance digital ecosystems for brands that refuse to settle for the ordinary.
-            </motion.p>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.6 }}
-              className="flex flex-col sm:flex-row gap-6 items-center"
-            >
-              <MagneticButton className="group relative px-10 py-5 rounded-full bg-[#007FFF] text-white font-black text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(0,127,255,0.4)] overflow-hidden">
-                <span className="relative z-10 flex items-center gap-3">
-                  Elevate Your Brand <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-                </span>
-              </MagneticButton>
-              <button className="flex items-center gap-3 px-10 py-5 rounded-full glass font-bold text-lg hover:bg-white/10 transition-all duration-300 border border-white/10 group">
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-[#007FFF] transition-colors duration-300">
-                  <Play size={16} fill="currentColor" />
-                </div>
-                Showreel 2026
+            <div className="flex items-center gap-4">
+              <a href="#contact" className="hidden md:flex items-center gap-2 px-6 py-2.5 rounded-full bg-white text-black text-xs font-black hover:bg-[#007FFF] hover:text-white transition-all duration-300">
+                START PROJECT <ArrowRight size={14} />
+              </a>
+              <button className="md:hidden text-white p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                <div className="w-6 h-0.5 bg-white mb-1.5" />
+                <div className="w-6 h-0.5 bg-white" />
               </button>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+            </div>
+          </motion.div>
+        </nav>
 
-      {/* Content Wrapper */}
-      <div className="relative z-10 bg-black/45 backdrop-blur-sm">
-        {/* Services Section */}
-        <section id="services" className="py-40 px-6 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-32 gap-12">
-              <div>
-                <div className="text-[#007FFF] font-black tracking-[0.5em] uppercase text-[10px] mb-6">Our Capabilities</div>
-                <h2 className="text-6xl md:text-9xl font-bold tracking-tighter text-white leading-[0.8] mb-4">
-                  <TextReveal>CREATIVE</TextReveal>
-                  <TextReveal delay={0.1}><span className="text-white/10">ENGINEERING.</span></TextReveal>
+        {/* Hero Section */}
+        <section id="home" className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+          <div className="max-w-7xl w-full relative z-10 px-6">
+            <div className="flex flex-col items-center text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full glass border border-white/10 text-[10px] font-black tracking-[0.3em] uppercase text-uptic-orange"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-uptic-orange opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-uptic-orange"></span>
+                </span>
+                World-Class Digital Ecosystems
+              </motion.div>
+
+              <h1 className="text-[10vw] md:text-[12vw] font-black mb-12 mt-12 tracking-tighter leading-[0.8] text-white">
+                <PremiumHeroText text="VELOCE" />
+              </h1>
+
+              <div className="w-screen max-w-[100vw] overflow-hidden mb-16 relative left-1/2 -translate-x-1/2">
+                <InteractiveMarquee
+                  text="We build, enhance, and modernize applications and platforms for brands that refuse to settle for the ordinary."
+                  speed={0.6}
+                />
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.6 }}
+                className="flex flex-col sm:flex-row gap-6 items-center"
+              >
+                <MagneticButton className="group relative px-10 py-5 rounded-full bg-white text-black font-black text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] overflow-hidden">
+                  <span className="relative z-10 flex items-center gap-3">
+                    Start Your Project <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  </span>
+                </MagneticButton>
+                <button className="flex items-center gap-3 px-10 py-5 rounded-full glass font-bold text-lg hover:bg-white/10 transition-all duration-300 border border-white/10 group">
+                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/20 transition-colors duration-300">
+                    <Play size={16} fill="currentColor" />
+                  </div>
+                  Our Service
+                </button>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        <div className="relative z-10">
+          <ServicePillars />
+
+          {/* Detailed Service Grid - Re-integrated "Old" Services */}
+          <section id="detailed-services" className="py-32 px-6 relative overflow-hidden">
+            <div className="max-w-7xl mx-auto relative z-10">
+              <div className="mb-20">
+                <div className="text-uptic-orange font-black tracking-[0.4em] uppercase text-[10px] mb-4">Precision Engineering</div>
+                <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-white leading-[0.8]">
+                  <TextReveal>GRANULAR</TextReveal>
+                  <TextReveal delay={0.1}><span className="text-white/20">SOLUTIONS.</span></TextReveal>
                 </h2>
               </div>
-              <div className="max-w-sm border-l-2 border-[#007FFF] pl-8 py-2">
-                <p className="text-white/40 text-xl font-light leading-relaxed">
-                  We don't just design; we build <span className="text-white font-medium">visual systems</span> that scale your brand's impact.
-                </p>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {services.map((service, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  className="group relative"
-                >
-                  <div className="relative h-full glass p-12 rounded-[3rem] border-white/5 overflow-hidden bg-white/[0.01] flex flex-col justify-between min-h-[450px] transition-all duration-500 hover:border-[#007FFF]/30">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                    <div className="relative z-10">
-                      <div className="mb-10 inline-flex items-center justify-center w-20 h-20 rounded-[2rem] bg-white/5 border border-white/10 text-white transition-all duration-500 group-hover:bg-white group-hover:text-black">
-                        {service.icon}
-                      </div>
-                      <h3 className="text-4xl font-bold mb-6 text-white tracking-tighter group-hover:text-[#007FFF] transition-colors duration-300">{service.title}</h3>
-                      <p className="text-white/40 leading-relaxed mb-10 group-hover:text-white/80 transition-colors duration-300 font-light text-lg">{service.desc}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {services.map((service, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1, duration: 0.6 }}
+                    className="group relative p-8 rounded-[2.5rem] glass hover:bg-white/[0.05] transition-all duration-500 hover:border-white/20"
+                  >
+                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-8 border border-white/10 group-hover:scale-110 transition-transform duration-500`}>
+                      {service.icon}
                     </div>
-                    <div className="relative z-10 flex flex-wrap gap-3">
+                    <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-uptic-orange transition-colors">{service.title}</h3>
+                    <p className="text-white/40 text-sm leading-relaxed mb-6 font-light">
+                      {service.desc}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
                       {service.tags.map((tag, j) => (
-                        <span key={j} className="text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/30 group-hover:text-white transition-all duration-300">{tag}</span>
+                        <span key={j} className="text-[9px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-white/5 text-white/40 border border-white/5">
+                          {tag}
+                        </span>
                       ))}
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Live Proof Section */}
-        <section className="py-40 px-6 relative overflow-hidden border-y border-white/5">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col items-center text-center mb-24">
-              <div className="text-[#007FFF] font-black tracking-[0.5em] uppercase text-[10px] mb-6">Live Proof</div>
-              <h2 className="text-5xl md:text-8xl font-bold tracking-tighter text-white leading-none mb-8">
-                <TextReveal>MEASURABLE</TextReveal>
-                <TextReveal delay={0.1}><span className="chromatic-text">VELOCITY.</span></TextReveal>
-              </h2>
-              <p className="text-white/40 text-xl max-w-2xl font-light">
-                Real-world performance data from our latest creative deployments. We don't just deliver assets; we deliver <span className="text-white">growth</span>.
-              </p>
+          {/* Live Proof Section - Re-integrated Video Portfolio */}
+          <section id="live-proof" className="py-32 px-6 relative">
+            <div className="max-w-7xl mx-auto relative z-10">
+              <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-20">
+                <div>
+                  <div className="text-purple-500 font-black tracking-[0.4em] uppercase text-[10px] mb-4">Visual Proof</div>
+                  <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-white leading-[0.8]">
+                    <TextReveal>LIVE</TextReveal>
+                    <TextReveal delay={0.1}><span className="text-white/20">CAMPAIGNS.</span></TextReveal>
+                  </h2>
+                </div>
+                <p className="text-white/40 text-lg max-w-xs font-light border-l border-purple-500/30 pl-6">
+                  Experience the velocity of our creative engine in real-time.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {adExamples.map((ad, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.2, duration: 0.8 }}
+                  >
+                    <VideoPlayer
+                      videoUrl={ad.videoUrl}
+                      title={ad.title}
+                      type={ad.type}
+                    />
+                  </motion.div>
+                ))}
+              </div>
             </div>
+          </section>
 
-            {/* Premium Video Showcase Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-              {adExamples.map((example, i) => (
-                <motion.div 
-                  key={i}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ delay: i * 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="group relative"
-                >
-                  <div className="relative h-[500px] md:h-[580px] rounded-[2rem] overflow-hidden border border-white/10 hover:border-[#007FFF]/50 transition-all duration-500 bg-black/50 backdrop-blur-sm">
-                    {example.isVideo ? (
-                      <VideoPlayer videoUrl={example.videoUrl || ''} title={example.title} type={example.type} />
-                    ) : (
-                      <div className="h-full relative overflow-hidden">
-                        <img src={example.image} alt={example.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
-                        
-                        <div className="absolute bottom-0 left-0 w-full p-8">
-                          <div className="flex items-center gap-2 mb-4">
-                            <div className="w-2 h-2 bg-[#007FFF] rounded-full animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">{example.type}</span>
-                          </div>
-                          <h3 className="text-2xl font-bold text-white mb-2">{example.title}</h3>
-                          <div className="inline-block px-4 py-2 rounded-full bg-[#007FFF] text-white text-xs font-black tracking-wider">
-                            {example.benefit}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Title below card */}
-                  <div className="mt-4 text-center">
-                    <h3 className="text-lg font-bold text-white group-hover:text-[#007FFF] transition-colors duration-300">{example.title}</h3>
-                    <p className="text-white/40 text-sm mt-1">{example.benefit}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+          <WhyVeloce />
+          <CustomerSuccess />
+          <TechStackGrid />
+        </div>
 
-        {/* Stats Section with 70% black background */}
-        <section className="py-32 px-6 relative overflow-hidden bg-black/70 backdrop-blur-md">
-          {/* Animated background elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <motion.div 
-              className="absolute -top-1/2 -left-1/4 w-full h-full bg-gradient-to-r from-[#007FFF]/10 to-transparent rounded-full blur-3xl"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-            />
-            <motion.div 
-              className="absolute -bottom-1/2 -right-1/4 w-full h-full bg-gradient-to-l from-purple-500/10 to-transparent rounded-full blur-3xl"
-              animate={{ rotate: -360 }}
-              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-            />
-          </div>
+        {/* Theme Showcase / Inspiration Board */}
+        <section id="inspiration" className="py-40 px-6 relative overflow-hidden">
+          {/* Subtle atmospheric glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-uptic-orange/5 blur-[120px] rounded-full pointer-events-none" />
 
           <div className="max-w-7xl mx-auto relative z-10">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-16"
-            >
-              <h3 className="text-3xl md:text-5xl font-bold text-white tracking-tighter mb-4">
-                Numbers That <span className="text-[#007FFF]">Matter</span>
-              </h3>
-              <p className="text-white/40 text-lg max-w-xl mx-auto">
-                Our track record speaks for itself. Real results, real impact.
+            <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-20 text-center md:text-left">
+              <div>
+                <span className="text-xs font-semibold tracking-[0.4em] uppercase text-uptic-orange mb-6 block">
+                  Find Your Vision
+                </span>
+                <h2 className="text-5xl md:text-8xl font-black mb-6 tracking-tighter text-white">
+                  INSPIRATION <br />
+                  <span className="text-gray-600 italic">BOARD.</span>
+                </h2>
+              </div>
+              <p className="text-gray-400 max-w-sm text-lg font-light leading-relaxed md:border-l border-uptic-orange/30 md:pl-8 mx-auto md:mx-0">
+                Browse our curated selection of award-winning digital experiences. Select the architecture that perfectly aligns with your brand's future.
               </p>
-            </motion.div>
+            </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {stats.map((stat, i) => (
-                <motion.div 
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                { name: 'Aura', type: 'SaaS / AI Product', color: 'from-blue-500/20 to-purple-500/20', img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop' },
+                { name: 'Kinetix', type: 'High-End E-commerce', color: 'from-uptic-orange/20 to-red-500/20', img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop' },
+                { name: 'Monolith', type: 'Corporate / Real Estate', color: 'from-emerald-500/20 to-teal-500/20', img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop' }
+              ].map((theme, i) => (
+                <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="text-center group"
+                  transition={{ delay: i * 0.15, duration: 0.8 }}
+                  className="group relative cursor-pointer"
                 >
-                  <motion.div 
-                    className="relative inline-block"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <div className="absolute inset-0 bg-[#007FFF]/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <div className="text-5xl md:text-7xl font-black text-white mb-3 tracking-tighter relative">
-                      <AnimatedCounter value={stat.value} />
+                  <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden relative mb-6 border border-white/10 bg-black/45 backdrop-blur-md">
+                    <div className={`absolute inset-0 bg-gradient-to-t ${theme.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10`} />
+                    <motion.img
+                      src={theme.img}
+                      alt={theme.name}
+                      className="absolute inset-0 w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-700"
+                      whileHover={{ scale: 1.05 }}
+                    />
+
+                    {/* Select Overlay */}
+                    <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-sm bg-black/40">
+                      <button className="px-8 py-4 rounded-full bg-white text-black font-black text-sm uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-2">
+                        Select Theme <ArrowRight size={16} />
+                      </button>
                     </div>
-                  </motion.div>
-                  <div className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-white/40 group-hover:text-white/60 transition-colors duration-300">
-                    {stat.label}
+                  </div>
+
+                  <div className="flex justify-between items-center px-2">
+                    <div>
+                      <h3 className="text-3xl font-black text-white group-hover:text-uptic-orange transition-colors">{theme.name}</h3>
+                      <p className="text-white/50 text-sm tracking-wider uppercase font-bold mt-1">{theme.type}</p>
+                    </div>
                   </div>
                 </motion.div>
               ))}
+            </div>
+
+            <div className="mt-20 flex justify-center">
+              <button className="flex items-center gap-3 px-10 py-5 rounded-full border border-white/20 text-white font-bold text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300">
+                View Full Catalog
+              </button>
             </div>
           </div>
         </section>
@@ -673,12 +650,12 @@ export default function Home() {
         <section id="portfolio" className="relative py-40 overflow-hidden">
           {/* Animated background elements */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <motion.div 
+            <motion.div
               className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-[#007FFF]/5 rounded-full blur-[100px]"
               animate={{ x: [0, 100, 0], y: [0, -50, 0] }}
               transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
             />
-            <motion.div 
+            <motion.div
               className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[100px]"
               animate={{ x: [0, -100, 0], y: [0, 50, 0] }}
               transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
@@ -705,54 +682,71 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Premium Moving Portfolio Grid */}
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Premium Horizontal Moving Portfolio */}
+          <div className="w-full overflow-hidden relative" onMouseMove={(e) => {
+            const cursor = document.getElementById('portfolio-cursor');
+            if (cursor) {
+              cursor.style.left = `${e.clientX}px`;
+              cursor.style.top = `${e.clientY}px`;
+            }
+          }}
+            onMouseEnter={() => {
+              const cursor = document.getElementById('portfolio-cursor');
+              if (cursor) cursor.style.opacity = '1';
+            }}
+            onMouseLeave={() => {
+              const cursor = document.getElementById('portfolio-cursor');
+              if (cursor) cursor.style.opacity = '0';
+            }}
+          >
+            {/* Custom Magnetic Cursor */}
+            <div id="portfolio-cursor" className="fixed w-24 h-24 rounded-full bg-white text-black flex items-center justify-center font-black text-[10px] tracking-widest uppercase pointer-events-none z-[100] opacity-0 transition-opacity duration-300 -translate-x-1/2 -translate-y-1/2 mix-blend-difference">
+              Drag
+            </div>
+
+            {/* Horizontal Scroll Track */}
+            <div className="flex gap-8 px-6 md:px-24 overflow-x-auto pb-20 pt-10 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {projects.map((project, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 60, rotateX: -10 }}
-                  whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                  initial={{ opacity: 0, x: 100 }}
+                  whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
-                  transition={{ 
-                    delay: i * 0.15, 
-                    duration: 0.8, 
-                    ease: [0.22, 1, 0.36, 1] 
+                  transition={{
+                    delay: i * 0.1,
+                    duration: 1,
+                    ease: [0.16, 1, 0.3, 1]
                   }}
                   onHoverStart={() => setActiveProject(i)}
                   onHoverEnd={() => setActiveProject(null)}
-                  className="group relative"
-                  style={{ perspective: '1000px' }}
+                  className="group relative min-w-[85vw] md:min-w-[60vw] lg:min-w-[45vw] snap-center shrink-0"
                 >
-                  <motion.div 
-                    className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden cursor-pointer"
-                    whileHover={{ 
-                      rotateY: 2, 
-                      rotateX: -2,
-                      scale: 1.02,
-                      transition: { duration: 0.4, ease: "easeOut" }
+                  <motion.div
+                    className="relative aspect-[16/9] rounded-[3rem] overflow-hidden cursor-none border border-white/5 bg-black/45 backdrop-blur-md"
+                    whileHover={{
+                      scale: 0.98,
+                      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
                     }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
                   >
-                    {/* Animated border gradient */}
-                    <motion.div 
-                      className="absolute -inset-[2px] rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                      style={{
-                        background: `linear-gradient(135deg, ${project.color}, transparent, ${project.color})`,
-                      }}
-                    />
+                    {/* Parallax Image Container */}
+                    <div className="absolute inset-0 overflow-hidden">
+                      <motion.img
+                        src={project.image}
+                        alt={project.title}
+                        className="absolute inset-0 w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-1000"
+                        style={{
+                          scale: 1.2,
+                        }}
+                        animate={{
+                          y: activeProject === i ? -20 : 0,
+                          scale: activeProject === i ? 1.1 : 1.2
+                        }}
+                        transition={{ duration: 1.2, ease: "easeOut" }}
+                      />
+                    </div>
 
-                    {/* Image with zoom effect */}
-                    <motion.img 
-                      src={project.image} 
-                      alt={project.title} 
-                      className="absolute inset-0 w-full h-full object-cover"
-                      animate={{ scale: activeProject === i ? 1.1 : 1 }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                    />
-                    
                     {/* Animated gradient overlay */}
-                    <motion.div 
+                    <motion.div
                       className="absolute inset-0"
                       style={{
                         background: `linear-gradient(to top, ${project.color}40 0%, transparent 50%, transparent 100%)`,
@@ -764,7 +758,7 @@ export default function Home() {
 
                     {/* Floating particles effect on hover */}
                     {activeProject === i && (
-                      <motion.div 
+                      <motion.div
                         className="absolute inset-0 pointer-events-none"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -797,24 +791,24 @@ export default function Home() {
                     <div className="absolute inset-0 p-8 flex flex-col justify-between">
                       {/* Top Section */}
                       <div className="flex justify-between items-start">
-                        <motion.div 
+                        <motion.div
                           className="flex gap-2"
                           initial={{ opacity: 0, y: -20 }}
                           animate={{ opacity: activeProject === i ? 1 : 0, y: activeProject === i ? 0 : -20 }}
                           transition={{ duration: 0.4, delay: 0.1 }}
                         >
                           {project.tags.map((tag, j) => (
-                            <span 
-                              key={j} 
+                            <span
+                              key={j}
                               className="text-[9px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white/80 border border-white/10"
                             >
                               {tag}
                             </span>
                           ))}
                         </motion.div>
-                        <motion.span 
+                        <motion.span
                           className="text-white/40 font-mono text-sm px-3 py-1 rounded-full bg-white/5 backdrop-blur-sm"
-                          animate={{ 
+                          animate={{
                             backgroundColor: activeProject === i ? `${project.color}30` : 'rgba(255,255,255,0.05)'
                           }}
                           transition={{ duration: 0.3 }}
@@ -825,16 +819,16 @@ export default function Home() {
 
                       {/* Bottom Section */}
                       <div>
-                        <motion.div 
+                        <motion.div
                           className="flex items-center gap-2 mb-3"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ duration: 0.4 }}
                         >
-                          <motion.div 
+                          <motion.div
                             className="w-2 h-2 rounded-full"
                             style={{ backgroundColor: project.color }}
-                            animate={{ 
+                            animate={{
                               scale: [1, 1.5, 1],
                               opacity: [0.5, 1, 0.5]
                             }}
@@ -842,10 +836,10 @@ export default function Home() {
                           />
                           <span className="text-[10px] font-black uppercase tracking-widest text-white/60">{project.category}</span>
                         </motion.div>
-                        
-                        <motion.h3 
+
+                        <motion.h3
                           className="text-3xl md:text-4xl font-black text-white tracking-tight mb-3"
-                          animate={{ 
+                          animate={{
                             color: activeProject === i ? project.color : '#ffffff',
                             x: activeProject === i ? 10 : 0
                           }}
@@ -853,8 +847,8 @@ export default function Home() {
                         >
                           {project.title}
                         </motion.h3>
-                        
-                        <motion.p 
+
+                        <motion.p
                           className="text-white/50 text-sm leading-relaxed mb-6 max-w-xs"
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: activeProject === i ? 1 : 0, y: activeProject === i ? 0 : 20 }}
@@ -864,19 +858,19 @@ export default function Home() {
                         </motion.p>
 
                         {/* Action Buttons */}
-                        <motion.div 
+                        <motion.div
                           className="flex gap-3"
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: activeProject === i ? 1 : 0, y: activeProject === i ? 0 : 20 }}
                           transition={{ duration: 0.4, delay: 0.25 }}
                         >
                           {project.link && (
-                            <a 
-                              href={project.link} 
-                              target="_blank" 
+                            <a
+                              href={project.link}
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                              style={{ 
+                              style={{
                                 backgroundColor: project.color,
                                 color: 'white',
                                 boxShadow: activeProject === i ? `0 10px 30px ${project.color}40` : 'none'
@@ -886,8 +880,8 @@ export default function Home() {
                               View Live Site
                             </a>
                           )}
-                          <button 
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300"
+                          <button
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300"
                           >
                             <ArrowUpRight size={14} />
                             Case Study
@@ -897,14 +891,14 @@ export default function Home() {
                     </div>
 
                     {/* Corner accent */}
-                    <motion.div 
+                    <motion.div
                       className="absolute top-6 right-6 w-12 h-12 border-t-2 border-r-2 rounded-tr-2xl"
                       style={{ borderColor: project.color }}
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={{ opacity: activeProject === i ? 1 : 0, scale: activeProject === i ? 1 : 0.5 }}
                       transition={{ duration: 0.3 }}
                     />
-                    <motion.div 
+                    <motion.div
                       className="absolute bottom-6 left-6 w-12 h-12 border-b-2 border-l-2 rounded-bl-2xl"
                       style={{ borderColor: project.color }}
                       initial={{ opacity: 0, scale: 0.5 }}
@@ -923,7 +917,7 @@ export default function Home() {
           <div className="max-w-5xl mx-auto relative z-10">
             <div className="glass p-12 md:p-24 rounded-[4rem] border-white/10 relative overflow-hidden">
               {formStatus === 'success' ? (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="text-center py-12"
@@ -946,10 +940,10 @@ export default function Home() {
                   </div>
                   <form className="space-y-8" onSubmit={handleSubmit}>
                     <div className="grid md:grid-cols-2 gap-8">
-                      <input required type="text" className="w-full bg-white/[0.03] border border-white/10 rounded-3xl px-8 py-5 text-white focus:outline-none focus:border-[#007FFF] transition-all duration-300" placeholder="Your Name" />
-                      <input required type="email" className="w-full bg-white/[0.03] border border-white/10 rounded-3xl px-8 py-5 text-white focus:outline-none focus:border-[#007FFF] transition-all duration-300" placeholder="email@company.com" />
+                      <input required type="text" className="w-full bg-black/45 backdrop-blur-md border border-white/10 rounded-3xl px-8 py-5 text-white focus:outline-none focus:border-[#007FFF] transition-all duration-300" placeholder="Your Name" />
+                      <input required type="email" className="w-full bg-black/45 backdrop-blur-md border border-white/10 rounded-3xl px-8 py-5 text-white focus:outline-none focus:border-[#007FFF] transition-all duration-300" placeholder="email@company.com" />
                     </div>
-                    <textarea required rows={5} className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] px-8 py-6 text-white focus:outline-none focus:border-[#007FFF] transition-all duration-300 resize-none" placeholder="Tell us about your vision..." />
+                    <textarea required rows={5} className="w-full bg-black/45 backdrop-blur-md border border-white/10 rounded-[2rem] px-8 py-6 text-white focus:outline-none focus:border-[#007FFF] transition-all duration-300 resize-none" placeholder="Tell us about your vision..." />
                     <button disabled={formStatus === 'submitting'} className="w-full py-6 rounded-3xl bg-white text-black font-black text-xl hover:bg-[#007FFF] hover:text-white transition-all duration-300 flex items-center justify-center gap-4 group">
                       {formStatus === 'submitting' ? <div className="w-6 h-6 border-4 border-black/20 border-t-black rounded-full animate-spin" /> : <>INITIATE PROJECT <ArrowRight className="group-hover:translate-x-2 transition-transform" /></>}
                     </button>
@@ -960,11 +954,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Footer with 70% black background */}
-        <footer className="py-16 px-6 border-t border-white/5 bg-black/70 backdrop-blur-md relative overflow-hidden">
+        {/* Footer with transparent glass background */}
+        <footer className="py-16 px-6 border-t border-white/5 bg-black/45 backdrop-blur-md relative overflow-hidden">
           {/* Animated gradient */}
           <div className="absolute inset-0 pointer-events-none">
-            <motion.div 
+            <motion.div
               className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#007FFF] to-transparent"
               animate={{ opacity: [0.3, 1, 0.3] }}
               transition={{ duration: 3, repeat: Infinity }}
@@ -975,7 +969,7 @@ export default function Home() {
             <div className="flex flex-col md:flex-row justify-between items-center gap-12">
               {/* Logo and tagline */}
               <div className="flex flex-col items-center md:items-start gap-4">
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-3"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300 }}
@@ -991,9 +985,9 @@ export default function Home() {
               {/* Social Links */}
               <div className="flex gap-6">
                 {['Twitter', 'LinkedIn', 'Dribbble'].map((social, i) => (
-                  <motion.a 
+                  <motion.a
                     key={social}
-                    href="#" 
+                    href="#"
                     className="text-sm text-white/40 hover:text-white transition-colors duration-300 relative group"
                     whileHover={{ y: -2 }}
                     transition={{ type: "spring", stiffness: 300 }}
@@ -1011,7 +1005,7 @@ export default function Home() {
             </div>
 
             {/* Bottom accent line */}
-            <motion.div 
+            <motion.div
               className="mt-12 pt-8 border-t border-white/5 flex justify-center"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -1023,72 +1017,71 @@ export default function Home() {
             </motion.div>
           </div>
         </footer>
-      </div>
 
-      {/* Portfolio Modal */}
-      <AnimatePresence>
-        {isPortfolioModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-2xl p-6 md:p-20 overflow-y-auto"
-          >
-            <div className="max-w-7xl mx-auto">
-              <div className="flex justify-between items-center mb-20">
-                <h2 className="text-4xl md:text-6xl font-bold tracking-tighter">PROJECT ARCHIVE</h2>
-                <button 
-                  onClick={() => setIsPortfolioModalOpen(false)}
-                  className="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300"
-                >
-                  <Zap className="w-8 h-8 rotate-45" />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                {projects.map((project, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1, duration: 0.5 }}
-                    className="group"
+        {/* Portfolio Modal */}
+        <AnimatePresence>
+          {isPortfolioModalOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-2xl p-6 md:p-20 overflow-y-auto"
+            >
+              <div className="max-w-7xl mx-auto">
+                <div className="flex justify-between items-center mb-20">
+                  <h2 className="text-4xl md:text-6xl font-bold tracking-tighter">PROJECT ARCHIVE</h2>
+                  <button
+                    onClick={() => setIsPortfolioModalOpen(false)}
+                    className="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300"
                   >
-                    <div className="relative aspect-video rounded-[2rem] overflow-hidden mb-6 border border-white/10">
-                      <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-                        {project.link && (
-                          <a 
-                            href={project.link} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-bold text-sm hover:bg-[#007FFF] hover:text-white transition-all duration-300"
-                          >
-                            <Eye size={16} />
-                            View Live Site
-                          </a>
-                        )}
-                        <button className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white font-bold text-sm hover:bg-white hover:text-black transition-all duration-300">
-                          <ExternalLink size={16} />
-                          Case Study
-                        </button>
+                    <Zap className="w-8 h-8 rotate-45" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                  {projects.map((project, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.1, duration: 0.5 }}
+                      className="group"
+                    >
+                      <div className="relative aspect-video rounded-[2rem] overflow-hidden mb-6 border border-white/10">
+                        <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
+                          {project.link && (
+                            <a
+                              href={project.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-bold text-sm hover:bg-[#007FFF] hover:text-white transition-all duration-300"
+                            >
+                              <Eye size={16} />
+                              View Live Site
+                            </a>
+                          )}
+                          <button className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white font-bold text-sm hover:bg-white hover:text-black transition-all duration-300">
+                            <ExternalLink size={16} />
+                            Case Study
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex justify-between items-end">
-                      <div>
-                        <div className="text-[#007FFF] text-[10px] font-black uppercase tracking-widest mb-2">{project.category}</div>
-                        <h3 className="text-3xl font-bold">{project.title}</h3>
+                      <div className="flex justify-between items-end">
+                        <div>
+                          <div className="text-[#007FFF] text-[10px] font-black uppercase tracking-widest mb-2">{project.category}</div>
+                          <h3 className="text-3xl font-bold">{project.title}</h3>
+                        </div>
+                        <div className="text-white/20 font-mono">0{i + 1}</div>
                       </div>
-                      <div className="text-white/20 font-mono">0{i + 1}</div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </PageTransition>
   );
 }

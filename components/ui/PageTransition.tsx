@@ -1,7 +1,53 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+
+// Helper component to fix hydration mismatch
+function Particles({ count }: { count: number }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const particles = useMemo(() => {
+    return [...Array(count)].map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      duration: 2 + Math.random() * 2,
+      delay: Math.random() * 2,
+    }));
+  }, [count]);
+
+  if (!mounted) return null;
+
+  return (
+    <>
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute w-1 h-1 bg-white/20 rounded-full"
+          style={{
+            left: p.left,
+            top: p.top,
+          }}
+          animate={{
+            y: [-20, 20],
+            opacity: [0, 1, 0],
+          }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </>
+  );
+}
 
 interface PageTransitionProps {
   children: React.ReactNode;
@@ -9,29 +55,13 @@ interface PageTransitionProps {
 
 export function PageTransition({ children }: PageTransitionProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Simulate loading progress
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + Math.random() * 15;
-      });
-    }, 100);
-
-    // Complete loading after minimum time
+    // Shorter, sharper intro duration for a modern feel
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1500);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timer);
-    };
+    }, 1800);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -39,136 +69,75 @@ export function PageTransition({ children }: PageTransitionProps) {
       <AnimatePresence mode="wait">
         {isLoading && (
           <motion.div
-            key="loader"
-            className="fixed inset-0 z-[1000] bg-black flex flex-col items-center justify-center"
+            key="premium-loader"
+            className="fixed inset-0 z-[1000] bg-black flex items-center justify-center flex-col"
             initial={{ opacity: 1 }}
-            exit={{ 
+            exit={{
               opacity: 0,
-              transition: { 
-                duration: 0.8, 
-                ease: [0.22, 1, 0.36, 1],
-                delay: 0.2
+              y: '-10%',
+              transition: {
+                duration: 0.8,
+                ease: [0.76, 0, 0.24, 1] // Custom sleek cubic bezier curve
               }
             }}
           >
-            {/* Animated background gradient */}
-            <div className="absolute inset-0 overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-[#007FFF]/20 via-purple-500/20 to-pink-500/20"
-                animate={{
-                  x: ['-100%', '100%'],
-                }}
+            <div className="overflow-hidden">
+              <motion.h1
+                className="text-white text-5xl md:text-8xl font-black tracking-tighter"
+                initial={{ y: '100%', opacity: 0 }}
+                animate={{ y: '0%', opacity: 1 }}
+                exit={{ y: '-100%', opacity: 0 }}
                 transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: 'linear',
+                  duration: 0.8,
+                  ease: [0.76, 0, 0.24, 1],
+                  delay: 0.2
                 }}
-              />
+              >
+                V E L O C E
+              </motion.h1>
             </div>
 
-            {/* Logo animation */}
+            <div className="overflow-hidden mt-4">
+              <motion.p
+                className="text-uptic-orange text-xs md:text-sm font-bold tracking-[0.4em] uppercase"
+                initial={{ y: '100%', opacity: 0 }}
+                animate={{ y: '0%', opacity: 1 }}
+                exit={{ y: '-100%', opacity: 0 }}
+                transition={{
+                  duration: 0.8,
+                  ease: [0.76, 0, 0.24, 1],
+                  delay: 0.3
+                }}
+              >
+                World Class Digital
+              </motion.p>
+            </div>
+
+            {/* Subtle loading line */}
             <motion.div
-              className="relative z-10 flex flex-col items-center"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute bottom-12 w-32 h-[1px] bg-white/20 overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
             >
-              {/* Animated logo */}
               <motion.div
-                className="text-6xl md:text-8xl font-black tracking-tighter chromatic-text mb-8"
-                animate={{
-                  opacity: [0.5, 1, 0.5],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-              >
-                VELOCE
-              </motion.div>
-
-              {/* Progress bar container */}
-              <div className="w-64 md:w-80 h-[2px] bg-white/10 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-[#007FFF] via-purple-500 to-pink-500 rounded-full"
-                  initial={{ width: '0%' }}
-                  animate={{ width: `${Math.min(progress, 100)}%` }}
-                  transition={{ duration: 0.1, ease: 'linear' }}
-                />
-              </div>
-
-              {/* Loading text */}
-              <motion.div
-                className="mt-6 text-white/40 text-xs font-bold uppercase tracking-[0.3em]"
-                animate={{ opacity: [0.3, 0.7, 0.3] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                Loading Experience
-              </motion.div>
+                className="w-full h-full bg-uptic-orange"
+                initial={{ x: '-100%' }}
+                animate={{ x: '100%' }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              />
             </motion.div>
-
-            {/* Animated particles */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              {[...Array(20)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-1 h-1 bg-white/20 rounded-full"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                  }}
-                  animate={{
-                    y: [-20, 20],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: 2 + Math.random() * 2,
-                    repeat: Infinity,
-                    delay: Math.random() * 2,
-                    ease: 'easeInOut',
-                  }}
-                />
-              ))}
-            </div>
-
-            {/* Corner accents */}
-            <motion.div
-              className="absolute top-8 left-8 w-16 h-16 border-l-2 border-t-2 border-[#007FFF]/50"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-            />
-            <motion.div
-              className="absolute top-8 right-8 w-16 h-16 border-r-2 border-t-2 border-purple-500/50"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-            />
-            <motion.div
-              className="absolute bottom-8 left-8 w-16 h-16 border-l-2 border-b-2 border-pink-500/50"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-            />
-            <motion.div
-              className="absolute bottom-8 right-8 w-16 h-16 border-r-2 border-b-2 border-[#007FFF]/50"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-            />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Page content with entrance animation */}
       <AnimatePresence mode="wait">
         {!isLoading && (
           <motion.div
             key="content"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
             {children}
           </motion.div>

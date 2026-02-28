@@ -6,6 +6,9 @@
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 0, 0, 0;
   --background-end-rgb: 0, 0, 0;
+  --uptic-orange: #fb923c;
+  --uptic-amber: #d97706;
+  --text-dim: #a1a1aa;
 }
 
 @layer base {
@@ -16,15 +19,30 @@
 
 @layer components {
   .glass {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
+    @apply bg-black/45 backdrop-blur-xl border border-white/10 shadow-2xl;
   }
 
   .glass-dark {
-    @apply bg-black/40 backdrop-blur-2xl border border-white/5;
+    @apply bg-black/60 backdrop-blur-3xl border border-white/5 shadow-2xl;
   }
 
   .chromatic-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#007FFF] via-white to-[#007FFF] bg-[length:200%_auto] animate-chromatic;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-400 to-white bg-[length:200%_auto] animate-chromatic;
+  }
+
+  .shimmer-text {
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.8) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shimmer 3s infinite;
+  }
+
+  .bento-card {
+    @apply bg-black/45 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 transition-all duration-500 hover:border-white/20;
   }
 
   .reveal {
@@ -38,11 +56,64 @@
   .perspective-1000 {
     perspective: 1000px;
   }
+
+  .noise-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    filter: contrast(150%) brightness(150%);
+  }
+
+  .tactile-grain {
+    position: relative;
+  }
+
+  .tactile-grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.02;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes chromatic {
-  0% { background-position: 0% center; }
-  100% { background-position: 200% center; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes chromatic {
+  0% {
+    background-position: 0% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
 }
 
 .animate-chromatic {
@@ -74,7 +145,7 @@
 }
 
 /* Hide Unicorn Studio Watermark - Maximum coverage */
-[data-us-project] > a,
+[data-us-project]>a,
 [data-us-project] a,
 [data-us-project] [class*="credit"],
 [data-us-project] [class*="watermark"],
@@ -89,12 +160,12 @@
 [class*="unicorn"] [class*="watermark"],
 [class*="unicorn"] [class*="credit"],
 [class*="unicorn"] [class*="logo"],
-div[class*="unicorn"] > a,
+div[class*="unicorn"]>a,
 span[class*="unicorn"],
 a[href*="unicornstudio"],
 a[href*="unicorn.studio"],
-canvas + a,
-[data-us-project] canvas + * {
+canvas+a,
+[data-us-project] canvas+* {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;

@@ -465,7 +465,7 @@ export default function Home() {
               <div className="w-screen max-w-[100vw] overflow-hidden mb-16 relative left-1/2 -translate-x-1/2">
                 <InteractiveMarquee
                   text="We build, enhance, and modernize applications and platforms for brands that refuse to settle for the ordinary."
-                  speed={0.6}
+                  speed={0.25}
                 />
               </div>
 

@@ -41,14 +41,14 @@ export function InteractiveMarquee({ text, speed = 1 }: InteractiveMarqueeProps)
                 WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
             }}
         >
-            <motion.div className="flex whitespace-nowrap gap-12 text-2xl md:text-4xl font-bold tracking-tight text-white/70 uppercase" style={{ x }}>
+            <motion.div className="flex whitespace-nowrap gap-16 text-xl md:text-3xl lg:text-4xl font-black tracking-wide text-white/60 uppercase" style={{ x }}>
                 {/* We need multiple copies to ensure seamless infinite looping */}
                 {[...Array(4)].map((_, i) => (
                     <span
                         key={i}
-                        className="transition-colors duration-500 hover:text-white cursor-crosshair min-w-max"
+                        className="transition-all duration-700 ease-out hover:text-white hover:tracking-wider cursor-default min-w-max"
                     >
-                        {text} <span className="text-uptic-orange px-4">✦</span>
+                        {text} <span className="text-uptic-orange/80 px-6 text-2xl">◆</span>
                     </span>
                 ))}
             </motion.div>

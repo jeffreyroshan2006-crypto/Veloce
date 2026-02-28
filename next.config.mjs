@@ -19,6 +19,10 @@ const nextConfig = {
 		ignoreDuringBuilds: true,
 	},
 	allowedDevOrigins: ["*.theopenbuilder.com"],
+	reactStrictMode: true,
+	experimental: {
+		optimizeCss: true,
+	},
 };
 
 export default nextConfig;

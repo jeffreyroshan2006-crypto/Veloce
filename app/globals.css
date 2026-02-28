@@ -179,3 +179,71 @@ canvas+a,
   left: -9999px !important;
   top: -9999px !important;
 }
+
+/* Performance Optimizations for Smooth 60fps */
+
+/* GPU Acceleration for animated elements */
+.will-change-transform {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Content visibility for off-screen sections - lazy render */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+/* CSS Containment for isolated rendering */
+.contain-layout {
+  contain: layout style paint;
+}
+
+.contain-strict {
+  contain: strict;
+}
+
+/* Smooth scrolling with momentum */
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent layout shift during animations */
+* {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .will-change-transform {
+    will-change: auto;
+    transform: none;
+  }
+}
+
+/* Optimize paint operations */
+section {
+  contain: layout style;
+}
+
+/* Hardware acceleration helper */
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}

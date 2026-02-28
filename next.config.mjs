@@ -1,10 +1,8 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
-	output: 'export',
-	distDir: 'dist',
+	turbopack: {},
 	images: {
-		unoptimized: true,
 		remotePatterns: [
 			{
 				protocol: "https",
@@ -19,10 +17,6 @@ const nextConfig = {
 		ignoreDuringBuilds: true,
 	},
 	allowedDevOrigins: ["*.theopenbuilder.com"],
-	reactStrictMode: true,
-	experimental: {
-		optimizeCss: true,
-	},
 };
 
 export default nextConfig;

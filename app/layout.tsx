@@ -58,12 +58,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/logo.png" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-white will-change-transform`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased text-white`}
         suppressHydrationWarning={true}
-        style={{
-          WebkitFontSmoothing: 'antialiased',
-          MozOsxFontSmoothing: 'grayscale',
-        }}
       >
         {children}
       </body>

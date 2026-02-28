@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
-import { motion, useAnimationFrame, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 
 interface InteractiveMarqueeProps {
     text: string;
@@ -11,25 +11,45 @@ interface InteractiveMarqueeProps {
 export function InteractiveMarquee({ text, speed = 1 }: InteractiveMarqueeProps) {
     const baseX = useMotionValue(0);
     const [isHovered, setIsHovered] = useState(false);
+    const lastTimeRef = useRef<number>(0);
 
-    // Smoothly interpolate speed down when hovered
-    const targetSpeed = isHovered ? speed * 0.1 : speed;
-    const currentSpeed = useSpring(targetSpeed, { stiffness: 50, damping: 20 });
-
-    // Create a continuous movement with 60fps optimization
-    useAnimationFrame((t, delta) => {
-        // Cap delta to maintain smooth 60fps even if frame drops
-        const smoothDelta = Math.min(delta, 20);
-        let moveBy = currentSpeed.get() * (smoothDelta / 1000) * -50;
-
-        // reset to loop seamlessly
-        baseX.set(baseX.get() + moveBy);
-
-        // if it goes too far left, wrap it
-        if (baseX.get() <= -50) {
-            baseX.set(0);
-        }
+    // Ultra-smooth spring interpolation
+    const targetSpeed = isHovered ? speed * 0.05 : speed;
+    const currentSpeed = useSpring(targetSpeed, {
+        stiffness: 30,
+        damping: 25,
+        mass: 0.5
     });
+
+    // 60fps optimized animation loop with frame time capping
+    useEffect(() => {
+        let animationId: number;
+
+        const animate = (timestamp: number) => {
+            if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+            const delta = timestamp - lastTimeRef.current;
+            lastTimeRef.current = timestamp;
+
+            // Cap delta at 16.67ms (60fps) for smooth consistency
+            const smoothDelta = Math.min(delta, 16.67);
+
+            const moveBy = currentSpeed.get() * (smoothDelta / 1000) * -30;
+            const currentX = baseX.get();
+
+            baseX.set(currentX + moveBy);
+
+            // Seamless loop reset
+            if (baseX.get() <= -25) {
+                baseX.set(0);
+            }
+
+            animationId = requestAnimationFrame(animate);
+        };
+
+        animationId = requestAnimationFrame(animate);
+
+        return () => cancelAnimationFrame(animationId);
+    }, [baseX, currentSpeed]);
 
     const x = useTransform(baseX, (v) => `${v}%`);
 
@@ -44,22 +64,24 @@ export function InteractiveMarquee({ text, speed = 1 }: InteractiveMarqueeProps)
             }}
         >
             <motion.div
-                className="flex whitespace-nowrap gap-20 text-lg md:text-2xl lg:text-3xl font-black tracking-[0.15em] text-white/50 uppercase will-change-transform"
+                className="flex whitespace-nowrap gap-24 text-base md:text-xl lg:text-2xl font-black tracking-[0.2em] text-white/40 uppercase"
                 style={{
                     x,
-                    translateZ: 0, // Force GPU acceleration
+                    willChange: 'transform',
+                    transform: 'translateZ(0)',
                 }}
             >
-                {/* We need multiple copies to ensure seamless infinite looping */}
-                {[...Array(6)].map((_, i) => (
+                {/* Increased copies for seamless ultra-slow looping */}
+                {[...Array(8)].map((_, i) => (
                     <span
                         key={i}
-                        className="transition-all duration-1000 ease-out hover:text-white hover:tracking-[0.2em] cursor-default min-w-max select-none"
+                        className="transition-all duration-1000 ease-out hover:text-white hover:tracking-[0.25em] cursor-default min-w-max select-none"
                         style={{
-                            textShadow: '0 0 40px rgba(255,255,255,0.1)',
+                            textShadow: '0 0 60px rgba(255,255,255,0.05)',
+                            backfaceVisibility: 'hidden',
                         }}
                     >
-                        {text} <span className="text-uptic-orange/60 px-8 text-xl">◆</span>
+                        {text} <span className="text-uptic-orange/50 px-10 text-lg">◆</span>
                     </span>
                 ))}
             </motion.div>

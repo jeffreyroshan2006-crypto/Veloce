@@ -10,6 +10,7 @@ import ServicePillars from '@/components/sections/ServicePillars';
 import WhyVeloce from '@/components/sections/WhyVeloce';
 import CustomerSuccess from '@/components/sections/CustomerSuccess';
 import TechStackGrid from '@/components/sections/TechStackGrid';
+import SecuritySection from '@/components/sections/SecuritySection';
 import { InspirationBoard } from '@/components/sections/InspirationBoard';
 import PricingSection from '@/components/sections/PricingSection';
 import ContactFooter from '@/components/sections/ContactFooter';
@@ -578,6 +579,8 @@ export default function Home() {
           <WhyVeloce />
           <CustomerSuccess />
           <TechStackGrid />
+          
+          <SecuritySection />
         </div>
 
         {/* Theme Showcase / Inspiration Board */}

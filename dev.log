@@ -119,3 +119,6 @@ npm warn Unknown project config "strictDepBuilds". This will stop working in the
  ⚠ Fast Refresh had to perform a full reload due to a runtime error.
  ✓ Compiled in 43ms
  GET / 200 in 175ms
+ ✓ Compiled in 478ms
+ ✓ Compiled in 94ms
+ ✓ Compiled in 153ms

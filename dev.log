@@ -1,0 +1,97 @@
+npm warn Unknown project config "node-linker". This will stop working in the next major version of npm.
+npm warn Unknown project config "strictDepBuilds". This will stop working in the next major version of npm.
+
+> nextjs-base-starter@0.1.0 dev
+> NEXT_DISABLE_ESLINT=1 NEXT_DISABLE_TYPECHECK=1 next dev --turbopack
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/jeffreyroshan/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /Users/jeffreyroshan/Documents/veloce projects/Veloce/package-lock.json
+
+   ▲ Next.js 15.5.7 (Turbopack)
+   - Local:        http://localhost:3005
+   - Network:      http://10.226.57.90:3005
+
+ ✓ Starting...
+ ✓ Ready in 4.2s
+ ○ Compiling / ...
+ ✓ Compiled / in 2.4s
+ GET / 200 in 2660ms
+ ✓ Compiled in 253ms
+ GET / 200 in 292ms
+ ✓ Compiled in 48ms
+ ✓ Compiled in 57ms
+ ✓ Compiled in 55ms
+ ✓ Compiled in 35ms
+ ✓ Compiled in 94ms
+ ✓ Compiled in 47ms
+ ✓ Compiled in 41ms
+ ✓ Compiled in 101ms
+ ✓ Compiled in 50ms
+ ✓ Compiled in 53ms
+ ✓ Compiled in 61ms
+ ✓ Compiled in 39ms
+ ✓ Compiled in 40ms
+ ✓ Compiled / in 21ms
+ GET / 200 in 106ms
+ ✓ Compiled in 31ms
+ ✓ Compiled in 77ms
+ ✓ Compiled in 34ms
+ ✓ Compiled in 38ms
+ ✓ Compiled in 71ms
+ ✓ Compiled in 123ms
+ ✓ Compiled in 242ms
+ ✓ Compiled in 223ms
+ ✓ Compiled in 69ms
+ ✓ Compiled in 64ms
+ ✓ Compiled in 115ms
+ ✓ Compiled in 634ms
+ ✓ Compiled in 80ms
+ ✓ Compiled in 278ms
+ ✓ Compiled in 56ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 37ms
+ ✓ Compiled / in 21ms
+ GET / 200 in 205ms
+ ✓ Compiled in 140ms
+ ✓ Compiled in 605ms
+ ✓ Compiled in 126ms
+ ✓ Compiled in 72ms
+ ✓ Compiled in 42ms
+ ✓ Compiled in 125ms
+ GET / 200 in 349ms
+ ✓ Compiled in 225ms
+ ✓ Compiled in 312ms
+ ✓ Compiled in 45ms
+ GET / 200 in 320ms
+ ✓ Compiled in 315ms
+ ✓ Compiled in 86ms
+ ✓ Compiled in 117ms
+ ✓ Compiled in 162ms
+ ✓ Compiled in 41ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 69ms
+ GET / 200 in 191ms
+ ✓ Compiled in 121ms
+ GET / 200 in 445ms
+ ✓ Compiled in 116ms
+ GET / 200 in 271ms
+ ✓ Compiled in 322ms
+ ✓ Compiled in 44ms
+ ✓ Compiled in 147ms
+ ✓ Compiled in 96ms
+ ✓ Compiled in 176ms
+ GET / 200 in 232ms
+ ✓ Compiled in 59ms
+ ✓ Compiled / in 21ms
+ GET / 200 in 117ms
+ GET / 200 in 182ms
+ ✓ Compiled in 123ms
+ ✓ Compiled in 31ms
+ ✓ Compiled in 45ms
+ ✓ Compiled in 36ms
+ ✓ Compiled / in 16ms
+ GET / 200 in 76ms

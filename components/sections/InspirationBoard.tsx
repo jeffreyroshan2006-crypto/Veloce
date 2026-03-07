@@ -1,456 +1,178 @@
 'use client';
 
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
-import { ArrowRight, Sparkles, Layers, Globe, Zap, Shield, Cpu } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, ExternalLink, Sparkles } from 'lucide-react';
 import { TextReveal } from '@/components/ui/TextReveal';
+import { awwwardsSites, categories } from '@/lib/data/awwwards';
 
 // ============================================
-// TYPES & DATA
+// MARQUEE CARD
 // ============================================
 
-type Category = 'All' | 'SaaS' | 'E-commerce' | 'Corporate' | 'Healthcare' | 'AI';
-
-interface Theme {
-    id: string;
-    name: string;
-    type: string;
-    category: Category;
-    description: string;
-    techStack: string[];
-    color: string;
-    accentColor: string;
-    img: string;
-}
-
-const themes: Theme[] = [
-    {
-        id: 'aura',
-        name: 'Aura',
-        type: 'SaaS / AI Product',
-        category: 'SaaS',
-        description: 'Ethereal interface with fluid animations and predictive UX patterns for next-gen SaaS platforms.',
-        techStack: ['React', 'Three.js', 'Framer Motion', 'WebGL'],
-        color: 'from-blue-500/30 to-purple-500/30',
-        accentColor: '#8b5cf6',
-        img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop'
-    },
-    {
-        id: 'kinetix',
-        name: 'Kinetix',
-        type: 'High-End E-commerce',
-        category: 'E-commerce',
-        description: 'Dynamic shopping experience with real-time inventory and immersive product visualization.',
-        techStack: ['Next.js', 'Stripe', 'Three.js', 'GSAP'],
-        color: 'from-orange-500/30 to-red-500/30',
-        accentColor: '#fb923c',
-        img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop'
-    },
-    {
-        id: 'monolith',
-        name: 'Monolith',
-        type: 'Corporate / Real Estate',
-        category: 'Corporate',
-        description: 'Bold architectural presence with commanding typography and sophisticated data presentations.',
-        techStack: ['Next.js', 'D3.js', 'Tailwind', 'Prisma'],
-        color: 'from-emerald-500/30 to-teal-500/30',
-        accentColor: '#10b981',
-        img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop'
-    },
-    {
-        id: 'pulse',
-        name: 'Pulse',
-        type: 'Healthcare / Wellness',
-        category: 'Healthcare',
-        description: 'Calming interface with biometric integrations and accessibility-first design principles.',
-        techStack: ['React', 'TypeScript', 'WebRTC', 'TensorFlow.js'],
-        color: 'from-cyan-500/30 to-blue-500/30',
-        accentColor: '#06b6d4',
-        img: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2070&auto=format&fit=crop'
-    },
-    {
-        id: 'neural',
-        name: 'Neural',
-        type: 'AI / Machine Learning',
-        category: 'AI',
-        description: 'Futuristic dashboard with real-time data visualization and neural network animations.',
-        techStack: ['Python', 'TensorFlow', 'React', 'WebGL'],
-        color: 'from-violet-500/30 to-fuchsia-500/30',
-        accentColor: '#a855f7',
-        img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2070&auto=format&fit=crop'
-    },
-    {
-        id: 'vertex',
-        name: 'Vertex',
-        type: 'FinTech / Banking',
-        category: 'Corporate',
-        description: 'Secure, compliant interface with real-time trading data and institutional-grade performance.',
-        techStack: ['Next.js', 'PostgreSQL', 'Redis', 'WebSockets'],
-        color: 'from-amber-500/30 to-yellow-500/30',
-        accentColor: '#f59e0b',
-        img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=2070&auto=format&fit=crop'
-    }
-];
-
-const categories: Category[] = ['All', 'SaaS', 'E-commerce', 'Corporate', 'Healthcare', 'AI'];
-
-// ============================================
-// WEBGL PARTICLE FIELD
-// ============================================
-
-function ParticleField() {
-    const meshRef = useRef<THREE.InstancedMesh>(null);
-    const { viewport, mouse } = useThree();
-    const particleCount = 200;
-
-    const dummy = useMemo(() => new THREE.Object3D(), []);
-    const particles = useMemo(() => {
-        return Array.from({ length: particleCount }, () => ({
-            position: [
-                (Math.random() - 0.5) * 20,
-                (Math.random() - 0.5) * 20,
-                (Math.random() - 0.5) * 10
-            ] as [number, number, number],
-            scale: Math.random() * 0.5 + 0.2,
-            speed: Math.random() * 0.5 + 0.2,
-            phase: Math.random() * Math.PI * 2
-        }));
-    }, []);
-
-    useFrame((state) => {
-        if (!meshRef.current) return;
-
-        const time = state.clock.elapsedTime;
-
-        particles.forEach((particle, i) => {
-            const [x, y, z] = particle.position;
-
-            // Floating motion
-            const floatY = y + Math.sin(time * particle.speed + particle.phase) * 0.3;
-            const floatX = x + Math.cos(time * particle.speed * 0.5 + particle.phase) * 0.2;
-
-            // Mouse proximity effect
-            const mouseInfluenceX = (mouse.x * viewport.width * 0.5 - floatX) * 0.02;
-            const mouseInfluenceY = (mouse.y * viewport.height * 0.5 - floatY) * 0.02;
-
-            // Pulsing scale
-            const pulse = 1 + Math.sin(time * 2 + particle.phase) * 0.2;
-
-            dummy.position.set(
-                floatX + mouseInfluenceX,
-                floatY + mouseInfluenceY,
-                z
-            );
-            dummy.scale.setScalar(particle.scale * pulse);
-            dummy.updateMatrix();
-            meshRef.current!.setMatrixAt(i, dummy.matrix);
-        });
-
-        meshRef.current.instanceMatrix.needsUpdate = true;
-    });
-
-    return (
-        <instancedMesh ref={meshRef} args={[undefined, undefined, particleCount]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshBasicMaterial color="#ffffff" transparent opacity={0.6} />
-        </instancedMesh>
-    );
-}
-
-function ParticleCanvas() {
-    return (
-        <div className="absolute inset-0 z-0 pointer-events-none">
-            <Canvas
-                camera={{ position: [0, 0, 8], fov: 60 }}
-                gl={{ antialias: true, alpha: true }}
-                style={{ background: 'transparent' }}
-            >
-                <ambientLight intensity={0.5} />
-                <ParticleField />
-            </Canvas>
-        </div>
-    );
-}
-
-// ============================================
-// ORBITAL GLOW RING
-// ============================================
-
-function OrbitalGlowRing() {
-    return (
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none opacity-30">
-            <svg viewBox="0 0 400 400" className="w-full h-full animate-orbit-rotate">
-                <defs>
-                    <linearGradient id="orbitalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#fb923c" stopOpacity="0.8" />
-                        <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#fb923c" stopOpacity="0.8" />
-                    </linearGradient>
-                    <filter id="orbitalGlow">
-                        <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-                        <feMerge>
-                            <feMergeNode in="coloredBlur" />
-                            <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                    </filter>
-                </defs>
-                <circle
-                    cx="200"
-                    cy="200"
-                    r="180"
-                    fill="none"
-                    stroke="url(#orbitalGradient)"
-                    strokeWidth="1"
-                    strokeDasharray="20 10 5 10"
-                    filter="url(#orbitalGlow)"
-                    opacity="0.6"
-                />
-                <circle
-                    cx="200"
-                    cy="200"
-                    r="160"
-                    fill="none"
-                    stroke="#fb923c"
-                    strokeWidth="0.5"
-                    strokeDasharray="50 30"
-                    opacity="0.4"
-                />
-            </svg>
-        </div>
-    );
-}
-
-// ============================================
-// 3D INTERACTIVE CARD
-// ============================================
-
-function ThemeCard({ theme, index }: { theme: Theme; index: number }) {
-    const cardRef = useRef<HTMLDivElement>(null);
-    const [isFlipped, setIsFlipped] = useState(false);
+function MarqueeCard({ site, isPaused }: { site: typeof awwwardsSites[0]; isPaused: boolean }) {
     const [isHovered, setIsHovered] = useState(false);
 
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-
-    const mouseX = useSpring(x, { stiffness: 150, damping: 20 });
-    const mouseY = useSpring(y, { stiffness: 150, damping: 20 });
-
-    const rotateX = useTransform(mouseY, [-0.5, 0.5], ['8deg', '-8deg']);
-    const rotateY = useTransform(mouseX, [-0.5, 0.5], ['-8deg', '8deg']);
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!cardRef.current || isFlipped) return;
-        const rect = cardRef.current.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        x.set((e.clientX - centerX) / rect.width);
-        y.set((e.clientY - centerY) / rect.height);
-    };
-
-    const handleMouseLeave = () => {
-        x.set(0);
-        y.set(0);
-        setIsHovered(false);
-    };
-
-    const getTechIcon = (tech: string) => {
-        if (tech.includes('React') || tech.includes('Next')) return <Layers size={12} />;
-        if (tech.includes('Three') || tech.includes('WebGL')) return <Globe size={12} />;
-        if (tech.includes('Tensor') || tech.includes('Python')) return <Cpu size={12} />;
-        if (tech.includes('Stripe')) return <Zap size={12} />;
-        return <Shield size={12} />;
-    };
-
     return (
-        <motion.div
-            ref={cardRef}
-            initial={{ opacity: 0, scale: 0.8, rotateY: -15 }}
-            whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{
-                delay: index * 0.1,
-                duration: 0.8,
-                ease: [0.33, 1, 0.68, 1]
-            }}
-            className="card-3d-wrapper"
-            onMouseMove={handleMouseMove}
+        <motion.a
+            href={site.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative flex-shrink-0 block mx-3 cursor-pointer group"
             onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={handleMouseLeave}
-            onClick={() => setIsFlipped(!isFlipped)}
+            onMouseLeave={() => setIsHovered(false)}
+            whileHover={{ scale: isPaused ? 1.02 : 1 }}
+            transition={{ duration: 0.3 }}
         >
-            <motion.div
-                className="card-3d"
-                style={{
-                    rotateX: isFlipped ? 0 : rotateX,
-                    rotateY: isFlipped ? 180 : rotateY,
-                    transformStyle: 'preserve-3d'
-                }}
-                animate={{
-                    rotateY: isFlipped ? 180 : 0
-                }}
-                transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
-            >
-                {/* FRONT */}
-                <div className="card-face card-front">
-                    <div className="absolute inset-0 rounded-[2rem] overflow-hidden">
-                        <motion.img
-                            src={theme.img}
-                            alt={theme.name}
-                            className="absolute inset-0 w-full h-full object-cover"
-                            animate={{ scale: isHovered ? 1.05 : 1 }}
-                            transition={{ duration: 0.6 }}
-                        />
-                        {/* Gradient overlay */}
-                        <div className={`absolute inset-0 bg-gradient-to-t ${theme.color} opacity-60 mix-blend-overlay`} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-
-                        {/* Scanline effect */}
-                        <div className="scanline-effect" />
-
-                        {/* Glass badge */}
-                        <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full glass text-xs font-semibold tracking-wider uppercase text-white/90 flex items-center gap-1.5">
-                            <Sparkles size={12} style={{ color: theme.accentColor }} />
-                            {theme.category}
+            <div className="relative w-[320px] md:w-[380px] aspect-[16/10] rounded-xl overflow-hidden bg-black/60 backdrop-blur-sm border border-white/[0.08] group-hover:border-white/20 transition-colors duration-300">
+                {/* Image */}
+                <img
+                    src={site.thumbnail}
+                    alt={site.name}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                />
+                
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
+                
+                {/* Premium glow on hover */}
+                <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{ 
+                        boxShadow: `inset 0 0 80px ${site.award === 'SOTM' ? 'rgba(251, 146, 60, 0.3)' : 'rgba(139, 92, 246, 0.3)'}`
+                    }}
+                />
+                
+                {/* Top badges */}
+                <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
+                    <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${
+                        site.award === 'SOTM' 
+                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-black' 
+                            : 'bg-white/10 text-white border border-white/20'
+                    }`}>
+                        {site.award === 'SOTM' ? '🏆 SOTM' : 'SOTD'}
+                    </span>
+                    <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-black/50 backdrop-blur-md text-white/80 border border-white/10">
+                        {site.category}
+                    </span>
+                </div>
+                
+                {/* Bottom content */}
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                    <div className="flex items-end justify-between">
+                        <div className="flex-1 min-w-0">
+                            <h3 className="text-xl font-bold text-white mb-0.5 truncate">{site.name}</h3>
+                            <p className="text-xs text-white/50 truncate">{site.agency}</p>
                         </div>
-
-                        {/* Shimmer overlay on hover */}
                         <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                            initial={{ x: '-100%' }}
-                            animate={{ x: isHovered ? '100%' : '-100%' }}
-                            transition={{ duration: 0.8, ease: 'easeInOut' }}
-                        />
-                    </div>
-
-                    {/* Card content */}
-                    <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
-                        <h3 className="text-3xl font-black text-white mb-1 tracking-tight">
-                            {theme.name}
-                        </h3>
-                        <p className="text-white/60 text-sm tracking-wider uppercase font-medium">
-                            {theme.type}
-                        </p>
-                    </div>
-
-                    {/* Corner accent */}
-                    <div
-                        className="absolute bottom-0 right-0 w-24 h-24 opacity-40"
-                        style={{
-                            background: `radial-gradient(circle at bottom right, ${theme.accentColor}, transparent 70%)`
-                        }}
-                    />
-                </div>
-
-                {/* BACK */}
-                <div
-                    className="card-face card-back"
-                    style={{ transform: 'rotateY(180deg)' }}
-                >
-                    <div className="absolute inset-0 rounded-[2rem] overflow-hidden bg-black/80 backdrop-blur-xl border border-white/10">
-                        {/* Background glow */}
-                        <div
-                            className="absolute inset-0 opacity-20"
-                            style={{
-                                background: `radial-gradient(circle at 50% 0%, ${theme.accentColor}, transparent 70%)`
-                            }}
-                        />
-
-                        <div className="relative h-full flex flex-col p-6 z-10">
-                            {/* Header */}
-                            <div className="mb-4">
-                                <span
-                                    className="text-xs font-bold tracking-[0.2em] uppercase"
-                                    style={{ color: theme.accentColor }}
-                                >
-                                    {theme.category}
-                                </span>
-                                <h3 className="text-2xl font-black text-white mt-1">
-                                    {theme.name}
-                                </h3>
-                            </div>
-
-                            {/* Description */}
-                            <p className="text-white/70 text-sm leading-relaxed mb-6 flex-grow">
-                                {theme.description}
-                            </p>
-
-                            {/* Tech stack */}
-                            <div className="mb-6">
-                                <span className="text-xs text-white/40 uppercase tracking-wider font-semibold mb-2 block">
-                                    Tech Stack
-                                </span>
-                                <div className="flex flex-wrap gap-2">
-                                    {theme.techStack.map((tech) => (
-                                        <span
-                                            key={tech}
-                                            className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/80 flex items-center gap-1.5"
-                                        >
-                                            {getTechIcon(tech)}
-                                            {tech}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* CTA Button */}
-                            <motion.button
-                                className="w-full py-3 rounded-xl font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-300"
-                                style={{
-                                    backgroundColor: theme.accentColor,
-                                    color: '#000'
-                                }}
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                            >
-                                Select Theme
-                                <ArrowRight size={16} />
-                            </motion.button>
-                        </div>
+                            className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0 ml-3 border border-white/20"
+                            animate={{ scale: isHovered ? 1.1 : 1, backgroundColor: isHovered ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)' }}
+                        >
+                            <ExternalLink size={16} className="text-white" />
+                        </motion.div>
                     </div>
                 </div>
-            </motion.div>
-        </motion.div>
+            </div>
+        </motion.a>
     );
 }
 
 // ============================================
-// CATEGORY FILTER
+// MARQUEE ROW
 // ============================================
 
-function CategoryFilter({
-    activeCategory,
-    onCategoryChange
-}: {
-    activeCategory: Category;
-    onCategoryChange: (category: Category) => void;
+function MarqueeRow({ sites, direction = 1, speed = 50, isPaused }: { 
+    sites: typeof awwwardsSites; 
+    direction?: 1 | -1; 
+    speed?: number;
+    isPaused: boolean;
 }) {
+    const duplicatedSites = [...sites, ...sites];
+
     return (
-        <div className="flex flex-wrap justify-center gap-3 mb-16">
-            {categories.map((category) => (
-                <motion.button
-                    key={category}
-                    onClick={() => onCategoryChange(category)}
-                    className={`relative px-5 py-2.5 rounded-full text-sm font-semibold tracking-wider uppercase transition-colors duration-300 ${activeCategory === category
-                        ? 'text-black'
-                        : 'text-white/60 hover:text-white'
-                        }`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                >
-                    {activeCategory === category && (
-                        <motion.div
-                            layoutId="activeFilter"
-                            className="absolute inset-0 rounded-full bg-[#fb923c]"
-                            initial={false}
-                            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                        />
-                    )}
-                    <span className="relative z-10">{category}</span>
-                </motion.button>
-            ))}
+        <div className="relative overflow-hidden py-3">
+            <motion.div
+                className="flex"
+                animate={isPaused ? {} : { x: direction === 1 ? [0, -50 * sites.length] : [-50 * sites.length, 0] }}
+                transition={{
+                    repeat: Infinity,
+                    duration: speed,
+                    ease: 'linear'
+                }}
+            >
+                {duplicatedSites.map((site, index) => (
+                    <MarqueeCard key={`${site.id}-${index}`} site={site} isPaused={isPaused} />
+                ))}
+            </motion.div>
         </div>
+    );
+}
+
+// ============================================
+// GRID CARD
+// ============================================
+
+function GridCard({ site }: { site: typeof awwwardsSites[0] }) {
+    const [isHovered, setIsHovered] = useState(false);
+
+    return (
+        <motion.a
+            href={site.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative block cursor-pointer"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
+            <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-black/60 backdrop-blur-sm border border-white/[0.08] group hover:border-white/20 transition-colors duration-300">
+                <img
+                    src={site.thumbnail}
+                    alt={site.name}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent" />
+                
+                <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{ 
+                        boxShadow: `inset 0 0 60px ${site.award === 'SOTM' ? 'rgba(251, 146, 60, 0.25)' : 'rgba(139, 92, 246, 0.25)'}`
+                    }}
+                />
+                
+                {/* Badges */}
+                <div className="absolute top-2 left-2 right-2 flex justify-between items-start">
+                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${
+                        site.award === 'SOTM' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-black' : 'bg-white/10 text-white border border-white/20'
+                    }`}>
+                        {site.award}
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-black/50 backdrop-blur-sm text-white/70 border border-white/10">
+                        {site.category}
+                    </span>
+                </div>
+
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <div className="flex items-end justify-between">
+                        <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-bold text-white truncate">{site.name}</h3>
+                            <p className="text-[10px] text-white/50 truncate">{site.agency}</p>
+                        </div>
+                        <motion.div
+                            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 ml-2 border border-white/20"
+                            animate={{ scale: isHovered ? 1.1 : 1 }}
+                        >
+                            <ExternalLink size={12} className="text-white" />
+                        </motion.div>
+                    </div>
+                </div>
+            </div>
+        </motion.a>
     );
 }
 
@@ -459,17 +181,30 @@ function CategoryFilter({
 // ============================================
 
 export function InspirationBoard() {
-    const [activeCategory, setActiveCategory] = useState<Category>('All');
+    const [activeCategory, setActiveCategory] = useState<string>('All');
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
     const [count, setCount] = useState(0);
 
-    const filteredThemes = useMemo(() => {
-        if (activeCategory === 'All') return themes;
-        return themes.filter(t => t.category === activeCategory);
+    const filteredSites = useMemo(() => {
+        if (activeCategory === 'All') return awwwardsSites;
+        return awwwardsSites.filter(s => s.category === activeCategory);
     }, [activeCategory]);
+
+    // Split into rows for marquee
+    const marqueeRows = useMemo(() => {
+        const rowSize = Math.ceil(filteredSites.length / 4);
+        return [
+            filteredSites.slice(0, rowSize),
+            filteredSites.slice(rowSize, rowSize * 2),
+            filteredSites.slice(rowSize * 2, rowSize * 3),
+            filteredSites.slice(rowSize * 3)
+        ];
+    }, [filteredSites]);
 
     // Animated counter
     useEffect(() => {
-        const target = filteredThemes.length;
+        const target = filteredSites.length;
         const duration = 600;
         const start = count;
         const diff = target - start;
@@ -481,110 +216,144 @@ export function InspirationBoard() {
             const easeProgress = 1 - Math.pow(1 - progress, 3);
             setCount(Math.round(start + diff * easeProgress));
 
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            }
+            if (progress < 1) requestAnimationFrame(animate);
         };
 
         requestAnimationFrame(animate);
-    }, [filteredThemes.length]);
+    }, [filteredSites.length]);
 
     return (
-        <section id="inspiration" className="py-40 px-6 relative overflow-hidden">
-            {/* WebGL Particle Field */}
-            <ParticleCanvas />
+        <section id="catalog" className="py-32 relative overflow-hidden bg-[#0a0a0b]">
+            {/* Background */}
+            <div className="absolute inset-0">
+                <div className="absolute top-1/4 left-0 w-[800px] h-[800px] bg-[#fb923c]/[0.03] rounded-full blur-[200px]" />
+                <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-[#8b5cf6]/[0.03] rounded-full blur-[180px]" />
+            </div>
 
-            {/* Subtle atmospheric glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-[#fb923c]/5 blur-[150px] rounded-full pointer-events-none" />
-
-            {/* Orbital Glow Ring */}
-            <OrbitalGlowRing />
-
-            <div className="max-w-7xl mx-auto relative z-10">
-                {/* Section Header */}
-                <div className="text-center mb-16">
-                    <motion.span
+            <div className="relative z-10">
+                {/* Header */}
+                <div className="text-center mb-16 px-6">
+                    <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="text-xs font-semibold tracking-[0.4em] uppercase text-[#fb923c] mb-6 block"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6"
                     >
-                        Find Your Vision
-                    </motion.span>
+                        <Sparkles size={14} className="text-[#fb923c]" />
+                        <span className="text-xs font-semibold tracking-[0.2em] uppercase text-white/60">
+                            Find Your Vision
+                        </span>
+                    </motion.div>
 
-                    <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-6">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-6">
                         <TextReveal>
-                            <h2 className="text-5xl md:text-8xl font-black tracking-tighter text-white">
-                                INSPIRATION
+                            <h2 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white">
+                                AWWWARDS
                             </h2>
                         </TextReveal>
 
-                        {/* Animated Count Badge */}
                         <motion.div
                             initial={{ scale: 0, opacity: 0 }}
                             whileInView={{ scale: 1, opacity: 1 }}
                             viewport={{ once: true }}
-                            transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
-                            className="px-4 py-2 rounded-full bg-[#fb923c]/10 border border-[#fb923c]/30"
+                            transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+                            className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#fb923c]/20 to-[#f97316]/20 border border-[#fb923c]/30"
                         >
                             <span className="text-[#fb923c] font-black text-xl tracking-tight">
-                                {count} THEMES
+                                {count}+ SITES
                             </span>
                         </motion.div>
                     </div>
 
                     <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.2, duration: 0.6 }}
-                        className="text-gray-400 max-w-lg mx-auto text-lg font-light leading-relaxed"
+                        className="text-white/40 max-w-xl mx-auto text-base leading-relaxed"
                     >
-                        <span className="relative">
-                            Browse our curated selection of award-winning digital experiences
-                            <span className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#fb923c]/50 to-transparent" />
-                        </span>
+                        Curated collection of award-winning websites. Hover to pause, click to visit.
                     </motion.p>
                 </div>
 
                 {/* Category Filter */}
-                <CategoryFilter
-                    activeCategory={activeCategory}
-                    onCategoryChange={setActiveCategory}
-                />
+                <div className="flex flex-wrap justify-center gap-2 mb-12 px-6">
+                    {categories.map((cat) => (
+                        <motion.button
+                            key={cat}
+                            onClick={() => { setActiveCategory(cat); setIsExpanded(false); }}
+                            className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                                activeCategory === cat
+                                    ? 'bg-white text-black'
+                                    : 'bg-white/5 text-white/50 hover:text-white hover:bg-white/10 border border-white/10'
+                            }`}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            {cat}
+                        </motion.button>
+                    ))}
+                </div>
 
-                {/* Cards Grid */}
+                {/* Content */}
                 <AnimatePresence mode="wait">
-                    <motion.div
-                        key={activeCategory}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.4 }}
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 perspective-1000"
-                    >
-                        {filteredThemes.map((theme, index) => (
-                            <ThemeCard key={theme.id} theme={theme} index={index} />
-                        ))}
-                    </motion.div>
+                    {!isExpanded ? (
+                        // MARQUEE VIEW
+                        <motion.div
+                            key="marquee"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.4 }}
+                            onMouseEnter={() => setIsPaused(true)}
+                            onMouseLeave={() => setIsPaused(false)}
+                        >
+                            <MarqueeRow sites={marqueeRows[0]} direction={1} speed={60} isPaused={isPaused} />
+                            <MarqueeRow sites={marqueeRows[1]} direction={-1} speed={70} isPaused={isPaused} />
+                            <MarqueeRow sites={marqueeRows[2]} direction={1} speed={55} isPaused={isPaused} />
+                            <MarqueeRow sites={marqueeRows[3]} direction={-1} speed={65} isPaused={isPaused} />
+                        </motion.div>
+                    ) : (
+                        // GRID VIEW
+                        <motion.div
+                            key="grid"
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -50 }}
+                            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                            className="px-6"
+                        >
+                            <div className="max-w-[1600px] mx-auto">
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4">
+                                    {filteredSites.map((site) => (
+                                        <GridCard key={site.id} site={site} />
+                                    ))}
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
                 </AnimatePresence>
 
-                {/* View Full Catalog Button */}
+                {/* View Toggle Button */}
                 <motion.div
+                    className="mt-16 flex justify-center"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.4, duration: 0.6 }}
-                    className="mt-20 flex justify-center"
                 >
                     <motion.button
-                        className="group flex items-center gap-3 px-10 py-5 rounded-full border border-white/20 text-white font-bold text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="group relative flex items-center gap-3 px-10 py-5 rounded-full border border-white/20 text-white font-bold text-sm tracking-widest uppercase overflow-hidden transition-all duration-500"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                     >
-                        View Full Catalog
-                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                        <span className="absolute inset-0 bg-gradient-to-r from-[#fb923c] to-[#f97316] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <span className="relative flex items-center gap-3">
+                            {isExpanded ? (
+                                <>← Back to Animated View</>
+                            ) : (
+                                <>View Full Catalog ({filteredSites.length}) <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" /></>
+                            )}
+                        </span>
                     </motion.button>
                 </motion.div>
             </div>

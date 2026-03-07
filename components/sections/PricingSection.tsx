@@ -218,9 +218,9 @@ function FloatingBlob({ className, delay = 0 }: { className?: string; delay?: nu
 
 export default function PricingSection() {
     return (
-        <section id="pricing" className="relative">
+        <section id="pricing" className="relative pricing-hero-gradient">
             {/* ===== HERO ===== */}
-            <div className="relative min-h-[80vh] flex flex-col items-center justify-center px-6 overflow-hidden pricing-hero-gradient">
+            <div className="relative min-h-[80vh] flex flex-col items-center justify-center px-6 overflow-hidden">
                 {/* Animated blobs */}
                 <FloatingBlob className="w-[500px] h-[500px] bg-[#7c6bdb]/30 top-[10%] left-[10%]" delay={0} />
                 <FloatingBlob className="w-[400px] h-[400px] bg-[#fb923c]/20 top-[20%] right-[15%]" delay={2} />
@@ -278,8 +278,6 @@ export default function PricingSection() {
 
             {/* ===== PRICE LIST CARD ===== */}
             <div className="relative px-4 md:px-6 -mt-16 z-10 pb-20">
-                {/* Background transition gradient */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#c8c0e8]/30 to-[#d4cfe6]/60 pointer-events-none" />
 
                 <motion.div
                     initial={{ opacity: 0, y: 60 }}
@@ -315,7 +313,6 @@ export default function PricingSection() {
 
             {/* ===== CONCEPT PROMO SECTION ===== */}
             <div className="relative px-4 md:px-6 pb-32">
-                <div className="absolute inset-0 bg-gradient-to-b from-[#d4cfe6]/60 via-[#d4cfe6]/30 to-transparent pointer-events-none" />
 
                 <motion.div
                     initial={{ opacity: 0, y: 50 }}
@@ -438,6 +435,9 @@ export default function PricingSection() {
                     </div>
                 </motion.div>
             </div>
+
+            {/* Fade transition to Contact section */}
+            <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-b from-transparent to-[#f4f5f8] pointer-events-none" />
         </section>
     );
 }

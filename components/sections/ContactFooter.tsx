@@ -1,135 +1,169 @@
 'use client';
 
-import React from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, ArrowRight, Instagram, MessageCircle, Mail, Twitter, Linkedin, Dribbble, Zap } from 'lucide-react';
 
-// ============================================
-// MAGNETIC HOVER COMPONENT for LINKS
-// ============================================
-function MagneticLink({ children, href, brandColor, icon: Icon, handle }: { children: string, href: string, brandColor: string, icon: any, handle: string }) {
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
+type HoveredLink = 'instagram' | 'whatsapp' | 'email' | null;
 
-    const springConfig = { damping: 25, stiffness: 150 };
-    const mouseX = useSpring(x, springConfig);
-    const mouseY = useSpring(y, springConfig);
-
-    function handleMouseMove(e: React.MouseEvent) {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        // Limit displacement to avoid flying away
-        const distanceX = (e.clientX - centerX) * 0.4;
-        const distanceY = (e.clientY - centerY) * 0.4;
-        x.set(distanceX);
-        y.set(distanceY);
+const brandConfigs = {
+    instagram: {
+        gradient: 'linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)',
+        solid: '#E1306C',
+        icon: Instagram,
+        handle: '@veloce_agency',
+        label: 'Instagram',
+        href: 'https://instagram.com/veloce_agency'
+    },
+    whatsapp: {
+        gradient: 'linear-gradient(135deg, #25D366 0%, #20BD5A 100%)',
+        solid: '#25D366',
+        icon: MessageCircle,
+        handle: '+1 800 555 0199',
+        label: 'WhatsApp',
+        href: 'https://wa.me/1234567890'
+    },
+    email: {
+        gradient: 'linear-gradient(135deg, #5B4BD5 0%, #7C3AED 100%)',
+        solid: '#5B4BD5',
+        icon: Mail,
+        handle: 'hello@veloce.com',
+        label: 'Email',
+        href: 'mailto:hello@veloce.com'
     }
+};
 
-    function handleMouseLeave() {
-        x.set(0);
-        y.set(0);
-    }
+function ContactLink({
+    brand,
+    isHovered,
+    otherHovered,
+    onHover,
+    onLeave
+}: {
+    brand: 'instagram' | 'whatsapp' | 'email',
+    isHovered: boolean,
+    otherHovered: boolean,
+    onHover: () => void,
+    onLeave: () => void
+}) {
+    const config = brandConfigs[brand];
+    const Icon = config.icon;
 
     return (
-        <motion.a
-            href={href}
+        <a
+            href={config.href}
             target="_blank"
             rel="noreferrer"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            style={{ x: mouseX, y: mouseY }}
-            className="group relative flex flex-col items-start w-full p-8 md:p-10 rounded-[2.5rem] bg-white/5 border border-white/5 overflow-hidden transition-all duration-500 hover:border-white/20 hover:shadow-2xl"
+            onMouseEnter={onHover}
+            onMouseLeave={onLeave}
+            className="block"
         >
-            {/* Brand Background Glow on Hover */}
-            <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none"
-                style={{ background: brandColor }}
-            />
-
-            {/* Brand Decorative Line */}
             <motion.div
-                className="absolute top-0 left-0 w-2 h-0 group-hover:h-full transition-all duration-500"
-                style={{ background: brandColor }}
-            />
+                className="flex items-center gap-5 py-4 px-2 rounded-2xl transition-all"
+                animate={{
+                    opacity: otherHovered ? 0.3 : 1,
+                    filter: otherHovered ? 'blur(4px)' : 'blur(0px)'
+                }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+                <motion.div
+                    className="w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shrink-0"
+                    animate={{
+                        backgroundColor: isHovered ? config.solid : 'rgba(255,255,255,0.08)',
+                        scale: isHovered ? 1.08 : 1
+                    }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                >
+                    <Icon size={28} className="text-white" />
+                </motion.div>
 
-            <div className="relative z-10 flex items-center justify-between w-full mb-6">
-                <div className="flex items-center gap-5">
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover:scale-110 group-hover:bg-white group-hover:text-black transition-all duration-500">
-                        <Icon size={28} />
-                    </div>
-                    <span className="text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-tight group-hover:translate-x-3 transition-transform duration-500">
-                        {children}
-                    </span>
+                <div className="flex flex-col flex-1 min-w-0">
+                    <motion.span
+                        className="text-2xl md:text-3xl font-bold text-white tracking-tight"
+                        animate={{ x: isHovered ? 8 : 0 }}
+                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                    >
+                        {config.label}
+                    </motion.span>
+
+                    <AnimatePresence>
+                        {isHovered && (
+                            <motion.span
+                                initial={{ opacity: 0, y: -8, height: 0 }}
+                                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                                exit={{ opacity: 0, y: -8, height: 0 }}
+                                transition={{ duration: 0.25, ease: 'easeOut' }}
+                                className="text-base md:text-lg text-white/50 font-medium mt-1 block overflow-hidden"
+                            >
+                                {config.handle}
+                            </motion.span>
+                        )}
+                    </AnimatePresence>
                 </div>
-                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white/30 group-hover:text-white group-hover:border-white/40 transition-all duration-500">
-                    <ArrowUpRight size={28} />
-                </div>
-            </div>
 
-            <div className="relative z-10 w-full h-px bg-white/5 group-hover:bg-white/10 mb-6 transition-colors duration-500" />
-
-            <p className="relative z-10 text-white/40 text-lg md:text-xl font-medium tracking-wide group-hover:text-white/80 transition-colors duration-500">
-                {handle}
-            </p>
-        </motion.a>
+                <motion.div
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center shrink-0"
+                    animate={{
+                        backgroundColor: isHovered ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)',
+                        scale: isHovered ? 1.1 : 1
+                    }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                >
+                    <ArrowUpRight size={20} className="text-white/50" />
+                </motion.div>
+            </motion.div>
+        </a>
     );
 }
 
-// ============================================
-// FLOATING BLOB BACKGROUND
-// ============================================
+function MassiveIcon({ brand }: { brand: 'instagram' | 'whatsapp' | 'email' | null }) {
+    if (!brand) return null;
+
+    const config = brandConfigs[brand];
+    const Icon = config.icon;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.5, rotate: -15, y: 20 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, rotate: 15, y: 20 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            className="flex items-center justify-center"
+        >
+            <div
+                className="w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80 rounded-full flex items-center justify-center"
+                style={{
+                    background: `radial-gradient(circle, ${config.solid}50 0%, ${config.solid}20 50%, transparent 70%)`,
+                    boxShadow: `0 0 80px ${config.solid}40, 0 0 120px ${config.solid}20`
+                }}
+            >
+                <Icon size={100} className="text-white drop-shadow-lg" strokeWidth={1.5} />
+            </div>
+        </motion.div>
+    );
+}
+
 function AmbientGlow() {
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <motion.div
-                className="absolute top-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#4A3AFF]/10 blur-[120px]"
-                animate={{
-                    x: [0, -40, 30, 0],
-                    y: [0, 50, -30, 0],
-                    scale: [1, 1.15, 0.9, 1],
-                }}
-                transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                }}
-            />
-            <motion.div
-                className="absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#9D4EDD]/10 blur-[120px]"
-                animate={{
-                    x: [0, 50, -40, 0],
-                    y: [0, -30, 60, 0],
-                    scale: [1, 1.25, 0.85, 1],
-                }}
-                transition={{
-                    duration: 25,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 2
-                }}
-            />
+            <div className="absolute top-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#4A3AFF]/10 blur-[120px]" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#9D4EDD]/10 blur-[120px]" />
         </div>
     );
 }
 
-// ============================================
-// MAIN COMPONENT
-// ============================================
 export default function ContactFooter() {
+    const [hoveredLink, setHoveredLink] = useState<HoveredLink>(null);
+
     return (
         <section id="contact" className="relative w-full z-10 flex flex-col pt-20 bg-[#f4f5f8]">
 
-            {/* -------------------------------------------------------------
-          PART 1: "Maximum Attention" CTA Section
-          ------------------------------------------------------------- */}
+            {/* PART 1: "Maximum Attention" CTA Section */}
             <div className="relative w-full px-6 py-16 md:py-32 flex flex-col items-center justify-center text-center overflow-hidden">
-                {/* Subtle noise overlay */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply" style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
                 }} />
 
-                {/* Small Logo accent */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -142,7 +176,6 @@ export default function ContactFooter() {
                     </div>
                 </motion.div>
 
-                {/* Huge Heading */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -166,7 +199,6 @@ export default function ContactFooter() {
                     </h2>
                 </motion.div>
 
-                {/* CTA Button */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -186,16 +218,13 @@ export default function ContactFooter() {
                 </motion.div>
             </div>
 
-            {/* -------------------------------------------------------------
-          PART 2: Branded Tagline & Contact Card (Dark Mode)
-          ------------------------------------------------------------- */}
+            {/* PART 2: Branded Tagline & Contact Card (Dark Mode) */}
             <div className="relative w-full bg-[#0E1117] rounded-t-[4rem] md:rounded-t-[6rem] px-4 md:px-8 pt-24 pb-12 overflow-hidden z-20 shadow-[0_-30px_60px_rgba(0,0,0,0.2)]">
 
                 <AmbientGlow />
 
                 {/* Tagline Content */}
                 <div className="relative z-10 max-w-[80rem] mx-auto text-center mb-24 md:mb-32">
-                    {/* Logo Mark */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
@@ -217,86 +246,109 @@ export default function ContactFooter() {
                     >
                         Where ideas <br />
                         turn into <br />
-                        <span className="contact-script-yellow text-[#F4D03F] normal-case -rotate-2 inline-block mt-4 md:mt-8 text-6xl md:text-8xl lg:text-[8.5rem] relative py-4">
+                        <span 
+                            className="contact-script-yellow text-[#F4D03F] normal-case -rotate-2 inline-block mt-4 md:mt-8 text-6xl md:text-8xl lg:text-[8.5rem] relative py-4"
+                            style={{
+                                textShadow: '0 0 20px rgba(244, 208, 63, 0.8), 0 0 40px rgba(244, 208, 63, 0.5), 0 0 60px rgba(244, 208, 63, 0.3)'
+                            }}
+                        >
                             world-class digital experiences
                         </span>
                     </motion.h3>
                 </div>
 
-                {/* Dark Slate Contact Card */}
+                {/* Interactive Contact Card */}
                 <motion.div
                     initial={{ opacity: 0, y: 60 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 1, delay: 0.4 }}
-                    className="relative z-10 max-w-[85rem] mx-auto bg-[#1A1E24] rounded-[3rem] md:rounded-[4rem] p-10 md:p-20 lg:p-24 overflow-hidden border border-white/5 shadow-3xl"
+                    className="relative z-10 max-w-[85rem] mx-auto rounded-[3rem] md:rounded-[4rem] p-10 md:p-16 lg:p-20 overflow-hidden border border-white/5 shadow-3xl"
                 >
-                    {/* Noise on card */}
+                    {/* Animated Background */}
+                    <motion.div
+                        className="absolute inset-0"
+                        animate={{
+                            background: hoveredLink
+                                ? brandConfigs[hoveredLink].gradient
+                                : '#1A1E24'
+                        }}
+                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                    />
+
+                    {/* Noise overlay */}
                     <div className="absolute inset-0 opacity-[0.02] mix-blend-overlay pointer-events-none" style={{
                         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
                     }} />
 
-                    {/* Contact Content Grid */}
-                    <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
+                    {/* Content Grid */}
+                    <div className="relative z-10 flex flex-col lg:flex-row gap-12 lg:gap-16">
 
-                        {/* Left Pillar: Text */}
-                        <div className="lg:w-1/3 flex flex-col justify-center">
-                            <h4 className="text-2xl md:text-3xl font-bold text-white/40 mb-4">Do you have questions or need advice?</h4>
-                            <p className="text-3xl md:text-5xl font-black text-white leading-[1.1] tracking-tighter">Please contact us for further details</p>
+                        {/* Left Column: Text & Links */}
+                        <div className="lg:w-1/2 flex flex-col">
+                            <h4 className="text-xl md:text-2xl font-bold text-white/40 mb-3">Do you have questions or need advice?</h4>
+                            <p className="text-2xl md:text-4xl font-black text-white leading-tight tracking-tight mb-10">Please contact us for further details</p>
 
-                            <div className="mt-12 hidden lg:block">
-                                <div className="w-20 h-1 bg-[#4A3AFF] rounded-full" />
+                            {/* Contact Links */}
+                            <div className="space-y-2">
+                                <ContactLink
+                                    brand="instagram"
+                                    isHovered={hoveredLink === 'instagram'}
+                                    otherHovered={hoveredLink !== null && hoveredLink !== 'instagram'}
+                                    onHover={() => setHoveredLink('instagram')}
+                                    onLeave={() => setHoveredLink(null)}
+                                />
+
+                                <div className="h-px bg-white/10 mx-2" />
+
+                                <ContactLink
+                                    brand="whatsapp"
+                                    isHovered={hoveredLink === 'whatsapp'}
+                                    otherHovered={hoveredLink !== null && hoveredLink !== 'whatsapp'}
+                                    onHover={() => setHoveredLink('whatsapp')}
+                                    onLeave={() => setHoveredLink(null)}
+                                />
+
+                                <div className="h-px bg-white/10 mx-2" />
+
+                                <ContactLink
+                                    brand="email"
+                                    isHovered={hoveredLink === 'email'}
+                                    otherHovered={hoveredLink !== null && hoveredLink !== 'email'}
+                                    onHover={() => setHoveredLink('email')}
+                                    onLeave={() => setHoveredLink(null)}
+                                />
+                            </div>
+
+                            <div className="mt-10 hidden lg:block">
+                                <div className="w-16 h-1 bg-[#4A3AFF] rounded-full" />
                             </div>
                         </div>
 
-                        {/* Right Pillar: Links Grid */}
-                        <div className="lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-
-                            {/* Instagram */}
-                            <MagneticLink
-                                href="https://instagram.com/veloce_agency"
-                                brandColor="linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)"
-                                icon={Instagram}
-                                handle="@veloce_agency"
-                            >
-                                Instagram
-                            </MagneticLink>
-
-                            {/* WhatsApp */}
-                            <MagneticLink
-                                href="https://wa.me/1234567890"
-                                brandColor="#25D366"
-                                icon={MessageCircle}
-                                handle="+1 800 555 0199"
-                            >
-                                WhatsApp
-                            </MagneticLink>
-
-                            {/* Email */}
-                            <MagneticLink
-                                href="mailto:hello@veloce.com"
-                                brandColor="#007FFF"
-                                icon={Mail}
-                                handle="hello@veloce.com"
-                            >
-                                Email
-                            </MagneticLink>
-
-                            {/* Placeholder/More block with Arrow */}
-                            <div className="hidden md:flex flex-col items-center justify-center p-8 rounded-[2.5rem] border border-white/5 bg-white/[0.02] text-white/20">
-                                <Zap size={40} className="mb-4 opacity-10" />
-                                <span className="text-xs font-black uppercase tracking-[0.3em]">Ignite your vision</span>
-                            </div>
-
+                        {/* Right Column: Massive Icon */}
+                        <div className="lg:w-1/2 flex items-center justify-center min-h-[280px] lg:min-h-[400px]">
+                            <AnimatePresence mode="wait">
+                                {hoveredLink ? (
+                                    <MassiveIcon key={hoveredLink} brand={hoveredLink} />
+                                ) : (
+                                    <motion.div
+                                        key="placeholder"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="w-40 h-40 md:w-52 md:h-52 lg:w-64 lg:h-64 rounded-full bg-white/5 flex items-center justify-center"
+                                    >
+                                        <Zap size={64} className="text-white/10" />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </motion.div>
 
-                {/* -------------------------------------------------------------
-            PART 3: Restored Original Veloce Footer
-            ------------------------------------------------------------- */}
+                {/* PART 3: Restored Original Veloce Footer */}
                 <footer className="mt-32 md:mt-48 py-20 px-6 border-t border-white/5 bg-black/40 backdrop-blur-2xl relative overflow-hidden rounded-[3rem] mx-auto max-w-[90rem]">
-                    {/* Animated gradient bottom glow */}
                     <div className="absolute inset-x-0 bottom-0 pointer-events-none">
                         <motion.div
                             className="h-[2px] bg-gradient-to-r from-transparent via-[#4A3AFF] to-transparent"
@@ -307,7 +359,6 @@ export default function ContactFooter() {
 
                     <div className="max-w-7xl mx-auto relative z-10">
                         <div className="flex flex-col md:flex-row justify-between items-center gap-16 md:gap-0">
-                            {/* Logo and tagline */}
                             <div className="flex flex-col items-center md:items-start gap-5">
                                 <motion.div
                                     className="flex items-center gap-4"
@@ -324,7 +375,6 @@ export default function ContactFooter() {
                                 </p>
                             </div>
 
-                            {/* Social Links with Premium Interaction */}
                             <div className="flex flex-wrap justify-center gap-8 md:gap-10">
                                 {[
                                     { name: 'Twitter', icon: Twitter },
@@ -344,7 +394,6 @@ export default function ContactFooter() {
                                 ))}
                             </div>
 
-                            {/* Copyright & Info */}
                             <div className="flex flex-col items-center md:items-end gap-2">
                                 <div className="text-sm text-white/20 font-bold tracking-widest uppercase">
                                     © {new Date().getFullYear()} VELOCE Studio
@@ -355,7 +404,6 @@ export default function ContactFooter() {
                             </div>
                         </div>
 
-                        {/* Bottom accent line & Final Motto */}
                         <motion.div
                             className="mt-20 pt-10 border-t border-white/5 flex flex-col items-center gap-6"
                             initial={{ opacity: 0 }}
@@ -373,7 +421,6 @@ export default function ContactFooter() {
                     </div>
                 </footer>
 
-                {/* Final Ambient Background Glow */}
                 <div className="absolute bottom-0 left-0 w-full h-[40rem] bg-gradient-to-t from-[#4A3AFF]/5 to-transparent pointer-events-none" />
             </div>
 

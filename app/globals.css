@@ -404,11 +404,13 @@ section {
 .pricing-hero-gradient {
   background: linear-gradient(180deg,
       #1a1333 0%,
-      #2d2459 30%,
-      #4a3d8f 60%,
-      #6b5cad 80%,
-      #8e82c4 95%,
-      #b8b0d8 100%);
+      #2d2459 10%,
+      #4a3d8f 25%,
+      #6b5cad 40%,
+      #8e82c4 55%,
+      #a99bc9 70%,
+      #c8bfe0 85%,
+      #d8d0e8 100%);
 }
 
 /* Script/handwritten accent text */

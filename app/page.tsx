@@ -10,6 +10,9 @@ import ServicePillars from '@/components/sections/ServicePillars';
 import WhyVeloce from '@/components/sections/WhyVeloce';
 import CustomerSuccess from '@/components/sections/CustomerSuccess';
 import TechStackGrid from '@/components/sections/TechStackGrid';
+import { InspirationBoard } from '@/components/sections/InspirationBoard';
+import PricingSection from '@/components/sections/PricingSection';
+import ContactFooter from '@/components/sections/ContactFooter';
 import { InteractiveMarquee } from '@/components/ui/InteractiveMarquee';
 import { PremiumHeroText } from '@/components/ui/PremiumHeroText';
 
@@ -421,7 +424,7 @@ export default function Home() {
             </a>
 
             <div className="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-white/60">
-              {['Home', 'Services', 'Portfolio', 'Contact'].map((item) => (
+              {['Home', 'Services', 'Portfolio', 'Pricing', 'Contact'].map((item) => (
                 <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="hover:text-uptic-orange transition-colors duration-300 relative group">
                   {item}
                   <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-uptic-orange transition-all duration-300 group-hover:w-full" />
@@ -577,74 +580,10 @@ export default function Home() {
         </div>
 
         {/* Theme Showcase / Inspiration Board */}
-        <section id="inspiration" className="py-40 px-6 relative overflow-hidden">
-          {/* Subtle atmospheric glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-uptic-orange/5 blur-[120px] rounded-full pointer-events-none" />
+        <InspirationBoard />
 
-          <div className="max-w-7xl mx-auto relative z-10">
-            <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-20 text-center md:text-left">
-              <div>
-                <span className="text-xs font-semibold tracking-[0.4em] uppercase text-uptic-orange mb-6 block">
-                  Find Your Vision
-                </span>
-                <h2 className="text-5xl md:text-8xl font-black mb-6 tracking-tighter text-white">
-                  INSPIRATION <br />
-                  <span className="text-gray-600 italic">BOARD.</span>
-                </h2>
-              </div>
-              <p className="text-gray-400 max-w-sm text-lg font-light leading-relaxed md:border-l border-uptic-orange/30 md:pl-8 mx-auto md:mx-0">
-                Browse our curated selection of award-winning digital experiences. Select the architecture that perfectly aligns with your brand's future.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                { name: 'Aura', type: 'SaaS / AI Product', color: 'from-blue-500/20 to-purple-500/20', img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop' },
-                { name: 'Kinetix', type: 'High-End E-commerce', color: 'from-uptic-orange/20 to-red-500/20', img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop' },
-                { name: 'Monolith', type: 'Corporate / Real Estate', color: 'from-emerald-500/20 to-teal-500/20', img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop' }
-              ].map((theme, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.15, duration: 0.8 }}
-                  className="group relative cursor-pointer"
-                >
-                  <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden relative mb-6 border border-white/10 bg-black/45 backdrop-blur-md">
-                    <div className={`absolute inset-0 bg-gradient-to-t ${theme.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10`} />
-                    <motion.img
-                      src={theme.img}
-                      alt={theme.name}
-                      className="absolute inset-0 w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-700"
-                      whileHover={{ scale: 1.05 }}
-                    />
-
-                    {/* Select Overlay */}
-                    <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-sm bg-black/40">
-                      <button className="px-8 py-4 rounded-full bg-white text-black font-black text-sm uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-2">
-                        Select Theme <ArrowRight size={16} />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center px-2">
-                    <div>
-                      <h3 className="text-3xl font-black text-white group-hover:text-uptic-orange transition-colors">{theme.name}</h3>
-                      <p className="text-white/50 text-sm tracking-wider uppercase font-bold mt-1">{theme.type}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="mt-20 flex justify-center">
-              <button className="flex items-center gap-3 px-10 py-5 rounded-full border border-white/20 text-white font-bold text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300">
-                View Full Catalog
-              </button>
-            </div>
-          </div>
-        </section>
+        {/* Pricing Section */}
+        <PricingSection />
 
         {/* Portfolio Section - Premium Moving Design */}
         <section id="portfolio" className="relative py-40 overflow-hidden">
@@ -913,110 +852,7 @@ export default function Home() {
         </section>
 
         {/* Contact Section */}
-        <section id="contact" className="py-40 px-6 relative overflow-hidden">
-          <div className="max-w-5xl mx-auto relative z-10">
-            <div className="glass p-12 md:p-24 rounded-[4rem] border-white/10 relative overflow-hidden">
-              {formStatus === 'success' ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="text-center py-12"
-                >
-                  <div className="w-24 h-24 bg-[#007FFF] rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_50px_rgba(0,127,255,0.4)]">
-                    <Zap size={40} className="text-white" />
-                  </div>
-                  <h2 className="text-5xl font-bold text-white mb-6 tracking-tighter">IGNITION CONFIRMED.</h2>
-                  <p className="text-white/50 text-xl font-light mb-10">Expect a response within 4 hours.</p>
-                  <button onClick={() => setFormStatus('idle')} className="px-10 py-4 rounded-full glass border-white/10 text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300">Send Another Brief</button>
-                </motion.div>
-              ) : (
-                <>
-                  <div className="text-center mb-16">
-                    <div className="text-[#007FFF] font-black tracking-[0.4em] uppercase text-[10px] mb-4">Get in Touch</div>
-                    <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tighter leading-none">
-                      <TextReveal>READY TO</TextReveal>
-                      <TextReveal delay={0.1}><span className="text-white/20">ACCELERATE?</span></TextReveal>
-                    </h2>
-                  </div>
-                  <form className="space-y-8" onSubmit={handleSubmit}>
-                    <div className="grid md:grid-cols-2 gap-8">
-                      <input required type="text" className="w-full bg-black/45 backdrop-blur-md border border-white/10 rounded-3xl px-8 py-5 text-white focus:outline-none focus:border-[#007FFF] transition-all duration-300" placeholder="Your Name" />
-                      <input required type="email" className="w-full bg-black/45 backdrop-blur-md border border-white/10 rounded-3xl px-8 py-5 text-white focus:outline-none focus:border-[#007FFF] transition-all duration-300" placeholder="email@company.com" />
-                    </div>
-                    <textarea required rows={5} className="w-full bg-black/45 backdrop-blur-md border border-white/10 rounded-[2rem] px-8 py-6 text-white focus:outline-none focus:border-[#007FFF] transition-all duration-300 resize-none" placeholder="Tell us about your vision..." />
-                    <button disabled={formStatus === 'submitting'} className="w-full py-6 rounded-3xl bg-white text-black font-black text-xl hover:bg-[#007FFF] hover:text-white transition-all duration-300 flex items-center justify-center gap-4 group">
-                      {formStatus === 'submitting' ? <div className="w-6 h-6 border-4 border-black/20 border-t-black rounded-full animate-spin" /> : <>INITIATE PROJECT <ArrowRight className="group-hover:translate-x-2 transition-transform" /></>}
-                    </button>
-                  </form>
-                </>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* Footer with transparent glass background */}
-        <footer className="py-16 px-6 border-t border-white/5 bg-black/45 backdrop-blur-md relative overflow-hidden">
-          {/* Animated gradient */}
-          <div className="absolute inset-0 pointer-events-none">
-            <motion.div
-              className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#007FFF] to-transparent"
-              animate={{ opacity: [0.3, 1, 0.3] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            />
-          </div>
-
-          <div className="max-w-7xl mx-auto relative z-10">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-12">
-              {/* Logo and tagline */}
-              <div className="flex flex-col items-center md:items-start gap-4">
-                <motion.div
-                  className="flex items-center gap-3"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <img src="/logo.png" alt="VELOCE Logo" className="w-10 h-10 rounded-full object-cover" />
-                  <span className="text-3xl font-black tracking-tighter chromatic-text">VELOCE</span>
-                </motion.div>
-                <p className="text-white/30 text-sm max-w-xs text-center md:text-left">
-                  Crafting digital excellence since 2024
-                </p>
-              </div>
-
-              {/* Social Links */}
-              <div className="flex gap-6">
-                {['Twitter', 'LinkedIn', 'Dribbble'].map((social, i) => (
-                  <motion.a
-                    key={social}
-                    href="#"
-                    className="text-sm text-white/40 hover:text-white transition-colors duration-300 relative group"
-                    whileHover={{ y: -2 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    {social}
-                    <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#007FFF] transition-all duration-300 group-hover:w-full" />
-                  </motion.a>
-                ))}
-              </div>
-
-              {/* Copyright */}
-              <div className="text-sm text-white/20">
-                © 2026 VELOCE Studio. All rights reserved.
-              </div>
-            </div>
-
-            {/* Bottom accent line */}
-            <motion.div
-              className="mt-12 pt-8 border-t border-white/5 flex justify-center"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              <p className="text-white/20 text-xs tracking-widest uppercase">
-                Designed with passion. Built for impact.
-              </p>
-            </motion.div>
-          </div>
-        </footer>
+        <ContactFooter />
 
         {/* Portfolio Modal */}
         <AnimatePresence>

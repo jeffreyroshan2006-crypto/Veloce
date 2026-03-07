@@ -247,3 +247,199 @@ section {
   perspective: 1000px;
   transform-style: preserve-3d;
 }
+
+/* ============================================
+   INSPIRATION BOARD - 3D CARD EFFECTS
+   ============================================ */
+
+/* Scanline animation - horizontal light sweep across cards */
+@keyframes scanline {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Orbit rotation - 360° rotation for the orbital ring */
+@keyframes orbit-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Float animation - gentle vertical bobbing for particles */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Card 3D utility classes */
+.card-3d-wrapper {
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.card-3d {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/5;
+  transform-style: preserve-3d;
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-front {
+  z-index: 2;
+}
+
+.card-back {
+  z-index: 1;
+}
+
+/* Scanline effect overlay */
+.scanline-effect {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scanline-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%);
+  animation: scanline 4s ease-in-out infinite;
+}
+
+.scanline-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 100%);
+  animation: scanline 4s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+/* Animation utility classes */
+.animate-orbit-rotate {
+  animation: orbit-rotate 60s linear infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Stagger float delays for particles */
+.animate-float-delay-1 {
+  animation-delay: 0s;
+}
+
+.animate-float-delay-2 {
+  animation-delay: 0.5s;
+}
+
+.animate-float-delay-3 {
+  animation-delay: 1s;
+}
+
+.animate-float-delay-4 {
+  animation-delay: 1.5s;
+}
+
+.animate-float-delay-5 {
+  animation-delay: 2s;
+}
+
+.animate-float-delay-6 {
+  animation-delay: 2.5s;
+}
+
+/* ============================================
+   PRICING SECTION STYLES
+   ============================================ */
+
+/* Hero gradient background */
+.pricing-hero-gradient {
+  background: linear-gradient(180deg,
+      #1a1333 0%,
+      #2d2459 30%,
+      #4a3d8f 60%,
+      #6b5cad 80%,
+      #8e82c4 95%,
+      #b8b0d8 100%);
+}
+
+/* Script/handwritten accent text */
+.pricing-script-text {
+  font-family: 'Georgia', 'Times New Roman', cursive, serif;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Accordion item hover */
+.pricing-accordion-item .group:hover h3 {
+  color: #5B4BD5;
+}
+
+/* ============================================
+   CONTACT FOOTER STYLES (FOOROR INSPIRED)
+   ============================================ */
+
+/* Signature purple graffiti/script font */
+.contact-script-purple {
+  font-family: 'Brush Script MT', 'Comic Sans MS', cursive, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  text-shadow: 0 4px 15px rgba(74, 58, 255, 0.2);
+}
+
+/* Vibrant yellow script font for tagline */
+.contact-script-yellow {
+  font-family: 'Brush Script MT', 'Comic Sans MS', cursive, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 25px rgba(244, 208, 63, 0.3);
+}

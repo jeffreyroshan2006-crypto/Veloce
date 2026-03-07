@@ -1,57 +1,52 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, MotionValue } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
 
 const text = "all your personal data and transactions are encrypted and secured. there's no room for mistakes because we didn't leave any.";
 const words = text.split(" ");
 
-function Word({ word, index, progress }: { word: string; index: number; progress: MotionValue<number> }) {
-    const [mounted, setMounted] = useState(false);
-    
+function Word({ word, index }: { word: string; index: number }) {
+    const ref = useRef<HTMLSpanElement>(null);
+    const [progress, setProgress] = useState(0);
+
     useEffect(() => {
-        setMounted(true);
+        const handleScroll = () => {
+            if (!ref.current) return;
+            
+            const rect = ref.current.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            const elementTop = rect.top;
+            const elementHeight = rect.height;
+            
+            const startScroll = windowHeight * 0.7;
+            const endScroll = windowHeight * 0.3;
+            
+            const totalScroll = startScroll - endScroll;
+            const currentScroll = startScroll - elementTop;
+            
+            let p = currentScroll / totalScroll;
+            p = Math.max(0, Math.min(1, p));
+            
+            setProgress(p);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        handleScroll();
+        
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const getOpacity = () => {
-        if (!mounted) return 0.15;
-        const currentProgress = progress.get() || 0;
-        const start = index / words.length;
-        const end = start + (1 / words.length);
-        
-        if (currentProgress < start) return 0.15;
-        if (currentProgress > end) return 1;
-        
-        return 0.15 + ((currentProgress - start) / (end - start)) * 0.85;
-    };
-
-    const [opacity, setOpacity] = useState(0.15);
-    const [glow, setGlow] = useState(0);
-
-    useEffect(() => {
-        const unsubscribe = progress.on("change", (latest) => {
-            const start = index / words.length;
-            const end = start + (1 / words.length);
-            
-            if (latest < start) {
-                setOpacity(0.15);
-                setGlow(0);
-            } else if (latest > end) {
-                setOpacity(1);
-                setGlow(1);
-            } else {
-                const ratio = (latest - start) / (end - start);
-                setOpacity(0.15 + ratio * 0.85);
-                setGlow(ratio);
-            }
-        });
-        
-        return () => unsubscribe();
-    }, [index, progress]);
+    const opacity = progress > 0 ? Math.min(1, Math.max(0.15, progress)) : 0.15;
+    const glowIntensity = progress > 0 ? Math.min(1, progress) : 0;
 
     return (
-        <span className="relative inline-block mr-2 mb-1 md:mr-3 md:mb-2 lg:mr-4 lg:mb-3">
+        <span 
+            ref={ref}
+            className="relative inline-block mr-2 mb-1 md:mr-3 md:mb-2 lg:mr-4 lg:mb-3"
+            style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
+        >
             <span 
                 className="text-white/15 select-none"
                 style={{ opacity: 1 }}
@@ -64,8 +59,8 @@ function Word({ word, index, progress }: { word: string; index: number; progress
             >
                 <span
                     style={{
-                        textShadow: glow > 0 
-                            ? `0 0 ${20 * glow}px rgba(255,255,255,${0.8 * glow}), 0 0 ${40 * glow}px rgba(255,255,255,${0.5 * glow})`
+                        textShadow: glowIntensity > 0 
+                            ? `0 0 ${20 * glowIntensity}px rgba(255,255,255,${0.9 * glowIntensity}), 0 0 ${40 * glowIntensity}px rgba(255,255,255,${0.6 * glowIntensity})`
                             : 'none',
                     }}
                 >
@@ -79,16 +74,11 @@ function Word({ word, index, progress }: { word: string; index: number; progress
 export default function SecuritySection() {
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end end"]
-    });
-
     return (
         <section
             ref={containerRef}
             id="security"
-            className="relative bg-black min-h-[200vh]"
+            className="relative bg-black min-h-[180vh]"
         >
             <div className="sticky top-0 h-screen flex flex-col items-center justify-center px-6 py-20">
                 <motion.div
@@ -107,18 +97,17 @@ export default function SecuritySection() {
                     whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                     viewport={{ once: true }}
+                    style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
                 >
                     YOUR DATA ISN'T OUR BUSINESS. KEEPING IT SAFE IS.
                 </motion.h3>
 
-                <p className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-[1.1] flex flex-wrap justify-center max-w-4xl mx-auto">
+                <p 
+                    className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] flex flex-wrap justify-center max-w-4xl mx-auto"
+                    style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
+                >
                     {words.map((word, index) => (
-                        <Word 
-                            key={index} 
-                            word={word} 
-                            index={index} 
-                            progress={scrollYProgress} 
-                        />
+                        <Word key={index} word={word} index={index} />
                     ))}
                 </p>
 

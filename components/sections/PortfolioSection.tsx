@@ -70,45 +70,56 @@ const projects = [
 function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
 
+  const yOffset = index % 2 === 0 ? -30 : 30;
+  const rotate = index % 2 === 0 ? -3 : 3;
+
   return (
     <motion.div
-      className="relative"
+      className="absolute"
       initial={{ 
-        x: 300, 
+        x: 400, 
         opacity: 0,
-        scale: 0.9
+        scale: 0.8,
+        rotate: 0
       }}
       whileInView={{ 
         x: 0, 
         opacity: 1,
-        scale: 1
+        scale: 1,
+        rotate: rotate
       }}
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, margin: "-150px" }}
       transition={{ 
         type: "spring",
-        stiffness: 60,
-        damping: 18,
-        delay: index * 0.15,
+        stiffness: 50,
+        damping: 16,
+        delay: index * 0.12,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      style={{ 
+        y: yOffset,
+        zIndex: isHovered ? 100 : index + 1
+      }}
     >
       <motion.div
-        className="relative w-[240px] md:w-[280px] aspect-[3/4] rounded-md overflow-hidden cursor-pointer"
+        className="relative w-[220px] md:w-[260px] aspect-[3/4] rounded-lg overflow-hidden cursor-pointer"
         animate={isHovered ? { 
-          scale: 1.02,
-          y: -6,
+          scale: 1.08,
+          y: -20,
+          rotate: 0,
+          zIndex: 100
         } : {}}
         transition={{ 
           type: "spring",
-          stiffness: 300,
-          damping: 25,
+          stiffness: 280,
+          damping: 22,
         }}
         style={{
           background: '#0a0a0a',
           boxShadow: isHovered 
-            ? `0 20px 40px -15px ${project.color}35`
-            : `0 6px 16px -6px rgba(0,0,0,0.35)`,
+            ? `0 30px 60px -20px ${project.color}50, 0 0 50px ${project.color}25`
+            : `0 10px 30px -10px rgba(0,0,0,0.5)`,
         }}
       >
         <div className="absolute inset-0 overflow-hidden">
@@ -116,21 +127,21 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
             src={project.image}
             alt={project.title}
             className="w-full h-full object-cover"
-            animate={{ scale: isHovered ? 1.05 : 1 }}
-            transition={{ duration: 0.4 }}
+            animate={{ scale: isHovered ? 1.1 : 1 }}
+            transition={{ duration: 0.5 }}
           />
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
         
-        <div className="absolute inset-0 p-3.5 flex flex-col justify-end">
+        <div className="absolute inset-0 p-3 flex flex-col justify-end">
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 8 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 10 }}
             transition={{ duration: 0.25 }}
           >
             <span 
-              className="inline-block px-2 py-1 rounded text-[7px] font-semibold uppercase tracking-wider mb-1.5"
+              className="inline-block px-2 py-1 rounded text-[7px] font-semibold uppercase tracking-wider mb-1"
               style={{ 
                 backgroundColor: project.color,
                 color: '#000',
@@ -138,7 +149,7 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
             >
               {project.category}
             </span>
-            <p className="text-white/75 text-[10px] mb-2 leading-snug">
+            <p className="text-white/80 text-[9px] mb-1.5 leading-snug">
               {project.description}
             </p>
             {project.link && (
@@ -146,21 +157,21 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
                 href={project.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[8px] font-medium uppercase tracking-wider bg-white text-black hover:bg-white/90 transition-colors"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[7px] font-medium uppercase tracking-wider bg-white text-black"
               >
-                <Eye size={9} />
+                <Eye size={8} />
                 View
               </a>
             )}
           </motion.div>
         </div>
 
-        <div className="absolute top-2.5 right-2.5">
+        <div className="absolute top-2 right-2">
           <span 
-            className="px-1.5 py-0.5 rounded text-[8px] font-mono"
+            className="px-1.5 py-0.5 rounded text-[7px] font-mono"
             style={{ 
-              backgroundColor: 'rgba(0,0,0,0.45)',
-              color: 'rgba(255,255,255,0.55)',
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              color: 'rgba(255,255,255,0.5)',
             }}
           >
             {project.year}
@@ -170,18 +181,18 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
 
       {project.tag && (
         <motion.div
-          className="absolute -bottom-2.5 left-1/2 -translate-x-1/2"
+          className="absolute -bottom-2 left-1/2 -translate-x-1/2"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ delay: index * 0.15 + 0.4 }}
+          transition={{ delay: index * 0.12 + 0.5 }}
         >
           <span 
-            className="px-2 py-0.5 rounded-full text-[8px] font-medium"
+            className="px-2 py-0.5 rounded-full text-[7px] font-medium whitespace-nowrap"
             style={{ 
               backgroundColor: 'rgba(255,255,255,0.08)',
-              color: 'rgba(255,255,255,0.65)',
-              border: '1px solid rgba(255,255,255,0.12)',
+              color: 'rgba(255,255,255,0.6)',
+              border: '1px solid rgba(255,255,255,0.1)',
             }}
           >
             {project.tag}
@@ -194,7 +205,7 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
 
 export default function PortfolioSection() {
   return (
-    <section id="portfolio" className="relative min-h-screen bg-black py-20 overflow-hidden">
+    <section id="portfolio" className="relative min-h-screen bg-black py-24 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <motion.div
           className="absolute top-0 left-[10%] w-[500px] h-[500px] bg-[#007FFF]/4 rounded-full blur-[120px]"
@@ -208,13 +219,13 @@ export default function PortfolioSection() {
         />
       </div>
 
-      <div className="relative z-10 max-w-[1800px] mx-auto px-4">
+      <div className="relative z-10 max-w-[1600px] mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="text-center mb-14"
+          className="text-center mb-20"
         >
           <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[0.95]">
             <motion.span
@@ -248,14 +259,23 @@ export default function PortfolioSection() {
           </h2>
         </motion.div>
 
-        <div className="flex flex-nowrap justify-center gap-3 md:gap-4 mb-14 overflow-x-auto pb-4">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={index}
-              project={project}
-              index={index}
-            />
-          ))}
+        <div className="relative h-[450px] md:h-[500px] flex items-center justify-center mb-20">
+          <div className="relative w-full max-w-5xl flex justify-center items-center">
+            {projects.map((project, index) => (
+              <div 
+                key={index}
+                className="absolute"
+                style={{
+                  left: `calc(50% + ${(index - 2.5) * 140}px)`,
+                }}
+              >
+                <ProjectCard
+                  project={project}
+                  index={index}
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
         <motion.div

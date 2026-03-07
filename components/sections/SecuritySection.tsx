@@ -33,26 +33,24 @@ function Word({ word, index, progress }: { word: string; index: number; progress
     }, [index, progress]);
 
     return (
-        <span className="relative inline-block mr-2 mb-1 md:mr-3 md:mb-2 lg:mr-4 lg:mb-3">
+        <span className="relative inline-block mx-1 my-0.5">
             <span 
-                className="text-white/15 select-none"
+                className="text-white/20 select-none text-4xl md:text-5xl lg:text-6xl font-bold"
                 style={{ opacity: 1 }}
             >
                 {word}
             </span>
             <span
-                className="absolute left-0 top-0 text-white z-10"
+                className="absolute inset-0 text-white z-10 flex items-center justify-center"
                 style={{ opacity }}
             >
                 <span
                     style={{
-                        fontFamily: '"Syne", "Bebas Neue", "Oswald", sans-serif',
-                        fontWeight: 800,
+                        fontFamily: '"Space Grotesk", "DM Sans", sans-serif',
+                        fontWeight: 700,
                         fontSize: 'inherit',
-                        letterSpacing: '0.02em',
-                        textTransform: 'uppercase',
                         textShadow: glow > 0 
-                            ? `0 0 ${20 * glow}px rgba(255,255,255,${0.9 * glow}), 0 0 ${40 * glow}px rgba(255,255,255,${0.6 * glow})`
+                            ? `0 0 ${25 * glow}px rgba(255,255,255,${0.9 * glow}), 0 0 ${50 * glow}px rgba(255,255,255,${0.5 * glow})`
                             : 'none',
                     }}
                 >
@@ -75,41 +73,39 @@ export default function SecuritySection() {
         <section
             ref={containerRef}
             id="security"
-            className="relative bg-black min-h-[120vh]"
+            className="relative bg-black min-h-[120vh] flex items-center justify-center"
         >
-            <style jsx global>{`
-                @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap');
-            `}</style>
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#F59E0B]/5 rounded-full blur-[150px]" />
+            </div>
             
-            <div className="sticky top-0 h-screen flex flex-col items-center justify-center px-6 py-20">
+            <div className="relative z-10 max-w-5xl mx-auto px-8 text-center">
                 <motion.div
-                    className="mb-10 p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm"
+                    className="mb-12"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
+                    transition={{ duration: 0.6 }}
                     viewport={{ once: true }}
                 >
-                    <Lock className="w-14 h-14 text-[#F59E0B]" />
+                    <div className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                        <Lock className="w-5 h-5 text-[#F59E0B]" />
+                        <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#F59E0B]">
+                            Security
+                        </span>
+                    </div>
                 </motion.div>
 
                 <motion.h3
-                    className="text-xs md:text-sm font-bold tracking-[0.35em] uppercase text-[#F59E0B] mb-16"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="text-[10px] md:text-xs font-bold tracking-[0.4em] uppercase text-white/50 mb-16"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
                     viewport={{ once: true }}
                 >
                     YOUR DATA ISN'T OUR BUSINESS. KEEPING IT SAFE IS.
                 </motion.h3>
 
-                <p 
-                    className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] flex flex-wrap justify-center max-w-4xl mx-auto uppercase"
-                    style={{
-                        fontFamily: '"Syne", "Bebas Neue", "Oswald", sans-serif',
-                        fontWeight: 800,
-                        letterSpacing: '0.02em',
-                    }}
-                >
+                <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-2 md:gap-x-4 md:gap-y-3 max-w-3xl mx-auto">
                     {words.map((word, index) => (
                         <Word 
                             key={index} 
@@ -118,9 +114,7 @@ export default function SecuritySection() {
                             progress={scrollYProgress} 
                         />
                     ))}
-                </p>
-
-                <div className="w-32 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-20" />
+                </div>
             </div>
         </section>
     );

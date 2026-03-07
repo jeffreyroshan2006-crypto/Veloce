@@ -33,10 +33,15 @@ function Word({ word, index, progress }: { word: string; index: number; progress
     }, [index, progress]);
 
     return (
-        <span className="relative inline-block mx-1 my-0.5">
+        <span className="relative inline-block mx-1 my-1">
             <span 
-                className="text-white/20 select-none text-4xl md:text-5xl lg:text-6xl font-bold"
-                style={{ opacity: 1 }}
+                className="text-white/20 select-none"
+                style={{ 
+                    opacity: 1,
+                    fontFamily: '"Clash Display", "Satoshi", "General Sans", sans-serif',
+                    fontWeight: 600,
+                    fontSize: 'inherit'
+                }}
             >
                 {word}
             </span>
@@ -46,11 +51,11 @@ function Word({ word, index, progress }: { word: string; index: number; progress
             >
                 <span
                     style={{
-                        fontFamily: '"Space Grotesk", "DM Sans", sans-serif',
-                        fontWeight: 700,
+                        fontFamily: '"Clash Display", "Satoshi", "General Sans", sans-serif',
+                        fontWeight: 600,
                         fontSize: 'inherit',
                         textShadow: glow > 0 
-                            ? `0 0 ${25 * glow}px rgba(255,255,255,${0.9 * glow}), 0 0 ${50 * glow}px rgba(255,255,255,${0.5 * glow})`
+                            ? `0 0 ${30 * glow}px rgba(255,255,255,${0.9 * glow}), 0 0 ${60 * glow}px rgba(255,255,255,${0.5 * glow})`
                             : 'none',
                     }}
                 >
@@ -73,10 +78,14 @@ export default function SecuritySection() {
         <section
             ref={containerRef}
             id="security"
-            className="relative bg-black min-h-[120vh] flex items-center justify-center"
+            className="relative bg-black min-h-[120vh] flex items-center justify-center overflow-hidden"
         >
+            <style jsx global>{`
+                @import url('https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=satoshi@700,900&display=swap');
+            `}</style>
+
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#F59E0B]/5 rounded-full blur-[150px]" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#F59E0B]/5 rounded-full blur-[120px]" />
             </div>
             
             <div className="relative z-10 max-w-5xl mx-auto px-8 text-center">
@@ -105,7 +114,7 @@ export default function SecuritySection() {
                     YOUR DATA ISN'T OUR BUSINESS. KEEPING IT SAFE IS.
                 </motion.h3>
 
-                <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-2 md:gap-x-4 md:gap-y-3 max-w-3xl mx-auto">
+                <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-2 md:gap-x-3 md:gap-y-3 max-w-3xl mx-auto">
                     {words.map((word, index) => (
                         <Word 
                             key={index} 

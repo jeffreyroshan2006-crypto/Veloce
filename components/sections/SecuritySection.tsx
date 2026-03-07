@@ -14,18 +14,6 @@ function Word({ word, index, progress }: { word: string; index: number; progress
         setMounted(true);
     }, []);
 
-    const getOpacity = () => {
-        if (!mounted) return 0.15;
-        const currentProgress = progress.get() || 0;
-        const start = index / words.length;
-        const end = start + (1 / words.length);
-        
-        if (currentProgress < start) return 0.15;
-        if (currentProgress > end) return 1;
-        
-        return 0.15 + ((currentProgress - start) / (end - start)) * 0.85;
-    };
-
     const [opacity, setOpacity] = useState(0.15);
     const [glow, setGlow] = useState(0);
 
@@ -64,8 +52,12 @@ function Word({ word, index, progress }: { word: string; index: number; progress
             >
                 <span
                     style={{
+                        fontFamily: '"Inter", "SF Pro Display", -apple-system, system-ui, sans-serif',
+                        fontWeight: 800,
+                        fontSize: 'inherit',
+                        letterSpacing: '-0.02em',
                         textShadow: glow > 0 
-                            ? `0 0 ${20 * glow}px rgba(255,255,255,${0.8 * glow}), 0 0 ${40 * glow}px rgba(255,255,255,${0.5 * glow})`
+                            ? `0 0 ${20 * glow}px rgba(255,255,255,${0.9 * glow}), 0 0 ${40 * glow}px rgba(255,255,255,${0.6 * glow})`
                             : 'none',
                     }}
                 >
@@ -111,7 +103,14 @@ export default function SecuritySection() {
                     YOUR DATA ISN'T OUR BUSINESS. KEEPING IT SAFE IS.
                 </motion.h3>
 
-                <p className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-[1.1] flex flex-wrap justify-center max-w-4xl mx-auto">
+                <p 
+                    className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] flex flex-wrap justify-center max-w-4xl mx-auto uppercase"
+                    style={{
+                        fontFamily: '"Inter", "SF Pro Display", -apple-system, system-ui, sans-serif',
+                        fontWeight: 800,
+                        letterSpacing: '-0.02em',
+                    }}
+                >
                     {words.map((word, index) => (
                         <Word 
                             key={index} 

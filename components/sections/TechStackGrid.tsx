@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from 'react';
+import { Marquee } from "@/components/ui/marquee";
 import { motion } from "framer-motion";
 
 const categories = [
@@ -351,6 +352,39 @@ export default function TechStackGrid() {
                         high-performance digital infrastructure.
                     </motion.p>
                 </motion.div>
+
+                {/* Marquee */}
+                <div className="mb-16">
+                    <Marquee pauseOnHover className="bg-white/5 border-y border-white/10">
+                        {[
+                            { name: "React", color: "#61DAFB" },
+                            { name: "Next.js", color: "#ffffff" },
+                            { name: "TypeScript", color: "#3178C6" },
+                            { name: "Python", color: "#3776AB" },
+                            { name: "PostgreSQL", color: "#336791" },
+                            { name: "Docker", color: "#2496ED" },
+                            { name: "Kubernetes", color: "#326CE5" },
+                            { name: "AWS", color: "#FF9900" },
+                            { name: "Azure", color: "#0078D4" },
+                            { name: "GCP", color: "#4285F4" },
+                            { name: "Redis", color: "#DC382D" },
+                            { name: "GraphQL", color: "#E10098" },
+                        ].map((tech, i) => (
+                            <div
+                                key={i}
+                                className="mx-8 py-4 flex items-center gap-3"
+                            >
+                                <div
+                                    className="w-3 h-3 rounded-full"
+                                    style={{ backgroundColor: tech.color, boxShadow: `0 0 10px ${tech.color}` }}
+                                />
+                                <span className="text-white/60 text-sm font-medium whitespace-nowrap">
+                                    {tech.name}
+                                </span>
+                            </div>
+                        ))}
+                    </Marquee>
+                </div>
 
                 {/* Neo-Bento Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-5">

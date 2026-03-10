@@ -1,68 +1,57 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Eye, ArrowUpRight, ExternalLink, Sparkles, Zap, Palette, Rocket } from 'lucide-react';
+import { CardStack, CardStackItem } from '@/components/ui/card-stack';
+import { ExternalLink, Sparkles, Zap, Palette, Rocket } from 'lucide-react';
 
-const projects = [
+const portfolioItems: CardStackItem[] = [
   {
+    id: 1,
     title: "SIP & SOCIAL",
-    category: "Social Platform",
-    year: "2025",
-    image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=800&auto=format&fit=crop",
-    color: "#F59E0B",
     description: "A social networking platform connecting beverage enthusiasts worldwide.",
-    link: "https://sipnsocial08.github.io/Sip-Social/",
+    imageSrc: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=800&auto=format&fit=crop",
+    href: "https://sipnsocial08.github.io/Sip-Social/",
     tag: "@sipnsocial"
   },
   {
+    id: 2,
     title: "GENZ CRICKET",
-    category: "Sports Club",
-    year: "2025",
-    image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=800&auto=format&fit=crop",
-    color: "#10B981",
     description: "Modern cricket club website with dynamic content and live scores.",
-    link: "https://genzcricketclub-max.github.io/genzzz/",
+    imageSrc: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=800&auto=format&fit=crop",
+    href: "https://genzcricketclub-max.github.io/genzzz/",
     tag: "@genzcricket"
   },
   {
+    id: 3,
     title: "PHIZOOE REHAB",
-    category: "Healthcare",
-    year: "2025",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=800&auto=format&fit=crop",
-    color: "#3B82F6",
     description: "Professional rehabilitation therapy center with appointment booking.",
-    link: "https://contactphizeeosrehabtherapy-source.github.io/Phizooe/",
+    imageSrc: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=800&auto=format&fit=crop",
+    href: "https://contactphizeeosrehabtherapy-source.github.io/Phizooe/",
     tag: "@phizooe"
   },
   {
+    id: 4,
     title: "NEURALIS",
-    category: "AI Platform",
-    year: "2026",
-    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop",
-    color: "#8B5CF6",
     description: "AI-driven interface for neural data visualization.",
-    link: "",
+    imageSrc: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop",
+    href: "",
     tag: "@neuralis"
   },
   {
+    id: 5,
     title: "AETHER",
-    category: "E-commerce",
-    year: "2025",
-    image: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=800&auto=format&fit=crop",
-    color: "#EC4899",
     description: "Luxury retail through immersive 3D shopping experiences.",
-    link: "",
+    imageSrc: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=800&auto=format&fit=crop",
+    href: "",
     tag: "@aether"
   },
   {
+    id: 6,
     title: "ZENITH",
-    category: "Real Estate",
-    year: "2025",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop",
-    color: "#06B6D4",
     description: "Premium architectural visualization with virtual tours.",
-    link: "",
+    imageSrc: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop",
+    href: "",
     tag: "@zenith"
   }
 ];
@@ -73,145 +62,6 @@ const features = [
   { icon: Palette, text: "Creative Excellence", color: "#8B5CF6" },
   { icon: Rocket, text: "Innovation First", color: "#EC4899" },
 ];
-
-function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const yOffset = index % 2 === 0 ? -15 : 15;
-  const rotate = index % 2 === 0 ? -1.5 : 1.5;
-
-  return (
-    <motion.div
-      className="absolute"
-      initial={{ 
-        x: 600, 
-        opacity: 0,
-        scale: 0.8,
-        rotate: 0
-      }}
-      whileInView={{ 
-        x: 0, 
-        opacity: 1,
-        scale: 1,
-        rotate: rotate
-      }}
-      viewport={{ once: true, margin: "-200px" }}
-      transition={{ 
-        type: "spring",
-        stiffness: 40,
-        damping: 12,
-        delay: index * 0.15,
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{ 
-        y: yOffset,
-        zIndex: isHovered ? 100 : index + 1
-      }}
-    >
-      <motion.div
-        className="relative w-[360px] md:w-[420px] aspect-[16/9] rounded-xl overflow-hidden cursor-pointer"
-        animate={isHovered ? { 
-          scale: 1.06,
-          y: -30,
-          rotate: 0,
-          zIndex: 100
-        } : {}}
-        transition={{ 
-          type: "spring",
-          stiffness: 220,
-          damping: 18,
-        }}
-        style={{
-          background: '#0a0a0a',
-          boxShadow: isHovered 
-            ? `0 40px 80px -30px ${project.color}55, 0 0 70px ${project.color}25`
-            : `0 15px 40px -15px rgba(0,0,0,0.5)`,
-        }}
-      >
-        <div className="absolute inset-0 overflow-hidden">
-          <motion.img
-            src={project.image}
-            alt={project.title}
-            className="w-full h-full object-cover"
-            animate={{ scale: isHovered ? 1.1 : 1 }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-        
-        <div className="absolute inset-0 p-5 flex flex-col justify-end">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 15 }}
-            transition={{ duration: 0.3 }}
-          >
-            <span 
-              className="inline-block px-3 py-1.5 rounded text-[9px] font-bold uppercase tracking-wider mb-2"
-              style={{ 
-                backgroundColor: project.color,
-                color: '#000',
-              }}
-            >
-              {project.category}
-            </span>
-            <h3 className="text-xl font-bold text-white mb-1">
-              {project.title}
-            </h3>
-            <p className="text-white/60 text-[11px] mb-2.5 leading-snug">
-              {project.description}
-            </p>
-            {project.link && (
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[9px] font-semibold uppercase tracking-wider bg-white text-black hover:bg-white/90 transition-colors"
-              >
-                <Eye size={11} />
-                View
-              </a>
-            )}
-          </motion.div>
-        </div>
-
-        <div className="absolute top-4 right-4">
-          <span 
-            className="px-2.5 py-1 rounded text-[9px] font-mono"
-            style={{ 
-              backgroundColor: 'rgba(0,0,0,0.55)',
-              color: 'rgba(255,255,255,0.55)',
-            }}
-          >
-            {project.year}
-          </span>
-        </div>
-      </motion.div>
-
-      {project.tag && (
-        <motion.div
-          className="absolute -bottom-3.5 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: index * 0.15 + 0.5 }}
-        >
-          <span 
-            className="px-3 py-1 rounded-full text-[9px] font-medium whitespace-nowrap"
-            style={{ 
-              backgroundColor: 'rgba(255,255,255,0.08)',
-              color: 'rgba(255,255,255,0.6)',
-              border: '1px solid rgba(255,255,255,0.1)',
-            }}
-          >
-            {project.tag}
-          </span>
-        </motion.div>
-      )}
-    </motion.div>
-  );
-}
 
 export default function PortfolioSection() {
   return (
@@ -298,27 +148,26 @@ export default function PortfolioSection() {
         </motion.div>
 
         <motion.div
-          className="relative h-[380px] md:h-[420px] flex items-center justify-center mb-20"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
+          className="flex items-center justify-center mb-20"
         >
-          <div className="relative w-full max-w-7xl flex justify-center items-center">
-            {projects.map((project, index) => (
-              <div 
-                key={index}
-                className="absolute"
-                style={{
-                  left: `calc(50% + ${(index - 2.5) * 200}px)`,
-                }}
-              >
-                <ProjectCard
-                  project={project}
-                  index={index}
-                />
-              </div>
-            ))}
+          <div className="w-full max-w-3xl">
+            <CardStack
+              items={portfolioItems}
+              initialIndex={0}
+              autoAdvance
+              intervalMs={3000}
+              pauseOnHover
+              showDots
+              cardWidth={520}
+              cardHeight={320}
+              overlap={0.48}
+              spreadDeg={48}
+              className="w-full"
+            />
           </div>
         </motion.div>
 

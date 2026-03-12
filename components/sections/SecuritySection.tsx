@@ -38,8 +38,8 @@ function Word({ word, index, progress }: { word: string; index: number; progress
                 className="text-white/20 select-none"
                 style={{ 
                     opacity: 1,
-                    fontFamily: '"Satoshi", "General Sans", system-ui, sans-serif',
-                    fontWeight: 700,
+                    fontFamily: '"Clash Display", "Satoshi", "General Sans", sans-serif',
+                    fontWeight: 600,
                     fontSize: 'inherit'
                 }}
             >
@@ -51,8 +51,8 @@ function Word({ word, index, progress }: { word: string; index: number; progress
             >
                 <span
                     style={{
-                        fontFamily: '"Satoshi", "General Sans", system-ui, sans-serif',
-                        fontWeight: 700,
+                        fontFamily: '"Clash Display", "Satoshi", "General Sans", sans-serif',
+                        fontWeight: 600,
                         fontSize: 'inherit',
                         textShadow: glow > 0 
                             ? `0 0 ${30 * glow}px rgba(255,255,255,${0.9 * glow}), 0 0 ${60 * glow}px rgba(255,255,255,${0.5 * glow})`
@@ -81,7 +81,7 @@ export default function SecuritySection() {
             className="relative bg-black min-h-[120vh] flex items-center justify-center overflow-hidden"
         >
             <style jsx global>{`
-                @import url('https://api.fontshare.com/v2/css?f[]=satoshi@700,900&display=swap');
+                @import url('https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=satoshi@700,900&display=swap');
             `}</style>
 
             <div className="absolute inset-0 pointer-events-none">
@@ -114,7 +114,7 @@ export default function SecuritySection() {
                     YOUR DATA ISN'T OUR BUSINESS. KEEPING IT SAFE IS.
                 </motion.h3>
 
-                <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-2 md:gap-x-3 md:gap-y-3 max-w-3xl mx-auto text-4xl md:text-5xl lg:text-6xl font-bold">
+                <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-2 md:gap-x-3 md:gap-y-3 max-w-3xl mx-auto">
                     {words.map((word, index) => (
                         <Word 
                             key={index} 

@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, ArrowUpRight, ExternalLink, Sparkles, Zap, Palette, Rocket } from 'lucide-react';
+import { Eye, ArrowUpRight, ExternalLink, Crown, Diamond, Flame, Stars } from 'lucide-react';
 
 const projects = [
   {
@@ -68,11 +68,44 @@ const projects = [
 ];
 
 const features = [
-  { icon: Sparkles, text: "Premium Design", color: "#F59E0B" },
-  { icon: Zap, text: "Fast Performance", color: "#10B981" },
-  { icon: Palette, text: "Creative Excellence", color: "#8B5CF6" },
-  { icon: Rocket, text: "Innovation First", color: "#EC4899" },
+  { icon: Crown, text: "World-Class Design", color: "#F59E0B" },
+  { icon: Diamond, text: "Unmatched Quality", color: "#10B981" },
+  { icon: Flame, text: "Industry Leading", color: "#8B5CF6" },
+  { icon: Stars, text: "Future Forward", color: "#EC4899" },
 ];
+
+function VeloceLogo({ className }: { className?: string }) {
+  return (
+    <motion.svg
+      viewBox="0 0 120 40"
+      className={className}
+      fill="none"
+      animate={{
+        filter: [
+          "drop-shadow(0 0 10px rgba(245,158,11,0.4))",
+          "drop-shadow(0 0 20px rgba(245,158,11,0.6))",
+          "drop-shadow(0 0 10px rgba(245,158,11,0.4))"
+        ]
+      }}
+      transition={{ duration: 3, repeat: Infinity }}
+    >
+      <motion.path
+        d="M20 5L8 35h6l2-5h8l2 5h6L20 5z"
+        fill="#F59E0B"
+      />
+      <motion.path
+        d="M45 8h5l3 12 3-12h5l5 22h-6l-1-5h-10l-1 5h-5L45 8z"
+        fill="white"
+      />
+      <motion.path
+        d="M78 8h6v4h4v3h-4v7h-3v-7h-7v-4h4V8z"
+        fill="#F59E0B"
+      />
+      <circle cx="100" cy="20" r="12" stroke="#F59E0B" strokeWidth="2" fill="none" />
+      <circle cx="100" cy="20" r="6" fill="#F59E0B" />
+    </motion.svg>
+  );
+}
 
 function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -218,7 +251,7 @@ export default function PortfolioSection() {
     <section id="portfolio" className="relative min-h-screen bg-black py-28 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <motion.div
-          className="absolute top-0 left-[10%] w-[600px] h-[600px] bg-[#007FFF]/4 rounded-full blur-[150px]"
+          className="absolute top-0 left-[10%] w-[600px] h-[600px] bg-[#F59E0B]/4 rounded-full blur-[150px]"
           animate={{ x: [0, 40, 0], y: [0, 20, 0] }}
           transition={{ duration: 18, repeat: Infinity }}
         />
@@ -237,6 +270,16 @@ export default function PortfolioSection() {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-8"
         >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mb-8"
+          >
+            <VeloceLogo className="w-24 h-10 mx-auto" />
+          </motion.div>
+
           <h2 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[0.95]">
             <motion.span
               initial={{ opacity: 0, y: 45 }}
@@ -245,17 +288,17 @@ export default function PortfolioSection() {
               transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="block"
             >
-              A place to
+              Where Vision
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 45 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="block text-transparent bg-clip-text bg-gradient-to-r from-[#007FFF] via-purple-400 to-[#007FFF]"
+              className="block text-transparent bg-clip-text bg-gradient-to-r from-[#F59E0B] via-[#FF6B6B] to-[#8B5CF6]"
               style={{ backgroundSize: '200% auto' }}
             >
-              display your
+              Meets Reality
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 45 }}
@@ -264,7 +307,7 @@ export default function PortfolioSection() {
               transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="block text-white/10"
             >
-              masterpiece.
+              In Every Pixel
             </motion.span>
           </h2>
         </motion.div>
@@ -332,12 +375,12 @@ export default function PortfolioSection() {
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-white text-black font-semibold text-sm uppercase tracking-wider hover:bg-[#007FFF] hover:text-white transition-all"
+            className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-white text-black font-semibold text-sm uppercase tracking-wider hover:bg-[#F59E0B] hover:text-black transition-all"
             style={{
               boxShadow: '0 10px 40px rgba(255,255,255,0.12)',
             }}
           >
-            View All Projects
+            Explore All Projects
             <ExternalLink size={16} />
           </motion.button>
         </motion.div>

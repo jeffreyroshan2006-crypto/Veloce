@@ -18,6 +18,8 @@ import ContactFooter from '@/components/sections/ContactFooter';
 import { InteractiveMarquee } from '@/components/ui/InteractiveMarquee';
 import { PremiumHeroText } from '@/components/ui/PremiumHeroText';
 import PortfolioSection from '@/components/sections/PortfolioSection';
+import ProcessSection from '@/components/sections/cards-demo';
+import { GlassCardsSection } from '@/components/sections/GlassCardsSection';
 
 // Animated counter component
 function AnimatedCounter({ value, suffix = '' }: { value: string; suffix?: string }) {
@@ -404,8 +406,8 @@ export default function Home() {
   return (
     <PageTransition>
       <div ref={containerRef} className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden">
-        {/* WebGL Background with two color combos: Deep Lilac + Tea Green (orange/blue removed) */}
-        <GradientWave colors={["#9955BB", "#D0F0C0"]} />
+        {/* WebGL Background with Burgundy and Pastel Blue colors */}
+        <GradientWave colors={["#002147", "#d2b48c"]} />
 
         {/* Scroll Progress Indicator */}
         <motion.div
@@ -447,10 +449,25 @@ export default function Home() {
           </motion.div>
         </nav>
 
-        {/* Premium Glass Box (Edge-highlighted) */}
+        {/* Premium Shining Glass Box */}
         <section id="home" className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
           <div className="glass-wrap mx-auto w-full">
-            <div className="glass-premium rounded-3xl shadow-2xl flex flex-col items-center justify-center" style={{ height: 800, width: '100%', background: 'linear-gradient(135deg, rgba(153,85,187,.25), rgba(208,240,192,.25))', border: '1px solid rgba(255,255,255,.6)', borderRadius: '24px', backdropFilter: 'none' }}>
+            <div className="glass-premium flex flex-col items-center justify-center" style={{ 
+              height: 800, 
+              width: 'calc(100vw - 2cm)', 
+              marginLeft: 'auto', 
+              marginRight: 'auto', 
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)',
+              borderRadius: '32px',
+              boxShadow: `
+                0 0 0 1px rgba(255,255,255,0.15) inset,
+                0 0 80px rgba(255,255,255,0.05) inset,
+                0 25px 50px -12px rgba(0,0,0,0.4),
+                0 0 150px -20px rgba(255,255,255,0.1)
+              `,
+              backdropFilter: 'blur(20px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(180%)'
+            }}>
               <div className="flex flex-col items-center text-center justify-center h-full w-full px-8 md:px-16">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -588,6 +605,9 @@ export default function Home() {
 
         {/* Theme Showcase / Inspiration Board */}
         <InspirationBoard />
+
+        {/* Process Section with GSAP Scroll Animation */}
+        <GlassCardsSection />
 
         {/* Portfolio Section - Premium WebGL Design */}
         <PortfolioSection />

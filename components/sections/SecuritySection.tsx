@@ -4,10 +4,10 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, MotionValue } from 'framer-motion';
 import { Lock } from 'lucide-react';
 
-const text = "all your personal data and transactions are encrypted and secured. there's no room for mistakes because we didn't leave any.";
-const words = text.split(" ");
+const text = `ALLYOUR\nPERSONAL\nDATA\nAND\nTRANSACTIONS\nARE\nENCRYPTED\nAND\nSECURED.\nTHERE’S\nNO\nROOM\nFOR\nMISTAKES\nBECAUSE\nWE\nDIDN’T\nLEAVE`;
+const words = text.split(/\s+/);
 
-function Word({ word, index, progress }: { word: string; index: number; progress: MotionValue<number> }) {
+ function Word({ word, index, progress, fontSize = 32 }: { word: string; index: number; progress: MotionValue<number>; fontSize?: number }) {
     const [opacity, setOpacity] = useState(0.15);
     const [glow, setGlow] = useState(0);
 
@@ -33,17 +33,17 @@ function Word({ word, index, progress }: { word: string; index: number; progress
     }, [index, progress]);
 
     return (
-        <span className="relative inline-block mx-1 my-1">
+        <span className="relative inline-block mx-2 my-1">
             <span 
                 className="text-white/20 select-none"
                 style={{ 
                     opacity: 1,
                     fontFamily: '"Clash Display", "Satoshi", "General Sans", sans-serif',
                     fontWeight: 600,
-                    fontSize: 'inherit'
+                    fontSize: `${fontSize}px`
                 }}
             >
-                {word}
+                {word.toUpperCase()}
             </span>
             <span
                 className="absolute inset-0 text-white z-10 flex items-center justify-center"
@@ -53,13 +53,13 @@ function Word({ word, index, progress }: { word: string; index: number; progress
                     style={{
                         fontFamily: '"Clash Display", "Satoshi", "General Sans", sans-serif',
                         fontWeight: 600,
-                        fontSize: 'inherit',
-                        textShadow: glow > 0 
+                    fontSize: `${fontSize}px`,
+                        textShadow: glow > 0
                             ? `0 0 ${30 * glow}px rgba(255,255,255,${0.9 * glow}), 0 0 ${60 * glow}px rgba(255,255,255,${0.5 * glow})`
                             : 'none',
                     }}
                 >
-                    {word}
+                    {word.toUpperCase()}
                 </span>
             </span>
         </span>
@@ -114,13 +114,14 @@ export default function SecuritySection() {
                     YOUR DATA ISN'T OUR BUSINESS. KEEPING IT SAFE IS.
                 </motion.h3>
 
-                <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-2 md:gap-x-3 md:gap-y-3 max-w-3xl mx-auto">
+                <div className="flex flex-wrap justify-center items-center gap-2 max-w-3xl mx-auto">
                     {words.map((word, index) => (
                         <Word 
                             key={index} 
                             word={word} 
                             index={index} 
                             progress={scrollYProgress} 
+                            fontSize={32} 
                         />
                     ))}
                 </div>

@@ -1,261 +1,191 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { cardData } from '../../lib/utils';
 
 gsap.registerPlugin(ScrollTrigger);
 
-interface CardProps {
-    id: number;
-    title: string;
-    description: string;
-    index: number;
-    totalCards: number;
-    color: string;
-}
-
-const Card: React.FC<CardProps> = ({ title, description, index, totalCards, color }) => {
-    const cardRef = useRef<HTMLDivElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const card = cardRef.current;
-        const container = containerRef.current;
-        if (!card || !container) return;
-
-        const targetScale = 1 - (totalCards - index) * 0.05;
-
-        // Set initial state
-        gsap.set(card, {
-            scale: 1,
-            transformOrigin: "center top"
-        });
-
-        // Create scroll trigger for stacking effect (similar to the reference component)
-        ScrollTrigger.create({
-            trigger: container,
-            start: "top center",
-            end: "bottom center",
-            scrub: 1,
-            onUpdate: (self) => {
-                const progress = self.progress;
-                const scale = gsap.utils.interpolate(1, targetScale, progress);
-
-                gsap.set(card, {
-                    scale: Math.max(scale, targetScale),
-                    transformOrigin: "center top"
-                });
-            }
-        });
-
-        return () => {
-            ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-        };
-    }, [index, totalCards]);
-
-    return (
-        <div
-            ref={containerRef}
-            style={{
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'sticky',
-                top: 0
-            }}
-        >
-            <div
-                ref={cardRef}
-                style={{
-                    position: 'relative',
-                    width: '70%',
-                    height: '450px',
-                    borderRadius: '24px',
-                    isolation: 'isolate',
-                    top: `calc(-5vh + ${index * 25}px)`,
-                    transformOrigin: 'top'
-                }}
-                className="card-content"
-            >
-                {/* Electric Border Effect */}
-                <div
-                    style={{
-                        position: 'absolute',
-                        inset: '-3px',
-                        borderRadius: '27px',
-                        padding: '3px',
-                        background: `conic-gradient(
-                            from 0deg,
-                            transparent 0deg,
-                            ${color} 60deg,
-                            ${color.replace('0.8', '0.6')} 120deg,
-                            transparent 180deg,
-                            ${color.replace('0.8', '0.4')} 240deg,
-                            transparent 360deg
-                        )`,
-                        zIndex: -1
-                    }}
-                />
-
-                {/* Main Card Content */}
-                <div style={{
-                    position: 'relative',
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    borderRadius: '24px',
-                    background: `
-                        linear-gradient(145deg, 
-                            rgba(255, 255, 255, 0.1), 
-                            rgba(255, 255, 255, 0.05)
-                        )
-                    `,
-                    backdropFilter: 'blur(25px) saturate(180%)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    boxShadow: `
-                        0 8px 32px rgba(0, 0, 0, 0.3),
-                        0 2px 8px rgba(0, 0, 0, 0.2),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.3),
-                        inset 0 -1px 0 rgba(255, 255, 255, 0.1)
-                    `,
-                    overflow: 'hidden'
-                }}>
-                    {/* Enhanced Glass reflection overlay */}
-                    <div style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: '60%',
-                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%)',
-                        pointerEvents: 'none',
-                        borderRadius: '24px 24px 0 0'
-                    }} />
-
-                    {/* Glass shine effect */}
-                    <div style={{
-                        position: 'absolute',
-                        top: '10px',
-                        left: '10px',
-                        right: '10px',
-                        height: '2px',
-                        background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%)',
-                        borderRadius: '1px',
-                        pointerEvents: 'none'
-                    }} />
-
-                    {/* Side glass reflection */}
-                    <div style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '2px',
-                        height: '100%',
-                        background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%)',
-                        borderRadius: '24px 0 0 24px',
-                        pointerEvents: 'none'
-                    }} />
-
-                    {/* Frosted glass texture */}
-                    <div style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundImage: `
-                            radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 1px, transparent 2px),
-                            radial-gradient(circle at 80% 70%, rgba(255,255,255,0.08) 1px, transparent 2px),
-                            radial-gradient(circle at 40% 80%, rgba(255,255,255,0.06) 1px, transparent 2px)
-                        `,
-                        backgroundSize: '30px 30px, 25px 25px, 35px 35px',
-                        pointerEvents: 'none',
-                        borderRadius: '24px',
-                        opacity: 0.7
-                    }} />
-                </div>
-            </div>
-        </div>
-    );
-};
+export const cardData = [
+  {
+    id: 1,
+    title: "01. Research and Analysis",
+    description: "With your vision in mind, we enter the Research and Analysis phase. Here, we examine your competitors, industry trends, and user preferences. This informed approach ensures your website stands out and provides an excellent user experience.",
+    color: "rgba(59, 130, 246, 0.4)" // blue transparency adjusted for stack look
+  },
+  {
+    id: 2,
+    title: "02. Wireframing and Prototyping",
+    description: "We move on to Wireframing and Prototyping, where we create skeletal representations of your website's pages. These visual blueprints allow us to test and refine the user experience before diving into design.",
+    color: "rgba(139, 92, 246, 0.4)" // purple
+  },
+  {
+    id: 3,
+    title: "03. Design Creation",
+    description: "Now, it's time for the Design Creation phase. Our talented designers bring your vision to life. We focus on aesthetics, ensuring your website not only looks stunning but also aligns perfectly with your brand identity.",
+    color: "rgba(236, 72, 153, 0.4)" // pink
+  },
+  {
+    id: 4,
+    title: "04. Development and Testing",
+    description: "In the Development and Testing phase, our skilled developers turn designs into a fully functional website. Rigorous testing ensures everything works seamlessly, providing an exceptional user experience.",
+    color: "rgba(34, 197, 94, 0.4)" // green
+  },
+  {
+    id: 5,
+    title: "05. Launch and Support",
+    description: "Our commitment continues beyond launch. We offer post-launch support to address questions, provide assistance, and ensure your website remains updated and optimized. The Website Design Process isn't just about creating a website; it's about crafting a digital experience that resonates, engages, and converts.",
+    color: "rgba(245, 158, 11, 0.4)" // yellow
+  }
+];
 
 export const StackedCards: React.FC = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
-    useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (!containerRef.current) return;
 
-        gsap.fromTo(container,
-            { opacity: 0 },
-            {
-                opacity: 1,
-                duration: 1.2,
-                ease: "power2.out"
-            }
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top top',
+          end: `+=${cardData.length * 100}%`,
+          pin: true,
+          scrub: 1,
+        },
+      });
+
+      cardsRef.current.forEach((card, index) => {
+        if (!card) return;
+        if (index === 0) return; // First card is already in place
+
+        tl.fromTo(card,
+          {
+            y: '100vh', // Start off-screen
+            scale: 0.9,
+            opacity: 0
+          },
+          {
+            // This pulls it up to its natural CSS 'top' position
+            y: 0,
+            scale: 1,
+            opacity: 1,
+            duration: 1,
+            ease: "power2.out"
+          },
+          index * 0.5 // Staggered start time
         );
-    }, []);
+      });
+    });
 
-    return (
-        <main ref={containerRef} style={{ background: '#0a0a0a' }}>
-            {/* Hero Section */}
-            <section style={{
-                height: '70vh',
-                width: '100%',
-                display: 'grid',
-                placeContent: 'center',
-                position: 'relative',
-                color: '#ffffff'
-            }}>
-                <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundImage: `
-                        linear-gradient(to right, rgba(79, 79, 79, 0.18) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(79, 79, 79, 0.18) 1px, transparent 1px)
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <main style={{ background: 'transparent' }} className="relative z-10 w-full overflow-hidden">
+      {/* Hero Section */}
+      <section style={{
+        height: '70vh',
+        width: '100%',
+        display: 'grid',
+        placeContent: 'center',
+        position: 'relative',
+        color: '#ffffff'
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `
+                        linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px)
                     `,
-                    backgroundSize: '54px 54px',
-                    maskImage: 'radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%)'
-                }} />
-                <h1 style={{
-                    fontSize: 'clamp(2rem, 5vw, 4rem)',
-                    fontWeight: '500',
-                    textAlign: 'center',
-                    lineHeight: '1.2',
-                    padding: '0 2rem',
-                    position: 'relative',
-                    zIndex: 1
-                }}>
-                    Stacking Glass Cards with GSAP <br /> Scroll down! 👇
-                </h1>
-            </section>
+          backgroundSize: '80px 80px',
+          maskImage: 'radial-gradient(ellipse 60% 50% at 50% 50%, #000 70%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 60% 50% at 50% 50%, #000 70%, transparent 100%)'
+        }} />
+        <h1 className="text-5xl md:text-7xl lg:text-[6rem] font-black text-center leading-[1.1] px-8 relative z-10 tracking-tighter">
+          Our Proven <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#007FFF] to-purple-500">Process</span>
+        </h1>
+        <p className="text-center text-white/60 mt-6 text-xl mx-auto block z-10 font-bold uppercase tracking-widest text-[10px]">
+          Scroll down to explore 👇
+        </p>
+      </section>
 
-            {/* Cards Section */}
-            <section style={{
-                color: '#ffffff',
-                width: '100%'
-            }}>
-                {cardData.map((card, index) => {
-                    const targetScale = 1 - (cardData.length - index) * 0.05;
-                    return (
-                        <Card
-                            key={card.id}
-                            id={card.id}
-                            title={card.title}
-                            description={card.description}
-                            index={index}
-                            totalCards={cardData.length}
-                            color={card.color}
-                        />
-                    );
-                })}
-            </section>
-        </main>
-    );
+      {/* Exact GSAP Pinned Cards Section matching demo behavior */}
+      <div
+        ref={containerRef}
+        className="w-full h-screen flex items-center justify-center overflow-hidden bg-transparent perspective-[1200px]"
+      >
+        <div className="relative w-[90%] max-w-[1100px] h-[450px]">
+          {cardData.map((card, i) => (
+            <div
+              key={card.id}
+              ref={(el) => (cardsRef.current[i] = el)}
+              className="absolute left-0 w-full h-full rounded-[32px] border border-white/10 shadow-2xl overflow-hidden glass-card"
+              style={{
+                background: `linear-gradient(135deg, ${card.color}, rgba(255,255,255,0.02))`,
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                // IMPORTANT: Fixed Top Offset creating the visible overlap tabs
+                top: `${i * 30}px`,
+                zIndex: i,
+                transformStyle: 'preserve-3d',
+                boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.2), 0 20px 50px rgba(0,0,0,0.5)',
+              }}
+            >
+              {/* Enhanced Glass reflection overlay */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '60%',
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%)',
+                pointerEvents: 'none',
+              }} />
+
+              {/* Glass shine effect */}
+              <div style={{
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                right: '10px',
+                height: '2px',
+                background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%)',
+                borderRadius: '1px',
+                pointerEvents: 'none'
+              }} />
+
+              {/* Frosted glass texture */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundImage: `
+                    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05) 1px, transparent 2px),
+                    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.04) 1px, transparent 2px),
+                    radial-gradient(circle at 40% 80%, rgba(255,255,255,0.03) 1px, transparent 2px)
+                `,
+                backgroundSize: '30px 30px, 25px 25px, 35px 35px',
+                pointerEvents: 'none',
+              }} />
+
+              {/* Actual Text Rendered Inside Glass Content */}
+              <div className="relative z-10 w-full h-full flex flex-col justify-center px-10 md:px-16 lg:px-24">
+                <h3 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tighter drop-shadow-lg">{card.title}</h3>
+                <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-4xl drop-shadow-md">
+                  {card.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
 };

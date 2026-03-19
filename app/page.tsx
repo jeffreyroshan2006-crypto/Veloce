@@ -18,8 +18,7 @@ import ContactFooter from '@/components/sections/ContactFooter';
 import { InteractiveMarquee } from '@/components/ui/InteractiveMarquee';
 import { PremiumHeroText } from '@/components/ui/PremiumHeroText';
 import PortfolioSection from '@/components/sections/PortfolioSection';
-import ProcessSection from '@/components/sections/cards-demo';
-import { GlassCardsSection } from '@/components/sections/GlassCardsSection';
+import { StackedCards } from '@/components/ui/glass-cards';
 
 // Animated counter component
 function AnimatedCounter({ value, suffix = '' }: { value: string; suffix?: string }) {
@@ -603,11 +602,11 @@ export default function Home() {
           <SecuritySection />
         </div>
 
+        {/* Process Flow - Stacked GSAP Cards */}
+        <StackedCards />
+
         {/* Theme Showcase / Inspiration Board */}
         <InspirationBoard />
-
-        {/* Process Section with GSAP Scroll Animation */}
-        <GlassCardsSection />
 
         {/* Portfolio Section - Premium WebGL Design */}
         <PortfolioSection />

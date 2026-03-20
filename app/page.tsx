@@ -1,58 +1,24 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { ArrowRight, Play, Globe, Zap, Shield, Layers, Sparkles, Smartphone, ExternalLink, Eye, ArrowUpRight, Video } from 'lucide-react';
-import { TextReveal } from '@/components/ui/TextReveal';
-import { GradientWave } from '@/components/ui/gradient-wave';
+import React, { useRef } from 'react';
+import { motion, useScroll, useSpring } from 'framer-motion';
+import { ArrowRight, Play, ArrowUpRight } from 'lucide-react';
 import { PageTransition } from '@/components/ui/PageTransition';
-import { WebGLText } from '@/components/ui/WebGLText';
 import ServicePillars from '@/components/sections/ServicePillars';
 import WhyVeloce from '@/components/sections/WhyVeloce';
 import CustomerSuccess from '@/components/sections/CustomerSuccess';
 import TechStackGrid from '@/components/sections/TechStackGrid';
-import SecuritySection from '@/components/sections/SecuritySection';
-import { InspirationBoard } from '@/components/sections/InspirationBoard';
-import PricingSection from '@/components/sections/PricingSection';
-import ContactFooter from '@/components/sections/ContactFooter';
 import { InteractiveMarquee } from '@/components/ui/InteractiveMarquee';
 import { PremiumHeroText } from '@/components/ui/PremiumHeroText';
+import { GradientWave } from '@/components/ui/gradient-wave';
+import PricingSection from '@/components/sections/PricingSection';
 import PortfolioSection from '@/components/sections/PortfolioSection';
-import { StackedCards } from '@/components/ui/glass-cards';
-
-// Animated counter component
-function AnimatedCounter({ value, suffix = '' }: { value: string; suffix?: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true });
-  const [displayValue, setDisplayValue] = useState('0');
-
-  useEffect(() => {
-    if (isInView) {
-      const numericValue = parseInt(value.replace(/[^0-9]/g, ''));
-      const duration = 2000;
-      const steps = 60;
-      const increment = numericValue / steps;
-      let current = 0;
-      const timer = setInterval(() => {
-        current += increment;
-        if (current >= numericValue) {
-          setDisplayValue(value);
-          clearInterval(timer);
-        } else {
-          setDisplayValue(Math.floor(current).toString() + (value.includes('%') ? '%' : '') + (value.includes('+') ? '+' : '') + (value.includes('x') ? 'x' : ''));
-        }
-      }, duration / steps);
-      return () => clearInterval(timer);
-    }
-  }, [isInView, value]);
-
-  return <span ref={ref}>{displayValue}{suffix}</span>;
-}
+import { InspirationBoard } from '@/components/sections/InspirationBoard';
 
 // Magnetic button component
 function MagneticButton({ children, className, onClick }: { children: React.ReactNode; className?: string; onClick?: () => void }) {
   const ref = useRef<HTMLButtonElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
 
   const handleMouse = (e: React.MouseEvent) => {
     if (!ref.current) return;
@@ -79,333 +45,15 @@ function MagneticButton({ children, className, onClick }: { children: React.Reac
   );
 }
 
-// Video Player Component - Premium Vertical Style with Auto-load
-function VideoPlayer({ videoUrl, title, type }: { videoUrl: string; title: string; type?: string }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const togglePlay = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        videoRef.current.play();
-        setIsPlaying(true);
-      }
-    }
-  };
-
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
-  };
-
-  const toggleFullscreen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (containerRef.current) {
-      if (!document.fullscreenElement) {
-        containerRef.current.requestFullscreen().then(() => {
-          setIsFullscreen(true);
-          if (videoRef.current) {
-            videoRef.current.muted = false;
-            setIsMuted(false);
-          }
-        }).catch(err => {
-          console.log('Fullscreen error:', err);
-        });
-      } else {
-        document.exitFullscreen().then(() => {
-          setIsFullscreen(false);
-        });
-      }
-    }
-  };
-
-  return (
-    <motion.div
-      ref={containerRef}
-      className="relative h-full min-h-[500px] rounded-[2rem] overflow-hidden bg-black group"
-      whileHover={{ scale: 1.01 }}
-      transition={{ duration: 0.3 }}
-    >
-      {/* Video Element - Always visible, auto-loads */}
-      <video
-        ref={videoRef}
-        src={videoUrl}
-        className="w-full h-full object-contain bg-black"
-        preload="auto"
-        muted={isMuted}
-        playsInline
-        onEnded={() => setIsPlaying(false)}
-        onClick={togglePlay}
-      />
-
-      {/* Play/Pause Overlay */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        onClick={togglePlay}
-      >
-        <motion.div
-          className="w-20 h-20 rounded-full bg-black/50 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center transition-all duration-300 pointer-events-auto cursor-pointer"
-          animate={{
-            opacity: isPlaying ? 0 : 1,
-            scale: isPlaying ? 0.8 : 1
-          }}
-          transition={{ duration: 0.2 }}
-        >
-          <Play size={36} className="text-white ml-1" fill="currentColor" />
-        </motion.div>
-      </div>
-
-      {/* Control Buttons - Top Right */}
-      <div className="absolute top-4 right-4 flex gap-2 z-10">
-        {/* Mute/Unmute Button */}
-        <motion.button
-          onClick={toggleMute}
-          className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {isMuted ? (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <line x1="23" y1="9" x2="17" y2="15"></line>
-              <line x1="17" y1="9" x2="23" y2="15"></line>
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            </svg>
-          )}
-        </motion.button>
-
-        {/* Fullscreen Button */}
-        <motion.button
-          onClick={toggleFullscreen}
-          className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-          </svg>
-        </motion.button>
-      </div>
-
-      {/* Content overlay at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none">
-        <div className="flex items-center gap-2 mb-3">
-          <motion.div
-            className="w-2 h-2 bg-[#007FFF] rounded-full"
-            animate={{
-              scale: isPlaying ? [1, 1.5, 1] : 1,
-              opacity: isPlaying ? [0.5, 1, 0.5] : 0.5
-            }}
-            transition={{ duration: 1.5, repeat: isPlaying ? Infinity : 0 }}
-          />
-          <span className="text-[10px] font-black uppercase tracking-widest text-[#007FFF]">{type || 'Video Campaign'}</span>
-          {isPlaying && (
-            <span className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-2">• Playing</span>
-          )}
-        </div>
-        <h3 className="text-2xl font-bold text-white mb-1">{title}</h3>
-        <p className="text-white/50 text-sm">Tap video to {isPlaying ? 'pause' : 'play'}</p>
-      </div>
-
-      {/* Corner accents */}
-      <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-[#007FFF]/50 rounded-tl-lg pointer-events-none" />
-      <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-purple-500/50 rounded-bl-lg pointer-events-none" />
-    </motion.div>
-  );
-}
-
 export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
-  const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false);
-  const [activeProject, setActiveProject] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
-
-  const services = [
-    {
-      title: "Social Media Creative Pack",
-      desc: "Stop the scroll with custom-built, on-brand templates for Instagram, LinkedIn, and YouTube. Empower your team to produce world-class content in minutes, not hours.",
-      icon: <Smartphone className="w-8 h-8" />,
-      tags: ["Instagram", "LinkedIn", "YouTube Thumbnails"],
-      color: "from-blue-500/20 to-cyan-500/20"
-    },
-    {
-      title: "Ad & Campaign Creatives",
-      desc: "High-impact static and animated ads engineered for maximum click-through rates. We optimize every pixel for clarity, brand recall, and conversion performance.",
-      icon: <Zap className="w-8 h-8" />,
-      tags: ["Social Ads", "Display Campaigns", "Motion Graphics"],
-      color: "from-purple-500/20 to-pink-500/20"
-    },
-    {
-      title: "Brand Template System",
-      desc: "A complete, ready-to-use library of flyers, pitch decks, and posters. Locked to your brand's DNA so every future design stays perfectly consistent.",
-      icon: <Layers className="w-8 h-8" />,
-      tags: ["Pitch Decks", "Brand Guidelines", "Asset Library"],
-      color: "from-orange-500/20 to-yellow-500/20"
-    },
-    {
-      title: "Poster, Flyer & Print Design",
-      desc: "From event posters to business cards, we deliver print-ready assets that command attention in the physical world and translate seamlessly to digital.",
-      icon: <Globe className="w-8 h-8" />,
-      tags: ["Print-Ready", "Brochures", "Event Graphics"],
-      color: "from-green-500/20 to-emerald-500/20"
-    },
-    {
-      title: "Short Video & Promo Assets",
-      desc: "Dominate Reels, Shorts, and TikTok with high-velocity promotional clips. Clean motion, trending audio, and sharp text that drives engagement.",
-      icon: <Play className="w-8 h-8" />,
-      tags: ["Reels/TikTok", "Promo Clips", "Motion Design"],
-      color: "from-red-500/20 to-orange-500/20"
-    },
-    {
-      title: "Festival & Seasonal Packs",
-      desc: "Pre-planned creative packs for launches and sale seasons. Plug in your offers and publish instantly with localized, high-conversion styling.",
-      icon: <Sparkles className="w-8 h-8" />,
-      tags: ["Seasonal Sales", "Launch Packs", "Holiday Creative"],
-      color: "from-cyan-500/20 to-blue-500/20"
-    },
-    {
-      title: "Brand Refresh & Upgrade",
-      desc: "We take your existing creatives and inject world-class layouts, typography, and color theory—elevating your brand without losing its core identity.",
-      icon: <Shield className="w-8 h-8" />,
-      tags: ["Creative Audit", "Visual Upgrade", "Consistency"],
-      color: "from-emerald-500/20 to-teal-500/20"
-    },
-  ];
-
-  const projects = [
-    {
-      title: "SIP & SOCIAL",
-      category: "Social Platform",
-      year: "2025",
-      image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1974&auto=format&fit=crop",
-      color: "#F59E0B",
-      gradient: "from-amber-500 to-orange-600",
-      description: "A social networking platform connecting beverage enthusiasts worldwide with real-time events and community features.",
-      link: "https://sipnsocial08.github.io/Sip-Social/",
-      tags: ["Community", "Events", "Social"]
-    },
-    {
-      title: "GENZ CRICKET",
-      category: "Sports Club",
-      year: "2025",
-      image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=1994&auto=format&fit=crop",
-      color: "#10B981",
-      gradient: "from-emerald-500 to-teal-600",
-      description: "Modern cricket club website with dynamic content, live scores, and team management for the next generation.",
-      link: "https://genzcricketclub-max.github.io/genzzz/",
-      tags: ["Sports", "Live Scores", "Team"]
-    },
-    {
-      title: "PHIZOOE REHAB",
-      category: "Healthcare",
-      year: "2025",
-      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2070&auto=format&fit=crop",
-      color: "#3B82F6",
-      gradient: "from-blue-500 to-cyan-600",
-      description: "Professional rehabilitation therapy center with appointment booking and patient management system.",
-      link: "https://contactphizeeosrehabtherapy-source.github.io/Phizooe/",
-      tags: ["Healthcare", "Booking", "Therapy"]
-    },
-    {
-      title: "NEURALIS",
-      category: "AI Platform",
-      year: "2026",
-      image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop",
-      color: "#8B5CF6",
-      gradient: "from-violet-500 to-purple-600",
-      description: "A revolutionary AI-driven interface for neural data visualization and predictive analytics.",
-      link: "",
-      tags: ["AI", "Data Viz", "Analytics"]
-    },
-    {
-      title: "AETHER",
-      category: "E-commerce",
-      year: "2025",
-      image: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070&auto=format&fit=crop",
-      color: "#EC4899",
-      gradient: "from-pink-500 to-rose-600",
-      description: "Redefining luxury retail through immersive 3D shopping experiences and AR try-on features.",
-      link: "",
-      tags: ["E-commerce", "3D", "AR"]
-    },
-    {
-      title: "ZENITH",
-      category: "Real Estate",
-      year: "2025",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop",
-      color: "#06B6D4",
-      gradient: "from-cyan-500 to-blue-600",
-      description: "Premium architectural visualization for the next generation of living with virtual tours.",
-      link: "",
-      tags: ["Real Estate", "3D Tours", "Premium"]
-    }
-  ];
-
-  const stats = [
-    { label: "Average CTR Increase", value: "45%", icon: "📈" },
-    { label: "Production Speed", value: "3x", icon: "⚡" },
-    { label: "Client Retention", value: "98%", icon: "🎯" },
-    { label: "Assets Delivered", value: "12k+", icon: "🚀" }
-  ];
-
-  const adExamples = [
-    {
-      title: "Video & Social Invites",
-      type: "Video Campaign",
-      image: "",
-      benefit: "Engaging Social Content",
-      isVideo: true,
-      videoUrl: "/video-social-invites.mp4"
-    },
-    {
-      title: "Professional Advertisement",
-      type: "Video Campaign",
-      image: "",
-      benefit: "High-Impact Visual Storytelling",
-      isVideo: true,
-      videoUrl: "/advertisement.mp4"
-    },
-    {
-      title: "Short Video Promo",
-      type: "Reels/TikTok Vertical",
-      image: "",
-      benefit: "Viral Brand Recall",
-      isVideo: true,
-      videoUrl: "/short-video-promo.mp4"
-    }
-  ];
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormStatus('submitting');
-    setTimeout(() => {
-      setFormStatus('success');
-      setTimeout(() => setFormStatus('idle'), 5000);
-    }, 1500);
-  };
 
   return (
     <PageTransition>
       <div ref={containerRef} className="relative min-h-screen font-sans selection:bg-[#007FFF]/30 overflow-x-hidden">
-        {/* WebGL Background with Burgundy and Pastel Blue colors */}
+        {/* WebGL Background */}
         <GradientWave colors={["#002147", "#d2b48c"]} />
 
         {/* Scroll Progress Indicator */}
@@ -414,41 +62,7 @@ export default function Home() {
           style={{ scaleX: smoothProgress }}
         />
 
-        {/* Navigation */}
-        <nav className="fixed top-0 w-full z-[100] px-6 py-6">
-          <motion.div
-            initial={{ y: -100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="max-w-7xl mx-auto glass rounded-full px-8 py-4 flex justify-between items-center"
-          >
-            <a href="#home" className="flex items-center gap-3 group">
-              <img src="/logo.png" alt="VELOCE Logo" className="w-10 h-10 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" />
-              <span className="text-2xl font-black tracking-tighter chromatic-text">VELOCE</span>
-            </a>
-
-            <div className="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-white/60">
-              {['Home', 'Services', 'Portfolio', 'Catalog', 'Pricing', 'Contact'].map((item) => (
-                <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="hover:text-uptic-orange transition-colors duration-300 relative group">
-                  {item}
-                  <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-uptic-orange transition-all duration-300 group-hover:w-full" />
-                </a>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-4">
-              <a href="#contact" className="hidden md:flex items-center gap-2 px-6 py-2.5 rounded-full bg-white text-black text-xs font-black hover:bg-[#007FFF] hover:text-white transition-all duration-300">
-                START PROJECT <ArrowRight size={14} />
-              </a>
-              <button className="md:hidden text-white p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                <div className="w-6 h-0.5 bg-white mb-1.5" />
-                <div className="w-6 h-0.5 bg-white" />
-              </button>
-            </div>
-          </motion.div>
-        </nav>
-
-        {/* Premium Shining Glass Box */}
+        {/* Premium Hero Section */}
         <section id="home" className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
           <div className="glass-wrap mx-auto w-full">
             <div className="glass-premium flex flex-col items-center justify-center" style={{ 
@@ -518,168 +132,47 @@ export default function Home() {
         <div className="relative z-10">
           <ServicePillars />
 
-          {/* Detailed Service Grid - Re-integrated "Old" Services */}
-          <section id="detailed-services" className="py-32 px-6 relative overflow-hidden">
-            <div className="max-w-7xl mx-auto relative z-10">
-              <div className="mb-20">
-                <div className="text-uptic-orange font-black tracking-[0.4em] uppercase text-[10px] mb-4">Precision Engineering</div>
-                <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-white leading-[0.8]">
-                  <TextReveal>GRANULAR</TextReveal>
-                  <TextReveal delay={0.1}><span className="text-white/20">SOLUTIONS.</span></TextReveal>
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {services.map((service, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1, duration: 0.6 }}
-                    className="group relative p-8 rounded-[2.5rem] glass hover:bg-white/[0.05] transition-all duration-500 hover:border-white/20"
-                  >
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-8 border border-white/10 group-hover:scale-110 transition-transform duration-500`}>
-                      {service.icon}
-                    </div>
-                    <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-uptic-orange transition-colors">{service.title}</h3>
-                    <p className="text-white/40 text-sm leading-relaxed mb-6 font-light">
-                      {service.desc}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {service.tags.map((tag, j) => (
-                        <span key={j} className="text-[9px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-white/5 text-white/40 border border-white/5">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Live Proof Section - Re-integrated Video Portfolio */}
-          <section id="live-proof" className="py-32 px-6 relative">
-            <div className="max-w-7xl mx-auto relative z-10">
-              <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-20">
-                <div>
-                  <div className="text-purple-500 font-black tracking-[0.4em] uppercase text-[10px] mb-4">Visual Proof</div>
-                  <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-white leading-[0.8]">
-                    <TextReveal>LIVE</TextReveal>
-                    <TextReveal delay={0.1}><span className="text-white/20">CAMPAIGNS.</span></TextReveal>
-                  </h2>
+          <section className="py-24 px-6 relative">
+            <div className="max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        className="p-12 rounded-[3rem] bg-white/[0.03] border border-white/10 flex flex-col justify-between aspect-square md:aspect-video"
+                    >
+                        <div>
+                            <div className="text-purple-500 font-black tracking-widest text-[10px] uppercase mb-4">The Process</div>
+                            <h3 className="text-4xl font-bold text-white mb-6">How we bring your <br /> vision to life.</h3>
+                        </div>
+                        <a href="/process" className="inline-flex items-center gap-2 text-white font-bold group">
+                            Explore our process <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+                        </a>
+                    </motion.div>
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="p-12 rounded-[3rem] bg-[#F59E0B]/10 border border-[#F59E0B]/20 flex flex-col justify-between aspect-square md:aspect-video"
+                    >
+                        <div>
+                            <div className="text-[#F59E0B] font-black tracking-widest text-[10px] uppercase mb-4">Security First</div>
+                            <h3 className="text-4xl font-bold text-white mb-6">Built on a foundation <br /> of absolute trust.</h3>
+                        </div>
+                        <a href="/security" className="inline-flex items-center gap-2 text-[#F59E0B] font-bold group">
+                            View architecture <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+                        </a>
+                    </motion.div>
                 </div>
-                <p className="text-white/40 text-lg max-w-xs font-light border-l border-purple-500/30 pl-6">
-                  Experience the velocity of our creative engine in real-time.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {adExamples.map((ad, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.2, duration: 0.8 }}
-                  >
-                    <VideoPlayer
-                      videoUrl={ad.videoUrl}
-                      title={ad.title}
-                      type={ad.type}
-                    />
-                  </motion.div>
-                ))}
-              </div>
             </div>
           </section>
 
           <WhyVeloce />
           <CustomerSuccess />
           <TechStackGrid />
-          
-          <SecuritySection />
+          <PricingSection />
+          <InspirationBoard />
+          <PortfolioSection />
         </div>
-
-        {/* Process Flow - Stacked GSAP Cards */}
-        <StackedCards />
-
-        {/* Theme Showcase / Inspiration Board */}
-        <InspirationBoard />
-
-        {/* Portfolio Section - Premium WebGL Design */}
-        <PortfolioSection />
-
-        {/* Pricing Section */}
-        <PricingSection />
-
-        {/* Contact Section */}
-        <ContactFooter />
-
-        {/* Portfolio Modal */}
-        <AnimatePresence>
-          {isPortfolioModalOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-2xl p-6 md:p-20 overflow-y-auto"
-            >
-              <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-20">
-                  <h2 className="text-4xl md:text-6xl font-bold tracking-tighter">PROJECT ARCHIVE</h2>
-                  <button
-                    onClick={() => setIsPortfolioModalOpen(false)}
-                    className="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300"
-                  >
-                    <Zap className="w-8 h-8 rotate-45" />
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                  {projects.map((project, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.1, duration: 0.5 }}
-                      className="group"
-                    >
-                      <div className="relative aspect-video rounded-[2rem] overflow-hidden mb-6 border border-white/10">
-                        <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-                          {project.link && (
-                            <a
-                              href={project.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-bold text-sm hover:bg-[#007FFF] hover:text-white transition-all duration-300"
-                            >
-                              <Eye size={16} />
-                              View Live Site
-                            </a>
-                          )}
-                          <button className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white font-bold text-sm hover:bg-white hover:text-black transition-all duration-300">
-                            <ExternalLink size={16} />
-                            Case Study
-                          </button>
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-end">
-                        <div>
-                          <div className="text-[#007FFF] text-[10px] font-black uppercase tracking-widest mb-2">{project.category}</div>
-                          <h3 className="text-3xl font-bold">{project.title}</h3>
-                        </div>
-                        <div className="text-white/20 font-mono">0{i + 1}</div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </PageTransition>
   );

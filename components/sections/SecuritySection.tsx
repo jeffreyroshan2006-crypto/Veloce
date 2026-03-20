@@ -88,31 +88,24 @@ export default function SecuritySection() {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#F59E0B]/5 rounded-full blur-[120px]" />
             </div>
             
-            <div className="relative z-10 max-w-5xl mx-auto px-8 text-center">
-                <motion.div
-                    className="mb-12"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    viewport={{ once: true }}
-                >
-                    <div className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                        <Lock className="w-5 h-5 text-[#F59E0B]" />
-                        <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#F59E0B]">
-                            Security
-                        </span>
-                    </div>
-                </motion.div>
-
-                <motion.h3
-                    className="text-[10px] md:text-xs font-bold tracking-[0.4em] uppercase text-white/50 mb-16"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    viewport={{ once: true }}
-                >
-                    YOUR DATA ISN'T OUR BUSINESS. KEEPING IT SAFE IS.
-                </motion.h3>
+            <div className="relative z-10 max-w-7xl mx-auto px-8 text-center py-20">
+                <div className="mb-32 text-center relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                    >
+                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-white leading-[0.95] uppercase">
+                            <span className="pricing-script-text text-[#F59E0B] text-3xl sm:text-4xl md:text-5xl inline-block -rotate-2 mr-3 mb-4 lowercase opacity-100 normal-case">
+                                Veloce Security & Architecture
+                            </span>
+                            <br className="hidden sm:block" />
+                            VELOCE GUARD - <br />
+                            <span className="text-white/30 tracking-tight">Infrastructure Excellence.</span>
+                        </h2>
+                    </motion.div>
+                </div>
 
                 <div className="flex flex-wrap justify-center items-center gap-2 max-w-3xl mx-auto">
                     {words.map((word, index) => (

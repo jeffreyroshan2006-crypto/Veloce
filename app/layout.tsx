@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { PremiumHeader } from "@/components/ui/PremiumHeader";
+import { MegaFooter } from "@/components/ui/MegaFooter";
 
 
 const geistSans = Geist({
@@ -59,10 +61,12 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/logo.png" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased text-white bg-black`}
         suppressHydrationWarning={true}
       >
+        <PremiumHeader />
         {children}
+        <MegaFooter />
       </body>
     </html>
   );

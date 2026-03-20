@@ -68,17 +68,33 @@ export default function ServicePillars() {
     return (
         <section id="services" className="py-24 px-6 md:px-12 lg:px-24">
             <div className="max-w-7xl mx-auto">
-                <div className="mb-16">
-                    <span className="text-xs font-semibold tracking-[0.2em] uppercase text-uptic-orange mb-4 block">
-                        Services
-                    </span>
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                        Three service pillars. <br />
-                        <span className="text-gray-500">One partner for development, <br /> platforms, and operations.</span>
-                    </h2>
-                    <p className="text-gray-400 max-w-xl text-lg">
-                        From build to run, we've got you covered.
-                    </p>
+                <div className="mb-24 text-center relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                    >
+                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-white leading-[0.95] uppercase">
+                            <span className="pricing-script-text text-[#fb923c] text-3xl sm:text-4xl md:text-5xl inline-block -rotate-2 mr-3 mb-2 lowercase opacity-100 normal-case">
+                                Service
+                            </span>
+                            <br className="hidden sm:block" />
+                            Three service pillars. <br />
+                            One partner for <span className="text-white/30">development, <br />
+                            platforms, and operations</span>
+                        </h2>
+                    </motion.div>
+
+                    <motion.p 
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.5, duration: 0.8 }}
+                        className="text-white/50 text-lg md:text-xl mt-8 max-w-4xl mx-auto font-light leading-relaxed tracking-tight"
+                    >
+                        From build to run, we&apos;ve got you covered
+                    </motion.p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

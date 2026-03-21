@@ -102,30 +102,45 @@ export default function Home() {
         />
 
         {/* Premium Hero Section */}
-        <section id="home" className="relative z-10 min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-          <div className="glass-wrap mx-auto w-full">
-            <div className="glass-premium flex flex-col items-center justify-center" style={{
-              height: 800,
-              width: 'calc(100vw - 2cm)',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%), rgba(0, 0, 0, 0.3)',
-              borderRadius: '32px',
-              boxShadow: `
-                0 0 0 1px rgba(255,255,255,0.15) inset,
-                0 0 80px rgba(255,255,255,0.05) inset,
-                0 25px 50px -12px rgba(0,0,0,0.4),
-                0 0 150px -20px rgba(255,255,255,0.1)
-              `,
-              backdropFilter: 'blur(40px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(40px) saturate(180%)'
-            }}>
+        <section id="home" className="relative z-10 min-h-screen flex items-center justify-center pt-24 pb-12 overflow-hidden">
+          <div className="glass-wrap mx-auto w-full px-4 md:px-8">
+            <div 
+              className="glass-premium relative flex flex-col md:flex-row items-center justify-center overflow-hidden" 
+              style={{
+                height: 850,
+                width: '100%',
+                maxWidth: '1650px',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%), rgba(0, 0, 0, 0.3)',
+                borderRadius: '40px',
+                boxShadow: `
+                  0 0 0 1px rgba(255,255,255,0.15) inset,
+                  0 0 100px rgba(0,0,0,0.2),
+                  0 25px 50px -12px rgba(0,0,0,0.5)
+                `,
+                backdropFilter: 'blur(40px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(40px) saturate(180%)'
+              }}
+            >
               <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
-              <div className="flex flex-col lg:flex-row h-full w-full">
+              
+              {/* Robot Layer (Background) */}
+              <div className="absolute inset-0 z-0 pointer-events-auto">
+                <div className="absolute right-0 bottom-0 w-full lg:w-[60%] h-full flex items-end justify-end translate-x-[5%] translate-y-[5%]">
+                  <SplineScene 
+                    scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                    className="w-full h-full scale-[0.80] lg:scale-[0.95] transform-gpu"
+                    onLoad={handleSplineLoad}
+                  />
+                </div>
+              </div>
 
+              {/* Content Layer (Foreground) */}
+              <div className="flex flex-col lg:flex-row h-full w-full items-center relative z-10 pointer-events-none">
                 {/* Left Content / Hero Text */}
-                <div className="flex-1 flex flex-col items-center justify-center h-full w-full px-8 md:px-16 relative z-10">
-                  <div className="flex flex-col items-center text-center justify-center">
+                <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left justify-center h-full w-full px-8 md:px-20 py-12 lg:py-0">
+                  <div className="flex flex-col items-center lg:items-start max-w-2xl">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -139,7 +154,7 @@ export default function Home() {
                       World-Class Digital Ecosystems
                     </motion.div>
 
-                    <div className="text-7xl md:text-8xl lg:text-9xl font-black mb-8 tracking-tighter leading-[0.8]">
+                    <div className="text-7xl md:text-8xl lg:text-9xl font-black mb-8 tracking-tighter leading-[0.8] text-white">
                       <PremiumHeroText text="VELOCE" />
                     </div>
 
@@ -154,7 +169,7 @@ export default function Home() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.7, duration: 0.6 }}
-                      className="flex flex-col sm:flex-row gap-6 items-center"
+                      className="flex flex-col sm:flex-row gap-6 items-center pointer-events-auto"
                     >
                       <MagneticButton
                         onMouseEnter={triggerThumbsUp}
@@ -168,7 +183,7 @@ export default function Home() {
                       <button
                         onMouseEnter={triggerThumbsUp}
                         onMouseLeave={releaseThumbsUp}
-                        className="flex items-center gap-3 px-10 py-5 rounded-full bg-white/10 backdrop-blur-sm font-bold text-lg text-white hover:bg-white/20 transition-all duration-300 border border-white/20 group"
+                        className="flex items-center gap-3 px-10 py-5 rounded-full bg-white/10 backdrop-blur-sm font-bold text-lg text-white hover:bg-white/20 transition-all duration-300 border border-white/20 group pointer-events-auto"
                       >
                         <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/30 transition-colors duration-300">
                           <Play size={16} fill="currentColor" />
@@ -178,15 +193,9 @@ export default function Home() {
                     </motion.div>
                   </div>
                 </div>
-
-                {/* Right Content / 3D Spline Scene */}
-                <div className="flex-1 relative w-full h-[400px] lg:h-full flex items-center justify-center">
-                  <SplineScene
-                    scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-                    className="w-full h-full pointer-events-none"
-                    onLoad={handleSplineLoad}
-                  />
-                </div>
+                
+                {/* Empty right side to keep text on the left */}
+                <div className="flex-1 hidden lg:block" />
               </div>
             </div>
           </div>

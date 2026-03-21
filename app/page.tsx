@@ -102,14 +102,14 @@ export default function Home() {
         />
 
         {/* Premium Hero Section */}
-        <section id="home" className="relative z-10 min-h-screen flex items-center justify-center pt-24 pb-12 overflow-hidden">
-          <div className="glass-wrap mx-auto w-full px-4 md:px-8">
+        <section id="home" className="relative z-10 min-h-screen flex items-center justify-center pt-28 pb-12 overflow-hidden">
+          <div className="glass-wrap mx-auto w-full px-2">
             <div 
               className="glass-premium relative flex flex-col md:flex-row items-center justify-center overflow-hidden" 
               style={{
                 height: 850,
-                width: '100%',
-                maxWidth: '1650px',
+                width: '95%',
+                maxWidth: '2100px',
                 marginLeft: 'auto',
                 marginRight: 'auto',
                 background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%), rgba(0, 0, 0, 0.3)',
@@ -127,10 +127,10 @@ export default function Home() {
               
               {/* Robot Layer (Background) */}
               <div className="absolute inset-0 z-0 pointer-events-auto">
-                <div className="absolute right-0 bottom-0 w-full lg:w-[60%] h-full flex items-end justify-end translate-x-[5%] translate-y-[5%]">
+                <div className="absolute right-0 bottom-0 w-full lg:w-[60%] h-full flex items-end justify-end translate-x-[15%] translate-y-[15%]">
                   <SplineScene 
                     scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-                    className="w-full h-full scale-[0.80] lg:scale-[0.95] transform-gpu"
+                    className="w-full h-full scale-[0.65] lg:scale-[0.75] transform-gpu"
                     onLoad={handleSplineLoad}
                   />
                 </div>
@@ -139,8 +139,8 @@ export default function Home() {
               {/* Content Layer (Foreground) */}
               <div className="flex flex-col lg:flex-row h-full w-full items-center relative z-10 pointer-events-none">
                 {/* Left Content / Hero Text */}
-                <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left justify-center h-full w-full px-8 md:px-20 py-12 lg:py-0">
-                  <div className="flex flex-col items-center lg:items-start max-w-2xl">
+                <div className="flex-1 flex flex-col items-center text-center justify-center h-full w-full px-8 md:px-20 py-12 lg:py-0">
+                  <div className="flex flex-col items-center text-center max-w-2xl">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}

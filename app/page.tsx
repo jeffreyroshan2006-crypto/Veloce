@@ -116,8 +116,11 @@ export default function Home() {
             >
               <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
               
-              {/* Robot Layer (Background) */}
-              <div className="absolute inset-0 z-0 pointer-events-auto">
+              {/* Ethereal Glass Background Layer - Higher Transparency */}
+              <div className="absolute inset-0 bg-white/5 backdrop-blur-md md:backdrop-blur-2xl z-0" />
+
+              {/* Robot Layer (Background) - Hidden on Mobile, Interactive on Desktop */}
+              <div className="absolute inset-0 z-0 pointer-events-auto hidden md:block">
                 <div className="absolute right-0 bottom-0 w-full lg:w-[60%] h-full flex items-end justify-end translate-x-[15%] translate-y-[13.5%]">
                   <SplineScene 
                     scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"

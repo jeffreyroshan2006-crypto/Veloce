@@ -116,8 +116,8 @@ function PremiumBentoCard({ category, index }: { category: typeof categories[0];
                 index % 3 === 0 ? 'md:col-span-12 lg:col-span-8' : 'md:col-span-12 lg:col-span-4'
             }`}
         >
-            {/* 90% Black Deep Glass Base */}
-            <div className="absolute inset-0 bg-black/95 backdrop-blur-2xl z-0" />
+            {/* 90% Black Deep Glass Base - High-Fidelity Desktop, Smooth Mobile */}
+            <div className="absolute inset-0 bg-black/95 backdrop-blur-md md:backdrop-blur-2xl z-0" />
             
             {/* Interactive Holographic Glint (Follows Mouse) */}
             <motion.div 
@@ -130,8 +130,8 @@ function PremiumBentoCard({ category, index }: { category: typeof categories[0];
                 }}
             />
 
-            {/* 3D Interactive Graphical Layer (Technical Orbit) */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+            {/* 3D Interactive Graphical Layer (Technical Orbit) - Hidden on Mobile */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0 hidden md:block">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full [perspective:1000px] [transform-style:preserve-3d]">
                     {/* Outer Orbit */}
                     <motion.div

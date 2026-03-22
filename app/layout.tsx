@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { PremiumHeader } from "@/components/ui/PremiumHeader";
 import { MegaFooter } from "@/components/ui/MegaFooter";
+import { IntroLoader } from "@/components/ui/IntroLoader";
 
 
 const geistSans = Geist({
@@ -64,6 +65,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-white bg-black`}
         suppressHydrationWarning={true}
       >
+        <IntroLoader />
         <PremiumHeader />
         {children}
         <MegaFooter />

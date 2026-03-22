@@ -86,8 +86,8 @@ export default function WhyVeloce() {
                     </motion.p>
                 </div>
 
-                {/* 3D Graphical Component */}
-                <div className="relative h-[700px] flex items-center justify-center perspective-[2000px]">
+                {/* 3D Graphical Component - Desktop/Tablet Only */}
+                <div className="relative h-[700px] hidden md:flex items-center justify-center perspective-[2000px]">
                     
                     {/* The Shield/Core 3D Assembly */}
                     <div className="relative flex items-center justify-center transform-style-3d">

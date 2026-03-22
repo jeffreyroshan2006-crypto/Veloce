@@ -137,7 +137,14 @@ export default function ServicePillars() {
                             };
                             window.addEventListener('resize', resize);
                             resize();
+
+                            if (w < 768) return; // Disable canvas animation on mobile to save frames
                             
+                            let particleCount = 50;
+                            if (w >= 768 && w < 1024) { // Tablet range
+                                particleCount = 20; // Reduced for tablets
+                            }
+
                             class Particle {
                                 constructor() {
                                     this.reset();
@@ -163,7 +170,7 @@ export default function ServicePillars() {
                                 }
                             }
                             
-                            for (let i = 0; i < 50; i++) particles.push(new Particle());
+                            for (let i = 0; i < particleCount; i++) particles.push(new Particle());
                             
                             const animate = () => {
                                 ctx.clearRect(0, 0, w, h);

@@ -14,6 +14,13 @@ const contactLinks = [
     icon: <Instagram className="w-full h-full" strokeWidth={1} />,
   },
   {
+    name: 'WhatsApp',
+    handle: 'Chat with us',
+    href: 'https://wa.me/veloce',
+    color: '#25D366',
+    icon: <MessageCircle className="w-full h-full" strokeWidth={1} />,
+  },
+  {
     name: 'Email',
     handle: 'hello@veloce.design',
     href: 'mailto:hello@veloce.design',
@@ -127,7 +134,7 @@ export function MegaFooter() {
                   transition={{ type: 'spring', stiffness: 200, damping: 20 }}
                   className="w-[300px] md:w-[500px] h-[300px] md:h-[500px] text-white/90 drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
                 >
-                  {contactLinks[hoveredIndex].icon}
+                  {hoveredIndex !== null && contactLinks[hoveredIndex]?.icon}
                 </motion.div>
               )}
             </AnimatePresence>

@@ -3,7 +3,7 @@
 import React from 'react';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { motion } from 'framer-motion';
-import { Mail, Send, ArrowRight } from 'lucide-react';
+import { Mail, MessageCircle, Send, ArrowRight } from 'lucide-react';
 import { MagneticButton } from '@/components/ui/MagneticButton';
 
 export default function ContactPage() {
@@ -30,6 +30,7 @@ export default function ContactPage() {
               <div className="space-y-6">
                 {[
                   { icon: Mail, label: 'Email', val: 'hello@veloce.design', href: 'mailto:hello@veloce.design' },
+                  { icon: MessageCircle, label: 'WhatsApp', val: 'Message us', href: 'https://wa.me/veloce' },
                   { icon: Send, label: 'Telegram', val: '@veloce_agency', href: 'https://t.me/veloce' }
                 ].map((item, i) => (
                   <a 

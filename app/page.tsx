@@ -152,7 +152,7 @@ export default function Home() {
                     <div className="w-full max-w-4xl overflow-hidden mb-12">
                       <InteractiveMarquee
                         text="We build, enhance, and modernize applications and platforms for brands that refuse to settle for the ordinary."
-                        speed={0.06}
+                        speed={0.02}
                       />
                     </div>
 

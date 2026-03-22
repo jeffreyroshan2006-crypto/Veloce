@@ -89,7 +89,7 @@ export default function Home() {
 
         {/* Scroll Progress Indicator */}
         <motion.div
-          className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#007FFF] via-purple-500 to-pink-500 z-[200] origin-left"
+          className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#007FFF] via-purple-500 to-pink-500 z-[200] origin-left will-change-transform"
           style={{ scaleX: smoothProgress }}
         />
 
@@ -145,7 +145,7 @@ export default function Home() {
                       World-Class Digital Ecosystems
                     </motion.div>
 
-                    <div className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black mb-8 tracking-tighter leading-[0.8] text-white">
+                    <div className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black mb-8 tracking-tighter leading-[0.8] text-white will-change-transform">
                       <PremiumHeroText text="VELOCE" />
                     </div>
 

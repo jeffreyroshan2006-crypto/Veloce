@@ -29,7 +29,7 @@ export function PremiumHeader() {
           isMenuOpen 
             ? 'bg-white shadow-xl' 
             : isScrolled 
-              ? 'bg-white/95 backdrop-blur-xl shadow-2xl border border-gray-100' 
+              ? 'bg-white/95 backdrop-blur-md md:backdrop-blur-xl shadow-2xl border border-gray-100' 
               : 'bg-white shadow-xl border border-gray-50'
         }`}
       >

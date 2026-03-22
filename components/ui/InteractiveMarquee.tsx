@@ -68,7 +68,7 @@ export function InteractiveMarquee({ text, speed = 1 }: InteractiveMarqueeProps)
                 style={{
                     x,
                     willChange: 'transform',
-                    transform: 'translateZ(0)',
+                    transform: 'translateZ(0) translate3d(0,0,0)',
                 }}
             >
                 {/* Increased copies for seamless ultra-slow looping */}

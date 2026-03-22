@@ -636,8 +636,9 @@ void main() {
     this.minigl.setSize(width, height);
     this.minigl.setOrthographicCamera();
 
-    const xSegCount = Math.ceil(width * 0.02);
-    const ySegCount = Math.ceil(height * 0.05);
+    const isMobile = width < 768;
+    const xSegCount = Math.ceil(width * (isMobile ? 0.01 : 0.02));
+    const ySegCount = Math.ceil(height * (isMobile ? 0.02 : 0.05));
     this.mesh.geometry.setTopology(xSegCount, ySegCount);
     this.mesh.geometry.setSize(width, height);
     this.mesh.material.uniforms.u_shadow_power.value = width < 600 ? 5 : 6;

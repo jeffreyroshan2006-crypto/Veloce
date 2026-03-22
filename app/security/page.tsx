@@ -9,7 +9,7 @@ import { ShieldCheck, Cpu, Globe, Lock } from 'lucide-react';
 export default function SecurityPage() {
   return (
     <PageTransition>
-      <main className="bg-black pt-32 min-h-screen">
+      <main className="bg-black min-h-screen">
         {/* The Interactive Security Section (Primary Focus) */}
         <div className="relative">
           <SecuritySection />

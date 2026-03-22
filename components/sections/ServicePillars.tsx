@@ -68,33 +68,124 @@ export default function ServicePillars() {
     return (
         <section id="services" className="py-24 px-6 md:px-12 lg:px-24">
             <div className="max-w-7xl mx-auto">
-                <div className="mb-24 text-center relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, y: 40 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                    >
-                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-white leading-[0.95] uppercase">
-                            <span className="pricing-script-text text-[#fb923c] text-3xl sm:text-4xl md:text-5xl inline-block -rotate-2 mr-3 mb-2 lowercase opacity-100 normal-case">
-                                Service
-                            </span>
-                            <br className="hidden sm:block" />
-                            Three service pillars. <br />
-                            One partner for <span className="text-white/30">development, <br />
-                            platforms, and operations</span>
-                        </h2>
-                    </motion.div>
+                <div className="mb-24 text-center relative group">
+                    {/* World-Class Digital Silk Background */}
+                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[450px] pointer-events-none z-0 overflow-hidden opacity-60">
+                        <canvas id="silk-canvas" className="w-full h-full" />
+                        <div className="absolute inset-0 bg-radial-gradient from-transparent via-[#0E1117]/80 to-[#0E1117] pointer-events-none" />
+                    </div>
 
-                    <motion.p 
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.5, duration: 0.8 }}
-                        className="text-white/50 text-lg md:text-xl mt-8 max-w-4xl mx-auto font-light leading-relaxed tracking-tight"
-                    >
-                        From build to run, we&apos;ve got you covered
-                    </motion.p>
+                    <div className="relative z-10 flex flex-col items-center">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            className="flex flex-col items-center"
+                        >
+                            {/* Sharp Section Descriptor */}
+                            <motion.div 
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                                className="mb-8 flex items-center gap-3"
+                            >
+                                <span className="h-px w-6 bg-gradient-to-r from-transparent to-black" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-black">The Ecosystem</span>
+                                <span className="h-px w-6 bg-gradient-to-l from-transparent to-black" />
+                            </motion.div>
+
+                            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-[1.05] uppercase flex flex-col items-center">
+                                <span className="pricing-script-text text-black text-2xl sm:text-3xl normal-case italic -rotate-1 mb-2">
+                                    Service
+                                </span>
+                                <span className="relative inline-block">
+                                    <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/40 select-none">
+                                        Three service pillars. <br />
+                                        One partner for <br className="sm:hidden" />
+                                        <span className="text-white/20">Development & Ops</span>
+                                    </span>
+                                </span>
+                            </h2>
+
+                            <motion.p 
+                                initial={{ opacity: 0, y: 15 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5, duration: 0.8 }}
+                                className="text-black text-base md:text-xl mt-10 max-w-2xl mx-auto font-light leading-relaxed tracking-tight px-6"
+                            >
+                                From initial prototype to global scale operations, <br className="hidden md:block" />
+                                we engineer the foundations of your success.
+                            </motion.p>
+
+                            {/* Decorative Interaction Indicator */}
+                            <div className="mt-12 w-px h-10 bg-gradient-to-b from-[#fb923c] to-transparent opacity-40" />
+                        </motion.div>
+                    </div>
+
+                    {/* Canvas Initialization Script */}
+                    <script dangerouslySetInnerHTML={{ __html: `
+                        (function() {
+                            const canvas = document.getElementById('silk-canvas');
+                            if (!canvas) return;
+                            const ctx = canvas.getContext('2d');
+                            let w, h, particles = [];
+                            
+                            const resize = () => {
+                                w = canvas.width = canvas.offsetWidth;
+                                h = canvas.height = canvas.offsetHeight;
+                            };
+                            window.addEventListener('resize', resize);
+                            resize();
+                            
+                            class Particle {
+                                constructor() {
+                                    this.reset();
+                                }
+                                reset() {
+                                    this.x = Math.random() * w;
+                                    this.y = Math.random() * h;
+                                    this.vx = (Math.random() - 0.5) * 0.5;
+                                    this.vy = (Math.random() - 0.5) * 0.5;
+                                    this.life = Math.random() * 0.5 + 0.5;
+                                    this.baseColor = Math.random() > 0.5 ? '#fb923c' : '#ffffff';
+                                }
+                                update() {
+                                    this.x += this.vx;
+                                    this.y += this.vy;
+                                    if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+                                }
+                                draw() {
+                                    ctx.beginPath();
+                                    ctx.arc(this.x, this.y, 1, 0, Math.PI * 2);
+                                    ctx.fillStyle = this.baseColor + '10';
+                                    ctx.fill();
+                                }
+                            }
+                            
+                            for (let i = 0; i < 50; i++) particles.push(new Particle());
+                            
+                            const animate = () => {
+                                ctx.clearRect(0, 0, w, h);
+                                particles.forEach(p => {
+                                    p.update();
+                                    p.draw();
+                                });
+                                // Draw flowing lines
+                                ctx.beginPath();
+                                ctx.strokeStyle = '#ffffff05';
+                                ctx.lineWidth = 0.5;
+                                for (let i = 0; i < 5; i++) {
+                                    const y = h/2 + Math.sin(Date.now() * 0.001 + i) * 100;
+                                    ctx.moveTo(0, y);
+                                    ctx.quadraticCurveTo(w/2, y + Math.cos(Date.now() * 0.001) * 200, w, y);
+                                }
+                                ctx.stroke();
+                                requestAnimationFrame(animate);
+                            };
+                            animate();
+                        })();
+                    `}} />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

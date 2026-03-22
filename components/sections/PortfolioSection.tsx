@@ -145,46 +145,25 @@ function PortfolioCard({ item, active }: { item: CardStackItem; active: boolean 
 
 export default function PortfolioSection() {
   return (
-    <section id="portfolio" className="relative min-h-[120vh] bg-black/50 backdrop-blur-xl pt-40 pb-28 overflow-hidden flex flex-col justify-center border-t border-white/5">
+    <section id="portfolio" className="relative min-h-[120vh] bg-[#0E1117]/70 backdrop-blur-xl pt-12 pb-28 overflow-hidden flex flex-col justify-center border-t border-white/5">
       <div className="relative z-10 max-w-[2000px] mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center mb-10"
-        >
-          <h2 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[0.95]">
-            <motion.span
-              initial={{ opacity: 0, y: 45 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="block"
-            >
+        <div className="mb-24 text-center">
+          <motion.h2 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-5xl md:text-7xl lg:text-[7rem] font-black tracking-tighter text-white leading-[0.8] uppercase"
+          >
+            <span className="pricing-script-text text-[#fb923c] text-3xl md:text-6xl inline-block -rotate-3 mr-4 normal-case italic">
               Where
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 45 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="block text-transparent bg-clip-text bg-gradient-to-r from-[#007FFF] via-purple-400 to-[#007FFF]"
-              style={{ backgroundSize: '200% auto' }}
-            >
-              Innovation
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 45 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="block text-white/10"
-            >
-              Meets Excellence.
-            </motion.span>
-          </h2>
-        </motion.div>
+            </span>
+            <br className="hidden md:block" />
+            INNOVATION
+            <br />
+            <span className="text-white/10 uppercase">Meets Excellence.</span>
+          </motion.h2>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 25 }}

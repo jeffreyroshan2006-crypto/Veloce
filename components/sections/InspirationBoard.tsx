@@ -18,60 +18,47 @@ function MarqueeCard({ site, isPaused }: { site: typeof awwwardsSites[0]; isPaus
             href={site.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative flex-shrink-0 block mx-3 cursor-pointer group"
+            className="relative flex-shrink-0 block mx-4 cursor-pointer group"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            whileHover={{ scale: isPaused ? 1.02 : 1 }}
-            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.05, zIndex: 50 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
-            <div className="relative w-[320px] md:w-[380px] aspect-[16/10] rounded-xl overflow-hidden bg-black/60 backdrop-blur-sm border border-white/[0.08] group-hover:border-white/20 transition-colors duration-300">
-                {/* Image */}
+            <div className="relative w-[340px] md:w-[420px] aspect-[16/10] rounded-2xl overflow-hidden bg-[#161618] border border-white/[0.05] group-hover:border-[#fb923c]/40 transition-all duration-500 shadow-2xl">
+                {/* Image - Optimized for performance */}
                 <img
                     src={site.thumbnail}
                     alt={site.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 will-change-transform"
                     loading="lazy"
+                    decoding="async"
                 />
                 
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
+                {/* Simplified gradient overlay for performance */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
                 
-                {/* Premium glow on hover */}
-                <motion.div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{ 
-                        boxShadow: `inset 0 0 80px ${site.award === 'SOTM' ? 'rgba(251, 146, 60, 0.3)' : 'rgba(139, 92, 246, 0.3)'}`
-                    }}
-                />
-                
-                {/* Top badges */}
-                <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
-                    <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${
-                        site.award === 'SOTM' 
-                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-black' 
-                            : 'bg-white/10 text-white border border-white/20'
-                    }`}>
-                        {site.award === 'SOTM' ? '🏆 SOTM' : 'SOTD'}
-                    </span>
-                    <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-black/50 backdrop-blur-md text-white/80 border border-white/10">
-                        {site.category}
-                    </span>
-                </div>
-                
-                {/* Bottom content */}
-                <div className="absolute bottom-0 left-0 right-0 p-5">
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                     <div className="flex items-end justify-between">
                         <div className="flex-1 min-w-0">
-                            <h3 className="text-xl font-bold text-white mb-0.5 truncate">{site.name}</h3>
-                            <p className="text-xs text-white/50 truncate">{site.agency}</p>
+                            <h3 className="text-2xl font-black text-white mb-1 truncate tracking-tight">{site.name}</h3>
+                            <div className="flex items-center gap-2">
+                                <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${
+                                    site.award === 'SOTM' 
+                                        ? 'bg-[#fb923c] text-black shadow-[0_0_15px_rgba(251,146,60,0.4)]' 
+                                        : 'bg-white/10 text-white/70'
+                                }`}>
+                                    {site.award}
+                                </span>
+                                <p className="text-[10px] text-white/40 truncate uppercase font-bold tracking-widest">{site.agency}</p>
+                            </div>
                         </div>
-                        <motion.div
-                            className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0 ml-3 border border-white/20"
-                            animate={{ scale: isHovered ? 1.1 : 1, backgroundColor: isHovered ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)' }}
-                        >
-                            <ExternalLink size={16} className="text-white" />
-                        </motion.div>
                     </div>
+                </div>
+
+                {/* Glass reflection shimmer */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent" />
                 </div>
             </div>
         </motion.a>
@@ -88,23 +75,36 @@ function MarqueeRow({ sites, direction = 1, speed = 50, isPaused }: {
     speed?: number;
     isPaused: boolean;
 }) {
-    const duplicatedSites = [...sites, ...sites];
+    // We duplicate the list to ensure seamless looping
+    const duplicatedSites = [...sites, ...sites, ...sites];
 
     return (
-        <div className="relative overflow-hidden py-3">
-            <motion.div
-                className="flex"
-                animate={isPaused ? {} : { x: direction === 1 ? [0, -50 * sites.length] : [-50 * sites.length, 0] }}
-                transition={{
-                    repeat: Infinity,
-                    duration: speed,
-                    ease: 'linear'
+        <div className="relative overflow-hidden py-4 group/row select-none">
+            <div 
+                className={`flex w-max will-change-transform ${isPaused ? 'pause-animation' : ''}`}
+                style={{
+                    animation: `marquee-${direction === 1 ? 'right' : 'left'} ${speed}s linear infinite`,
+                    animationPlayState: isPaused ? 'paused' : 'running'
                 }}
             >
                 {duplicatedSites.map((site, index) => (
                     <MarqueeCard key={`${site.id}-${index}`} site={site} isPaused={isPaused} />
                 ))}
-            </motion.div>
+            </div>
+
+            <style jsx>{`
+                @keyframes marquee-left {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-33.33%); }
+                }
+                @keyframes marquee-right {
+                    0% { transform: translateX(-33.33%); }
+                    100% { transform: translateX(0); }
+                }
+                .pause-animation {
+                    animation-play-state: paused !important;
+                }
+            `}</style>
         </div>
     );
 }
@@ -306,11 +306,18 @@ export function InspirationBoard() {
                             transition={{ duration: 0.4 }}
                             onMouseEnter={() => setIsPaused(true)}
                             onMouseLeave={() => setIsPaused(false)}
+                            className="perspective-[2000px] py-10 relative"
                         >
-                            <MarqueeRow sites={marqueeRows[0]} direction={1} speed={60} isPaused={isPaused} />
-                            <MarqueeRow sites={marqueeRows[1]} direction={-1} speed={70} isPaused={isPaused} />
-                            <MarqueeRow sites={marqueeRows[2]} direction={1} speed={55} isPaused={isPaused} />
-                            <MarqueeRow sites={marqueeRows[3]} direction={-1} speed={65} isPaused={isPaused} />
+                            {/* Cinematic Edge Masks */}
+                            <div className="absolute inset-y-0 left-0 w-40 z-20 bg-gradient-to-r from-[#0a0a0b] to-transparent pointer-events-none" />
+                            <div className="absolute inset-y-0 right-0 w-40 z-20 bg-gradient-to-l from-[#0a0a0b] to-transparent pointer-events-none" />
+                            
+                            <div className="rotate-x-12 -rotate-y-6 skew-x-[-4deg] scale-110">
+                                <MarqueeRow sites={marqueeRows[0]} direction={1} speed={150} isPaused={isPaused} />
+                                <MarqueeRow sites={marqueeRows[1]} direction={-1} speed={180} isPaused={isPaused} />
+                                <MarqueeRow sites={marqueeRows[2]} direction={1} speed={160} isPaused={isPaused} />
+                                <MarqueeRow sites={marqueeRows[3]} direction={-1} speed={190} isPaused={isPaused} />
+                            </div>
                         </motion.div>
                     ) : (
                         // GRID VIEW

@@ -17,7 +17,7 @@ export function PremiumHeader() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = ['Home', 'Services', 'Process', 'Security', 'Portfolio', 'Pricing', 'Contact'];
+  const navLinks = ['Home', 'Services', 'Process', 'Security', 'Portfolio', 'Catalog', 'Pricing', 'Contact'];
 
   return (
     <>
@@ -61,9 +61,8 @@ export function PremiumHeader() {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-6">
-          <div className="hidden sm:flex items-center gap-3 text-[10px] font-bold tracking-widest uppercase">
-            <span className="text-black hover:text-[#fb923c] cursor-pointer transition-colors">EN</span>
-            <span className="text-black/30 hover:text-black cursor-pointer transition-colors">FR</span>
+          <div className="hidden sm:flex items-center gap-3 text-[10px] font-bold tracking-widest uppercase opacity-0 pointer-events-none">
+            {/* Language Switchers removed to de-clutter as per user request */}
           </div>
 
           <MagneticButton>
@@ -98,7 +97,7 @@ export function PremiumHeader() {
                     <Link 
                       href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
                       onClick={() => setIsMenuOpen(false)}
-                      className="text-[8vh] md:text-[11vh] font-black tracking-tighter leading-[0.85] uppercase transition-all duration-500 hover:pl-10 text-black hover:text-uptic-orange"
+                      className="text-[5.5vh] md:text-[7.5vh] font-black tracking-tighter leading-[0.85] uppercase transition-all duration-500 hover:pl-10 text-black hover:text-uptic-orange"
                     >
                       {item}
                     </Link>
@@ -106,14 +105,14 @@ export function PremiumHeader() {
                 ))}
               </div>
 
-              {/* RIGHT COLUMN: Branding & Info (Properly Arranged) */}
-              <div className="flex flex-col justify-center items-center lg:items-end h-full">
+              {/* RIGHT COLUMN: Branding & Info (Centered in column for better balance) */}
+              <div className="flex flex-col justify-center items-center lg:items-center h-full">
                 {/* Unified Branding Block */}
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.8 }}
-                  className="flex flex-col items-center lg:items-end w-full"
+                  className="flex flex-col items-center w-full"
                 >
                   {/* Digital Ecosystem Logo */}
                   <div className="relative group mb-10">
@@ -124,27 +123,29 @@ export function PremiumHeader() {
                   </div>
 
                   {/* Brand Typography */}
-                  <div className="text-center lg:text-right space-y-2">
+                  <div className="text-center space-y-2">
                     <h3 className="text-6xl md:text-[9rem] font-black tracking-tighter text-black uppercase leading-[0.8]">VELOCE</h3>
                     <p className="text-[10px] md:text-[14px] font-black tracking-[0.5em] text-black/20 uppercase">WORLD CLASS DIGITAL ECOSYSTEM</p>
                   </div>
 
                   {/* Properly Aligned Info Section */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-12 mt-20 w-full lg:w-auto">
-                    <div className="lg:text-right">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-12 mt-20 w-full">
+                    <div className="text-center lg:text-left">
                       <h4 className="text-[10px] font-black text-black/20 uppercase tracking-[0.4em] mb-4">Inquiry</h4>
-                      <div className="space-y-1">
+                      <div className="space-y-3">
                         <a href="mailto:hello@veloce.design" className="text-2xl md:text-3xl font-bold text-black border-b-2 border-transparent hover:border-uptic-orange transition-all tracking-tighter block">hello@veloce.design</a>
-                        <p className="text-lg md:text-xl font-bold text-black/40 tracking-tight">+380 93 123 45 67</p>
                       </div>
                     </div>
 
-                    <div className="lg:text-right">
+                    <div className="text-center lg:text-left">
                       <h4 className="text-[10px] font-black text-black/20 uppercase tracking-[0.4em] mb-4">Portals</h4>
-                      <div className="flex flex-wrap lg:justify-end gap-x-8 gap-y-4 text-[12px] font-black text-black uppercase tracking-widest">
-                        {['Instagram', 'Behance', 'Dribbble'].map((social) => (
-                          <a key={social} href="#" className="hover:text-uptic-orange transition-all relative group overflow-hidden">
-                            {social}
+                      <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4 text-[14px] font-black text-black uppercase tracking-widest">
+                        {[
+                          { name: 'Instagram', href: 'https://instagram.com/the.veloce' },
+                          { name: 'Email', href: 'mailto:hello@veloce.design' }
+                        ].map((social) => (
+                          <a key={social.name} href={social.href} className="text-black hover:text-uptic-orange transition-all relative group overflow-hidden py-1">
+                            {social.name}
                             <span className="absolute bottom-0 left-0 w-full h-[2px] bg-uptic-orange translate-x-[-110%] group-hover:translate-x-0 transition-transform duration-500" />
                           </a>
                         ))}

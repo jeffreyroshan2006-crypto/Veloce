@@ -3,27 +3,20 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Send, MessageCircle, Mail } from 'lucide-react';
+import { Instagram, MessageCircle, Mail } from 'lucide-react';
 
 const contactLinks = [
-  { 
-    name: 'Telegram', 
-    handle: '@veloce_agency',
-    href: 'https://t.me/veloce', 
-    color: '#0088CC',
-    icon: <Send className="w-full h-full" strokeWidth={1} />,
+  {
+    name: 'Instagram',
+    handle: '@the.veloce',
+    href: 'https://instagram.com/the.veloce',
+    color: 'linear-gradient(45deg, #f9ce34 10%, #ee2a7b 50%, #6228d7 90%)',
+    icon: <Instagram className="w-full h-full" strokeWidth={1} />,
   },
-  { 
-    name: 'WhatsApp', 
-    handle: '+380 93 123 45 67',
-    href: 'https://wa.me/veloce', 
-    color: '#25D366',
-    icon: <MessageCircle className="w-full h-full" strokeWidth={1} />,
-  },
-  { 
-    name: 'Email', 
+  {
+    name: 'Email',
     handle: 'hello@veloce.design',
-    href: 'mailto:hello@veloce.design', 
+    href: 'mailto:hello@veloce.design',
     color: '#5B4BD5',
     icon: <Mail className="w-full h-full" strokeWidth={1} />,
   },
@@ -35,6 +28,7 @@ const footerNav = [
   { name: 'Process', href: '/process' },
   { name: 'Security', href: '/security' },
   { name: 'Portfolio', href: '/portfolio' },
+  { name: 'Catalog', href: '/catalog' },
   { name: 'Pricing', href: '/pricing' },
   { name: 'Contact', href: '/contact' },
   { name: 'Privacy Policy', href: '/privacy' },
@@ -46,25 +40,30 @@ export function MegaFooter() {
   // Background color logic based on hover
   const getBgColor = () => {
     if (hoveredIndex === null) return '#0E1117'; // Default dark
-    return contactLinks[hoveredIndex].color;
+    return 'transparent'; // Background handled by style
   };
 
   return (
-    <footer className="relative z-10 w-full bg-[#0E1117] pt-20 pb-12 px-2 md:px-6 overflow-hidden transition-colors duration-700 ease-in-out" style={{ backgroundColor: getBgColor() }}>
-      
+    <footer
+      className="relative w-full transition-all duration-500 ease-in-out py-20 pb-12 px-2 md:px-6 overflow-hidden"
+      style={{
+        background: hoveredIndex !== null ? contactLinks[hoveredIndex].color : '#0E1117'
+      }}
+    >
+
       {/* Immersive Contact Box */}
       <div className="max-w-[1440px] mx-auto relative z-10 bg-transparent rounded-[3rem] md:rounded-[4rem] p-8 md:p-20 flex flex-col min-h-[85vh] justify-between overflow-hidden">
-        
+
         {/* Top Header */}
         <div className="mb-20">
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             className="text-white/60 text-lg md:text-2xl font-medium tracking-tight mb-2"
           >
-            Still have questions?
+            Have a vision or a question? Don't hesitate—get a free consultation call from our team and let's build something remarkable.
           </motion.p>
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -76,11 +75,11 @@ export function MegaFooter() {
 
         {/* Main Content Area */}
         <div className="flex flex-col lg:flex-row items-center justify-between gap-20 flex-grow">
-          
+
           {/* Left Text Navigation */}
           <div className="flex flex-col items-start gap-4 md:gap-6 z-20">
             {contactLinks.map((link, i) => (
-              <div 
+              <div
                 key={link.name}
                 onMouseEnter={() => setHoveredIndex(i)}
                 onMouseLeave={() => setHoveredIndex(null)}
@@ -91,8 +90,8 @@ export function MegaFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`block text-6xl sm:text-8xl md:text-[8rem] lg:text-[10rem] font-black tracking-tighter transition-all duration-500 ${
-                    hoveredIndex !== null && hoveredIndex !== i 
-                      ? 'text-white/20 blur-md scale-95' 
+                    hoveredIndex !== null && hoveredIndex !== i
+                      ? 'text-white/20 blur-md scale-95'
                       : 'text-white'
                   }`}
                 >
@@ -151,8 +150,8 @@ export function MegaFooter() {
           </div>
 
           <div className="flex flex-col items-center md:items-end gap-2 text-center md:text-right">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">© 2026 VELOCE STUDIO</p>
-            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/10">All rights reserved. Ukraine / World</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">© 2026 VELOCE — All rights reserved.</p>
+            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/10 italic">Engineering high-velocity digital ecosystems from INDIA</p>
           </div>
         </div>
       </div>

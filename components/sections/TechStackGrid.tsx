@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Sparkles, Cpu, Layers, Database, Cloud } from 'lucide-react';
+import { LogosSlider } from './LogosSlider';
 
 const categories = [
     {
@@ -111,36 +112,71 @@ function PremiumBentoCard({ category, index }: { category: typeof categories[0];
                 rotateX,
                 rotateY,
             }}
-            className={`relative rounded-[2.5rem] p-8 md:p-12 overflow-hidden group transition-all duration-300 ${
+            className={`relative rounded-[2.5rem] p-8 md:p-12 overflow-hidden group transition-all duration-500 border border-white/10 ${
                 index % 3 === 0 ? 'md:col-span-12 lg:col-span-8' : 'md:col-span-12 lg:col-span-4'
             }`}
         >
-            {/* Ambient Background */}
-            <div 
-                className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent border border-white/10 backdrop-blur-xl group-hover:border-white/20 transition-colors duration-500 rounded-[2.5rem]"
-            />
+            {/* 90% Black Deep Glass Base */}
+            <div className="absolute inset-0 bg-black/95 backdrop-blur-2xl z-0" />
             
-            {/* Corner Accent Color */}
+            {/* Interactive Holographic Glint (Follows Mouse) */}
+            <motion.div 
+                className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                style={{
+                    background: useTransform(
+                        [mouseXSpring, mouseYSpring],
+                        ([x, y]: any) => `radial-gradient(circle at ${50 + x * 100}% ${50 + y * 100}%, rgba(255,255,255,0.08) 0%, transparent 50%)`
+                    )
+                }}
+            />
+
+            {/* 3D Interactive Graphical Layer (Technical Orbit) */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full [perspective:1000px] [transform-style:preserve-3d]">
+                    {/* Outer Orbit */}
+                    <motion.div
+                        animate={{ rotateZ: 360, rotateX: [10, 30, 10], rotateY: [10, -10, 10] }}
+                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 aspect-square border-2 border-dashed border-white/[0.03] rounded-full [transform-style:preserve-3d]"
+                    />
+                    {/* Inner Orbit */}
+                    <motion.div
+                        animate={{ rotateZ: -360, rotateX: [-10, -30, -10], rotateY: [-10, 10, -10] }}
+                        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 aspect-square border border-white/[0.05] rounded-full [transform-style:preserve-3d]"
+                    >
+                        <div className="absolute -top-1 -left-1 w-2 h-2 bg-white/20 blur-sm rounded-full" />
+                    </motion.div>
+
+                    {/* Technical Mesh/Grid Floor Overlay */}
+                    <div 
+                        className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_at_bottom,black_20%,transparent_70%)] [transform:rotateX(60deg)] opacity-40 brightness-150" 
+                    />
+                </div>
+            </div>
+
+            {/* Corner Accent Glow */}
             <div 
-                className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-[80px] opacity-20 pointer-events-none group-hover:opacity-40 transition-opacity duration-700"
+                className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-[100px] opacity-10 pointer-events-none group-hover:opacity-30 transition-opacity duration-1000 z-0"
                 style={{ backgroundColor: category.accent }}
             />
 
-            {/* Content */}
-            <div className="relative z-10 flex flex-col h-full">
+            {/* Content Content Container */}
+            <div className="relative z-10 flex flex-col h-full pointer-events-none">
                 <div className="flex items-center gap-4 mb-8">
-                    <div 
-                        className="w-12 h-12 rounded-2xl flex items-center justify-center border border-white/10 shadow-xl"
-                        style={{ backgroundColor: `${category.accent}20`, color: category.accent }}
+                    <motion.div 
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/10 shadow-2xl backdrop-blur-sm pointer-events-auto"
+                        style={{ backgroundColor: `${category.accent}15`, color: category.accent }}
                     >
                         {category.icon}
-                    </div>
-                    <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-white">
+                    </motion.div>
+                    <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-white pointer-events-auto">
                         {category.title}
                     </h3>
                 </div>
 
-                <div className="flex flex-wrap gap-3 mt-auto">
+                <div className="flex flex-wrap gap-3 mt-auto pointer-events-auto">
                     {category.tools.map((tool, i) => (
                         <ToolPill key={i} tool={tool} />
                     ))}
@@ -152,7 +188,7 @@ function PremiumBentoCard({ category, index }: { category: typeof categories[0];
 
 export default function TechStackGrid() {
     return (
-        <section id="tech-stack" className="py-20 md:py-40 px-6 md:px-12 lg:px-24 bg-[#0E1117] relative overflow-hidden">
+        <section id="tech-stack" className="py-20 md:py-24 px-6 md:px-12 lg:px-24 bg-[#0E1117]/70 relative overflow-hidden">
             
             {/* Premium Header Architecture (Centered) */}
             <div className="max-w-7xl mx-auto mb-24 md:mb-40 text-center flex flex-col items-center">
@@ -199,11 +235,8 @@ export default function TechStackGrid() {
                 ))}
             </div>
 
-            {/* Bottom Watermark */}
-            <div className="absolute -bottom-20 left-0 right-0 opacity-[0.02] pointer-events-none select-none text-center">
-                <h3 className="text-[30vw] font-black text-white tracking-[2vw] uppercase">
-                    INFRA
-                </h3>
+            <div className="mt-20 px-6 md:px-12 lg:px-24">
+                <LogosSlider />
             </div>
         </section>
     );

@@ -11,9 +11,7 @@ import TechStackGrid from '@/components/sections/TechStackGrid';
 import { InteractiveMarquee } from '@/components/ui/InteractiveMarquee';
 import { PremiumHeroText } from '@/components/ui/PremiumHeroText';
 import { GradientWave } from '@/components/ui/gradient-wave';
-import PricingSection from '@/components/sections/PricingSection';
 import PortfolioSection from '@/components/sections/PortfolioSection';
-import { InspirationBoard } from '@/components/sections/InspirationBoard';
 import { SplineScene } from '@/components/ui/splite';
 import { Spotlight } from '@/components/ui/spotlight';
 
@@ -89,12 +87,6 @@ export default function Home() {
         {/* WebGL Background */}
         <GradientWave colors={["#A020F0", "#F8C8A0", "#A020F0", "#F5D0A9"]} />
 
-        {/* Premium Noise Texture */}
-        <div
-          className="fixed inset-0 z-[1] pointer-events-none mix-blend-overlay opacity-[0.15]"
-          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-        />
-
         {/* Scroll Progress Indicator */}
         <motion.div
           className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#007FFF] via-purple-500 to-pink-500 z-[200] origin-left"
@@ -105,14 +97,13 @@ export default function Home() {
         <section id="home" className="relative z-10 min-h-screen flex items-center justify-center pt-28 pb-12 overflow-hidden">
           <div className="glass-wrap mx-auto w-full px-2">
             <div 
-              className="glass-premium relative flex flex-col md:flex-row items-center justify-center overflow-hidden" 
+              className="glass-premium relative flex flex-col items-center justify-center overflow-hidden h-[650px] md:h-[850px]" 
               style={{
-                height: 850,
                 width: '95%',
                 maxWidth: '2100px',
                 marginLeft: 'auto',
                 marginRight: 'auto',
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%), rgba(0, 0, 0, 0.3)',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%), rgba(0, 0, 0, 0.4)',
                 borderRadius: '40px',
                 boxShadow: `
                   0 0 0 1px rgba(255,255,255,0.15) inset,
@@ -127,10 +118,10 @@ export default function Home() {
               
               {/* Robot Layer (Background) */}
               <div className="absolute inset-0 z-0 pointer-events-auto">
-                <div className="absolute right-0 bottom-0 w-full lg:w-[60%] h-full flex items-end justify-end translate-x-[15%] translate-y-[15%]">
+                <div className="absolute right-0 bottom-0 w-full lg:w-[60%] h-full flex items-end justify-end translate-x-[15%] translate-y-[13.5%]">
                   <SplineScene 
                     scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-                    className="w-full h-full scale-[0.65] lg:scale-[0.75] transform-gpu"
+                    className="w-full h-full scale-[0.5] sm:scale-[0.6] md:scale-[0.65] lg:scale-[0.75] transform-gpu"
                     onLoad={handleSplineLoad}
                   />
                 </div>
@@ -145,23 +136,23 @@ export default function Home() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6 }}
-                      className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-white/10 border border-white/20 text-[10px] font-black tracking-[0.3em] uppercase text-[#fb923c]"
+                      className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-white/10 border border-white/20 text-[10px] font-black tracking-[0.3em] uppercase text-white/90"
                     >
                       <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#fb923c] opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#fb923c]"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/50 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                       </span>
                       World-Class Digital Ecosystems
                     </motion.div>
 
-                    <div className="text-7xl md:text-8xl lg:text-9xl font-black mb-8 tracking-tighter leading-[0.8] text-white">
+                    <div className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black mb-8 tracking-tighter leading-[0.8] text-white">
                       <PremiumHeroText text="VELOCE" />
                     </div>
 
                     <div className="w-full max-w-4xl overflow-hidden mb-12">
                       <InteractiveMarquee
                         text="We build, enhance, and modernize applications and platforms for brands that refuse to settle for the ordinary."
-                        speed={0.045}
+                        speed={0.06}
                       />
                     </div>
 
@@ -241,8 +232,6 @@ export default function Home() {
           <WhyVeloce />
           <CustomerSuccess />
           <TechStackGrid />
-          <PricingSection />
-          <InspirationBoard />
           <PortfolioSection />
         </div>
       </div>

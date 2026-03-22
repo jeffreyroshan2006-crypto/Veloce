@@ -8,12 +8,12 @@ type HoveredLink = 'instagram' | 'whatsapp' | 'email' | null;
 
 const brandConfigs = {
     instagram: {
-        gradient: 'linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)',
-        solid: '#E1306C',
+        gradient: 'linear-gradient(45deg, #f9ce34 10%, #ee2a7b 50%, #6228d7 90%)',
+        solid: '#ee2a7b',
         icon: Instagram,
-        handle: '@veloce_agency',
+        handle: '@the.veloce',
         label: 'Instagram',
-        href: 'https://instagram.com/veloce_agency'
+        href: 'https://instagram.com/the.veloce'
     },
     whatsapp: {
         gradient: 'linear-gradient(135deg, #25D366 0%, #20BD5A 100%)',
@@ -64,7 +64,7 @@ function ContactLink({
                     opacity: otherHovered ? 0.3 : 1,
                     filter: otherHovered ? 'blur(4px)' : 'blur(0px)'
                 }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
             >
                 <motion.div
                     className="w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shrink-0"
@@ -72,7 +72,7 @@ function ContactLink({
                         backgroundColor: isHovered ? config.solid : 'rgba(255,255,255,0.08)',
                         scale: isHovered ? 1.08 : 1
                     }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
                 >
                     <Icon size={28} className="text-white" />
                 </motion.div>
@@ -81,7 +81,7 @@ function ContactLink({
                     <motion.span
                         className="text-2xl md:text-3xl font-bold text-white tracking-tight"
                         animate={{ x: isHovered ? 8 : 0 }}
-                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
                     >
                         {config.label}
                     </motion.span>
@@ -92,7 +92,7 @@ function ContactLink({
                                 initial={{ opacity: 0, y: -8, height: 0 }}
                                 animate={{ opacity: 1, y: 0, height: 'auto' }}
                                 exit={{ opacity: 0, y: -8, height: 0 }}
-                                transition={{ duration: 0.25, ease: 'easeOut' }}
+                                transition={{ duration: 0.2, ease: 'easeOut' }}
                                 className="text-base md:text-lg text-white/50 font-medium mt-1 block overflow-hidden"
                             >
                                 {config.handle}
@@ -107,7 +107,7 @@ function ContactLink({
                         backgroundColor: isHovered ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)',
                         scale: isHovered ? 1.1 : 1
                     }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
                 >
                     <ArrowUpRight size={20} className="text-white/50" />
                 </motion.div>
@@ -133,8 +133,8 @@ function MassiveIcon({ brand }: { brand: 'instagram' | 'whatsapp' | 'email' | nu
             <div
                 className="w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80 rounded-full flex items-center justify-center"
                 style={{
-                    background: `radial-gradient(circle, ${config.solid}50 0%, ${config.solid}20 50%, transparent 70%)`,
-                    boxShadow: `0 0 80px ${config.solid}40, 0 0 120px ${config.solid}20`
+                    background: `radial-gradient(circle, ${(config?.solid || '#000')}50 0%, ${(config?.solid || '#000')}20 50%, transparent 70%)`,
+                    boxShadow: `0 0 80px ${(config?.solid || '#000')}40, 0 0 120px ${(config?.solid || '#000')}20`
                 }}
             >
                 <Icon size={100} className="text-white drop-shadow-lg" strokeWidth={1.5} />
@@ -160,9 +160,6 @@ export default function ContactFooter() {
 
             {/* PART 1: "Maximum Attention" CTA Section */}
             <div className="relative w-full px-6 py-16 md:py-32 flex flex-col items-center justify-center text-center overflow-hidden">
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply" style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
-                }} />
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -265,21 +262,19 @@ export default function ContactFooter() {
                     transition={{ duration: 1, delay: 0.4 }}
                     className="relative z-10 max-w-[85rem] mx-auto rounded-[3rem] md:rounded-[4rem] p-10 md:p-16 lg:p-20 overflow-hidden border border-white/5 shadow-3xl"
                 >
-                    {/* Animated Background */}
-                    <motion.div
-                        className="absolute inset-0"
-                        animate={{
-                            background: hoveredLink
-                                ? brandConfigs[hoveredLink].gradient
-                                : '#1A1E24'
-                        }}
-                        transition={{ duration: 0.5, ease: 'easeOut' }}
-                    />
+                    {/* Smooth Layered Backgrounds to prevent lag/errors */}
+                    <div className="absolute inset-0 bg-[#1A1E24]" />
+                    {(Object.keys(brandConfigs) as Array<keyof typeof brandConfigs>).map((brand) => (
+                        <motion.div
+                            key={brand}
+                            className="absolute inset-0"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: hoveredLink === brand ? 1 : 0 }}
+                            transition={{ duration: 0.4, ease: 'easeOut' }}
+                            style={{ background: brandConfigs[brand].gradient }}
+                        />
+                    ))}
 
-                    {/* Noise overlay */}
-                    <div className="absolute inset-0 opacity-[0.02] mix-blend-overlay pointer-events-none" style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
-                    }} />
 
                     {/* Content Grid */}
                     <div className="relative z-10 flex flex-col lg:flex-row gap-12 lg:gap-16">
@@ -396,10 +391,10 @@ export default function ContactFooter() {
 
                             <div className="flex flex-col items-center md:items-end gap-2">
                                 <div className="text-sm text-white/20 font-bold tracking-widest uppercase">
-                                    © {new Date().getFullYear()} VELOCE Studio
+                                    © {new Date().getFullYear()} VELOCE — All rights reserved.
                                 </div>
-                                <div className="text-[10px] text-white/10 tracking-[0.4em] uppercase">
-                                    All rights reserved
+                                <div className="text-[10px] text-white/10 tracking-[0.4em] uppercase italic">
+                                    Engineering high-velocity digital ecosystems from INDIA
                                 </div>
                             </div>
                         </div>

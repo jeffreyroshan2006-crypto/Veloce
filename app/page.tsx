@@ -103,21 +103,18 @@ export default function Home() {
                 maxWidth: '2100px',
                 marginLeft: 'auto',
                 marginRight: 'auto',
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%), rgba(0, 0, 0, 0.4)',
                 borderRadius: '40px',
                 boxShadow: `
-                  0 0 0 1px rgba(255,255,255,0.15) inset,
-                  0 0 100px rgba(0,0,0,0.2),
-                  0 25px 50px -12px rgba(0,0,0,0.5)
+                  0 0 100px rgba(0,0,0,0.1),
+                  0 25px 50px -12px rgba(0,0,0,0.3)
                 `,
                 backdropFilter: 'blur(40px) saturate(180%)',
                 WebkitBackdropFilter: 'blur(40px) saturate(180%)'
               }}
             >
-              <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
               
-              {/* Ethereal Glass Background Layer - Higher Transparency */}
-              <div className="absolute inset-0 bg-white/5 backdrop-blur-md md:backdrop-blur-2xl z-0" />
+              {/* Refined Glass Background Layer - 30% Black Tint */}
+              <div className="absolute inset-0 bg-black/30 backdrop-blur-md md:backdrop-blur-2xl z-0" />
 
               {/* Robot Layer (Background) - Hidden on Mobile, Interactive on Desktop */}
               <div className="absolute inset-0 z-0 pointer-events-auto hidden md:block">
